@@ -1,0 +1,59 @@
+[
+   {
+      "type": "TEXT_NODE",
+      "value": "Está tudo certo com ",
+      "attrs": [],
+      "event_attrs": [],
+      "children": [],
+      "location": {
+         "start": {
+            "offset": 0,
+            "line": 1,
+            "column": 1
+         },
+         "end": {
+            "offset": 20,
+            "line": 1,
+            "column": 21
+         }
+      }
+   },
+   {
+      "type": "DYNAMIC_TEXT_NODE",
+      "value": "texto dynamico aqui",
+      "attrs": [],
+      "event_attrs": [],
+      "children": [],
+      "location": {
+         "start": {
+            "offset": 20,
+            "line": 1,
+            "column": 21
+         },
+         "end": {
+            "offset": 41,
+            "line": 1,
+            "column": 42
+         }
+      }
+   },
+   {
+      "type": "TEXT_NODE",
+      "value": " funcionando?",
+      "attrs": [],
+      "event_attrs": [],
+      "children": [],
+      "location": {
+         "start": {
+            "offset": 41,
+            "line": 1,
+            "column": 42
+         },
+         "end": {
+            "offset": 54,
+            "line": 1,
+            "column": 55
+         }
+      }
+   }
+]

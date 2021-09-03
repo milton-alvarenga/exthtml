@@ -1,0 +1,43 @@
+[
+   {
+      "type": "DYNAMIC_TEXT_NODE",
+      "value": "Funcionou2",
+      "attrs": [],
+      "event_attrs": [],
+      "children": [],
+      "location": {
+         "start": {
+            "offset": 0,
+            "line": 1,
+            "column": 1
+         },
+         "end": {
+            "offset": 12,
+            "line": 1,
+            "column": 13
+         }
+      }
+   },
+   {
+      "type": "NEW_LINE",
+      "value": [
+         "\n"
+      ],
+      "attrs": [],
+      "dynamic_attrs": [],
+      "event_attrs": [],
+      "children": [],
+      "location": {
+         "start": {
+            "offset": 12,
+            "line": 1,
+            "column": 13
+         },
+         "end": {
+            "offset": 13,
+            "line": 2,
+            "column": 1
+         }
+      }
+   }
+]

@@ -1,0 +1,50 @@
+[
+   {
+      "type": "NESTED_TAG",
+      "value": "SELECT",
+      "attrs": [
+         {
+            "name": "obs",
+            "value": "",
+            "category": "custom_attribute",
+            "pos": 0
+         }
+      ],
+      "dynamic_attrs": [],
+      "event_attrs": [],
+      "children": [
+         {
+            "type": "NESTED_TAG",
+            "value": "OPTION",
+            "attrs": [],
+            "dynamic_attrs": [],
+            "event_attrs": [],
+            "children": [],
+            "location": {
+               "start": {
+                  "offset": 15,
+                  "line": 1,
+                  "column": 16
+               },
+               "end": {
+                  "offset": 32,
+                  "line": 1,
+                  "column": 33
+               }
+            }
+         }
+      ],
+      "location": {
+         "start": {
+            "offset": 0,
+            "line": 1,
+            "column": 1
+         },
+         "end": {
+            "offset": 41,
+            "line": 1,
+            "column": 42
+         }
+      }
+   }
+]

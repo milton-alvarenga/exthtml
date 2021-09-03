@@ -1,0 +1,35 @@
+[
+   {
+      "type": "SELF_CLOSE_TAG",
+      "value": "INPUT",
+      "attrs": [
+         {
+            "name": "type",
+            "value": "submit",
+            "category": "html_attribute",
+            "pos": 0
+         },
+         {
+            "name": "attr",
+            "value": "ok",
+            "category": "custom_attribute",
+            "pos": 1
+         }
+      ],
+      "dynamic_attrs": [],
+      "event_attrs": [],
+      "children": [],
+      "location": {
+         "start": {
+            "offset": 0,
+            "line": 1,
+            "column": 1
+         },
+         "end": {
+            "offset": 32,
+            "line": 1,
+            "column": 33
+         }
+      }
+   }
+]

@@ -1,0 +1,1 @@
+<button @click.prevent.passive={evt}></button>

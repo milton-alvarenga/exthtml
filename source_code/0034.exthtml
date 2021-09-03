@@ -1,0 +1,1 @@
+<comp text={val} @attr={evt} attr1="val1"></comp>

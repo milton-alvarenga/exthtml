@@ -1,0 +1,37 @@
+Start = Validation
+
+
+Validation = In / Out
+
+
+In = "In" _ "=" _ content:ContextRules { return { method: "IN", attrs: content }; } 
+
+
+Out = "Out" _ "=" _ content:ContextRules { return { method: "OUT", attrs: content }; }
+
+
+ContextRules = "{" _ rule:Rules loop:( _ "," _ loop:Rules {return loop})* _ "}" { return [rule,...loop]; }
+
+
+Rules = _ attr:Attribute _ ":" _ begin:Rule loop:( _ ";" _ loop:Rule _ {return loop})* { return { attribute: attr, rules:[begin,...loop] }; }
+		/ "[" ContextRules "]"
+
+Rule = obj:Object _ ":" _ method:Method { return {object:obj,method:method} }
+
+
+Attribute = attr:LowerSymbol { return attr; }
+
+
+Argument = LowerSymbol 
+
+
+Object = $([A-Z][a-z0-9_][a-zA-Z0-9_]+)
+
+
+Method = method:LowerSymbol {return method}
+
+
+LowerSymbol = $([a-z][a-z0-9_][a-zA-Z0-9_]*)
+
+
+_ "whitespace" = [ \t\n\r]*

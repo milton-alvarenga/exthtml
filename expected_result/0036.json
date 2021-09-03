@@ -1,0 +1,22 @@
+[
+   {
+      "type": "STYLE_TAG",
+      "value": "\n    css content here\n",
+      "attrs": [],
+      "dynamic_attrs": [],
+      "event_attrs": [],
+      "children": [],
+      "location": {
+         "start": {
+            "offset": 0,
+            "line": 1,
+            "column": 1
+         },
+         "end": {
+            "offset": 37,
+            "line": 3,
+            "column": 9
+         }
+      }
+   }
+]

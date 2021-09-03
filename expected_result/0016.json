@@ -1,0 +1,29 @@
+[
+   {
+      "type": "SELF_CLOSE_TAG",
+      "value": "INPUT",
+      "attrs": [],
+      "dynamic_attrs": [
+         {
+            "name": "type",
+            "value": "jsvar",
+            "category": "html_attribute",
+            "pos": 0
+         }
+      ],
+      "event_attrs": [],
+      "children": [],
+      "location": {
+         "start": {
+            "offset": 0,
+            "line": 1,
+            "column": 1
+         },
+         "end": {
+            "offset": 22,
+            "line": 1,
+            "column": 23
+         }
+      }
+   }
+]

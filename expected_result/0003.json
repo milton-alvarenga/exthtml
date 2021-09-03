@@ -1,0 +1,21 @@
+[
+   {
+      "type": "DYNAMIC_TEXT_NODE",
+      "value": "Funcionou",
+      "attrs": [],
+      "event_attrs": [],
+      "children": [],
+      "location": {
+         "start": {
+            "offset": 0,
+            "line": 1,
+            "column": 1
+         },
+         "end": {
+            "offset": 11,
+            "line": 1,
+            "column": 12
+         }
+      }
+   }
+]

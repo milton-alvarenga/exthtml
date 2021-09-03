@@ -1,0 +1,29 @@
+[
+   {
+      "type": "TEXTAREA_TAG",
+      "value": "Inner Text",
+      "attrs": [
+         {
+            "name": "width",
+            "value": "30",
+            "category": "html_attribute",
+            "pos": 0
+         }
+      ],
+      "dynamic_attrs": [],
+      "event_attrs": [],
+      "children": [],
+      "location": {
+         "start": {
+            "offset": 0,
+            "line": 1,
+            "column": 1
+         },
+         "end": {
+            "offset": 42,
+            "line": 1,
+            "column": 43
+         }
+      }
+   }
+]

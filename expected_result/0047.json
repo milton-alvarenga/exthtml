@@ -1,0 +1,40 @@
+[
+    {
+       "type": "SELF_CLOSE_TAG",
+       "value": "INPUT",
+       "attrs": [
+          {
+             "name": "type",
+             "value": "text",
+             "category": "html_attribute",
+             "pos": 0
+          }
+       ],
+       "dynamic_attrs": [],
+       "event_attrs": [
+          {
+             "name": "keyup",
+             "value": "postForm",
+             "category": "html_attribute",
+             "modifiers": [],
+             "keyboard_keys": [
+                "enter"
+             ],
+             "pos": 1
+          }
+       ],
+       "children": [],
+       "location": {
+          "start": {
+             "offset": 0,
+             "line": 1,
+             "column": 1
+          },
+          "end": {
+             "offset": 45,
+             "line": 1,
+             "column": 46
+          }
+       }
+    }
+]

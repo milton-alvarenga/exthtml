@@ -1,0 +1,22 @@
+[
+   {
+      "type": "COMPONENT",
+      "value": "TESTE",
+      "attrs": [],
+      "dynamic_attrs": [],
+      "event_attrs": [],
+      "children": [],
+      "location": {
+         "start": {
+            "offset": 0,
+            "line": 1,
+            "column": 1
+         },
+         "end": {
+            "offset": 8,
+            "line": 1,
+            "column": 9
+         }
+      }
+   }
+]

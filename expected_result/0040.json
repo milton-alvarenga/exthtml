@@ -1,0 +1,578 @@
+[
+   {
+      "type": "NESTED_TAG",
+      "value": "HTML",
+      "attrs": [],
+      "dynamic_attrs": [],
+      "event_attrs": [],
+      "children": [
+         {
+            "type": "NEW_LINE",
+            "value": [
+               "\n"
+            ],
+            "attrs": [],
+            "dynamic_attrs": [],
+            "event_attrs": [],
+            "children": [],
+            "location": {
+               "start": {
+                  "offset": 6,
+                  "line": 1,
+                  "column": 7
+               },
+               "end": {
+                  "offset": 7,
+                  "line": 2,
+                  "column": 1
+               }
+            }
+         },
+         {
+            "type": "TEXT_NODE",
+            "value": "    ",
+            "attrs": [],
+            "event_attrs": [],
+            "children": [],
+            "location": {
+               "start": {
+                  "offset": 7,
+                  "line": 2,
+                  "column": 1
+               },
+               "end": {
+                  "offset": 11,
+                  "line": 2,
+                  "column": 5
+               }
+            }
+         },
+         {
+            "type": "SCRIPT_TAG",
+            "value": "\n        Javascript vem aqui e é separado pelo parser para ser processado em outro lugar ou fazermos\n        o que desejarmos com o conteúdo\n    ",
+            "attrs": [],
+            "dynamic_attrs": [],
+            "event_attrs": [],
+            "children": [],
+            "location": {
+               "start": {
+                  "offset": 11,
+                  "line": 2,
+                  "column": 5
+               },
+               "end": {
+                  "offset": 173,
+                  "line": 5,
+                  "column": 14
+               }
+            }
+         },
+         {
+            "type": "NEW_LINE",
+            "value": [
+               "\n"
+            ],
+            "attrs": [],
+            "dynamic_attrs": [],
+            "event_attrs": [],
+            "children": [],
+            "location": {
+               "start": {
+                  "offset": 173,
+                  "line": 5,
+                  "column": 14
+               },
+               "end": {
+                  "offset": 174,
+                  "line": 6,
+                  "column": 1
+               }
+            }
+         },
+         {
+            "type": "TEXT_NODE",
+            "value": "    ",
+            "attrs": [],
+            "event_attrs": [],
+            "children": [],
+            "location": {
+               "start": {
+                  "offset": 174,
+                  "line": 6,
+                  "column": 1
+               },
+               "end": {
+                  "offset": 178,
+                  "line": 6,
+                  "column": 5
+               }
+            }
+         },
+         {
+            "type": "STYLE_TAG",
+            "value": "\n        Da mesma forma, o css é obtido e separado para poder ser tratado / processado facilmente\n    ",
+            "attrs": [],
+            "dynamic_attrs": [],
+            "event_attrs": [],
+            "children": [],
+            "location": {
+               "start": {
+                  "offset": 178,
+                  "line": 6,
+                  "column": 5
+               },
+               "end": {
+                  "offset": 295,
+                  "line": 8,
+                  "column": 13
+               }
+            }
+         },
+         {
+            "type": "NEW_LINE",
+            "value": [
+               "\n"
+            ],
+            "attrs": [],
+            "dynamic_attrs": [],
+            "event_attrs": [],
+            "children": [],
+            "location": {
+               "start": {
+                  "offset": 295,
+                  "line": 8,
+                  "column": 13
+               },
+               "end": {
+                  "offset": 296,
+                  "line": 9,
+                  "column": 1
+               }
+            }
+         },
+         {
+            "type": "MULTIPLE_LINE_COMMENT",
+            "value": "\n        Inicio do formulário\n    ",
+            "location": {
+               "start": {
+                  "offset": 300,
+                  "line": 9,
+                  "column": 5
+               },
+               "end": {
+                  "offset": 338,
+                  "line": 11,
+                  "column": 7
+               }
+            }
+         },
+         {
+            "type": "NEW_LINE",
+            "value": [
+               "\n"
+            ],
+            "attrs": [],
+            "dynamic_attrs": [],
+            "event_attrs": [],
+            "children": [],
+            "location": {
+               "start": {
+                  "offset": 338,
+                  "line": 11,
+                  "column": 7
+               },
+               "end": {
+                  "offset": 339,
+                  "line": 12,
+                  "column": 1
+               }
+            }
+         },
+         {
+            "type": "TEXT_NODE",
+            "value": "    ",
+            "attrs": [],
+            "event_attrs": [],
+            "children": [],
+            "location": {
+               "start": {
+                  "offset": 339,
+                  "line": 12,
+                  "column": 1
+               },
+               "end": {
+                  "offset": 343,
+                  "line": 12,
+                  "column": 5
+               }
+            }
+         },
+         {
+            "type": "NESTED_TAG",
+            "value": "FORM",
+            "attrs": [],
+            "dynamic_attrs": [],
+            "event_attrs": [],
+            "children": [
+               {
+                  "type": "NEW_LINE",
+                  "value": [
+                     "\n"
+                  ],
+                  "attrs": [],
+                  "dynamic_attrs": [],
+                  "event_attrs": [],
+                  "children": [],
+                  "location": {
+                     "start": {
+                        "offset": 349,
+                        "line": 12,
+                        "column": 11
+                     },
+                     "end": {
+                        "offset": 350,
+                        "line": 13,
+                        "column": 1
+                     }
+                  }
+               },
+               {
+                  "type": "SINGLE_LINE_COMMENT",
+                  "value": "Isto é um comentário de linha",
+                  "location": {
+                     "start": {
+                        "offset": 358,
+                        "line": 13,
+                        "column": 9
+                     },
+                     "end": {
+                        "offset": 389,
+                        "line": 13,
+                        "column": 40
+                     }
+                  }
+               },
+               {
+                  "type": "NEW_LINE",
+                  "value": [
+                     "\n"
+                  ],
+                  "attrs": [],
+                  "dynamic_attrs": [],
+                  "event_attrs": [],
+                  "children": [],
+                  "location": {
+                     "start": {
+                        "offset": 389,
+                        "line": 13,
+                        "column": 40
+                     },
+                     "end": {
+                        "offset": 390,
+                        "line": 14,
+                        "column": 1
+                     }
+                  }
+               },
+               {
+                  "type": "TEXT_NODE",
+                  "value": "        ",
+                  "attrs": [],
+                  "event_attrs": [],
+                  "children": [],
+                  "location": {
+                     "start": {
+                        "offset": 390,
+                        "line": 14,
+                        "column": 1
+                     },
+                     "end": {
+                        "offset": 398,
+                        "line": 14,
+                        "column": 9
+                     }
+                  }
+               },
+               {
+                  "type": "SELF_CLOSE_TAG",
+                  "value": "INPUT",
+                  "attrs": [
+                     {
+                        "name": "type",
+                        "value": "text",
+                        "category": "html_attribute",
+                        "pos": 0
+                     },
+                     {
+                        "name": "obs",
+                        "value": "",
+                        "category": "custom_attribute",
+                        "pos": 1
+                     }
+                  ],
+                  "dynamic_attrs": [
+                     {
+                        "name": "value",
+                        "value": "js_var",
+                        "category": "html_attribute",
+                        "pos": 2
+                     }
+                  ],
+                  "event_attrs": [],
+                  "children": [],
+                  "location": {
+                     "start": {
+                        "offset": 398,
+                        "line": 14,
+                        "column": 9
+                     },
+                     "end": {
+                        "offset": 441,
+                        "line": 14,
+                        "column": 52
+                     }
+                  }
+               },
+               {
+                  "type": "NEW_LINE",
+                  "value": [
+                     "\n"
+                  ],
+                  "attrs": [],
+                  "dynamic_attrs": [],
+                  "event_attrs": [],
+                  "children": [],
+                  "location": {
+                     "start": {
+                        "offset": 441,
+                        "line": 14,
+                        "column": 52
+                     },
+                     "end": {
+                        "offset": 442,
+                        "line": 15,
+                        "column": 1
+                     }
+                  }
+               },
+               {
+                  "type": "SINGLE_LINE_COMMENT",
+                  "value": "Outro comentário de linha",
+                  "location": {
+                     "start": {
+                        "offset": 450,
+                        "line": 15,
+                        "column": 9
+                     },
+                     "end": {
+                        "offset": 476,
+                        "line": 15,
+                        "column": 35
+                     }
+                  }
+               },
+               {
+                  "type": "NEW_LINE",
+                  "value": [
+                     "\n"
+                  ],
+                  "attrs": [],
+                  "dynamic_attrs": [],
+                  "event_attrs": [],
+                  "children": [],
+                  "location": {
+                     "start": {
+                        "offset": 476,
+                        "line": 15,
+                        "column": 35
+                     },
+                     "end": {
+                        "offset": 477,
+                        "line": 16,
+                        "column": 1
+                     }
+                  }
+               },
+               {
+                  "type": "TEXT_NODE",
+                  "value": "        ",
+                  "attrs": [],
+                  "event_attrs": [],
+                  "children": [],
+                  "location": {
+                     "start": {
+                        "offset": 477,
+                        "line": 16,
+                        "column": 1
+                     },
+                     "end": {
+                        "offset": 485,
+                        "line": 16,
+                        "column": 9
+                     }
+                  }
+               },
+               {
+                  "type": "NESTED_TAG",
+                  "value": "BUTTON",
+                  "attrs": [],
+                  "dynamic_attrs": [],
+                  "event_attrs": [
+                     {
+                        "name": "click",
+                        "value": "js_fn",
+                        "category": "html_attribute",
+                        "modifiers":[],
+                        "mouse_keys":"",
+                        "keyboard_modifiers_keys":[],
+                        "pos": 0
+                     }
+                  ],
+                  "children": [
+                     {
+                        "type": "TEXT_NODE",
+                        "value": "Label",
+                        "attrs": [],
+                        "event_attrs": [],
+                        "children": [],
+                        "location": {
+                           "start": {
+                              "offset": 508,
+                              "line": 16,
+                              "column": 32
+                           },
+                           "end": {
+                              "offset": 513,
+                              "line": 16,
+                              "column": 37
+                           }
+                        }
+                     }
+                  ],
+                  "location": {
+                     "start": {
+                        "offset": 485,
+                        "line": 16,
+                        "column": 9
+                     },
+                     "end": {
+                        "offset": 522,
+                        "line": 16,
+                        "column": 46
+                     }
+                  }
+               },
+               {
+                  "type": "NEW_LINE",
+                  "value": [
+                     "\n"
+                  ],
+                  "attrs": [],
+                  "dynamic_attrs": [],
+                  "event_attrs": [],
+                  "children": [],
+                  "location": {
+                     "start": {
+                        "offset": 522,
+                        "line": 16,
+                        "column": 46
+                     },
+                     "end": {
+                        "offset": 523,
+                        "line": 17,
+                        "column": 1
+                     }
+                  }
+               },
+               {
+                  "type": "TEXT_NODE",
+                  "value": "    ",
+                  "attrs": [],
+                  "event_attrs": [],
+                  "children": [],
+                  "location": {
+                     "start": {
+                        "offset": 523,
+                        "line": 17,
+                        "column": 1
+                     },
+                     "end": {
+                        "offset": 527,
+                        "line": 17,
+                        "column": 5
+                     }
+                  }
+               }
+            ],
+            "location": {
+               "start": {
+                  "offset": 343,
+                  "line": 12,
+                  "column": 5
+               },
+               "end": {
+                  "offset": 534,
+                  "line": 17,
+                  "column": 12
+               }
+            }
+         },
+         {
+            "type": "NEW_LINE",
+            "value": [
+               "\n"
+            ],
+            "attrs": [],
+            "dynamic_attrs": [],
+            "event_attrs": [],
+            "children": [],
+            "location": {
+               "start": {
+                  "offset": 534,
+                  "line": 17,
+                  "column": 12
+               },
+               "end": {
+                  "offset": 535,
+                  "line": 18,
+                  "column": 1
+               }
+            }
+         }
+      ],
+      "location": {
+         "start": {
+            "offset": 0,
+            "line": 1,
+            "column": 1
+         },
+         "end": {
+            "offset": 542,
+            "line": 18,
+            "column": 8
+         }
+      }
+   },
+   {
+      "type": "NEW_LINE",
+      "value": [
+         "\n"
+      ],
+      "attrs": [],
+      "dynamic_attrs": [],
+      "event_attrs": [],
+      "children": [],
+      "location": {
+         "start": {
+            "offset": 542,
+            "line": 18,
+            "column": 8
+         },
+         "end": {
+            "offset": 543,
+            "line": 19,
+            "column": 1
+         }
+      }
+   }
+]

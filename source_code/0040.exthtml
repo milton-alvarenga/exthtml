@@ -1,0 +1,18 @@
+<html>
+    <script>
+        Javascript vem aqui e é separado pelo parser para ser processado em outro lugar ou fazermos
+        o que desejarmos com o conteúdo
+    </script>
+    <style>
+        Da mesma forma, o css é obtido e separado para poder ser tratado / processado facilmente
+    </style>
+    /*
+        Inicio do formulário
+    */
+    <form>
+        //Isto é um comentário de linha
+        <input type="text" obs="" value={js_var} />
+        #Outro comentário de linha
+        <button @click={js_fn}>Label</button>
+    </form>
+</html>

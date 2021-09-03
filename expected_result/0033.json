@@ -1,0 +1,103 @@
+[
+   {
+      "type": "NESTED_TAG",
+      "value": "SELECT",
+      "attrs": [],
+      "dynamic_attrs": [],
+      "event_attrs": [],
+      "children": [
+         {
+            "type": "NESTED_TAG",
+            "value": "OPTION",
+            "attrs": [],
+            "dynamic_attrs": [],
+            "event_attrs": [],
+            "children": [
+               {
+                  "type": "TEXT_NODE",
+                  "value": "Val1",
+                  "attrs": [],
+                  "event_attrs": [],
+                  "children": [],
+                  "location": {
+                     "start": {
+                        "offset": 16,
+                        "line": 1,
+                        "column": 17
+                     },
+                     "end": {
+                        "offset": 20,
+                        "line": 1,
+                        "column": 21
+                     }
+                  }
+               }
+            ],
+            "location": {
+               "start": {
+                  "offset": 8,
+                  "line": 1,
+                  "column": 9
+               },
+               "end": {
+                  "offset": 29,
+                  "line": 1,
+                  "column": 30
+               }
+            }
+         },
+         {
+            "type": "NESTED_TAG",
+            "value": "OPTION",
+            "attrs": [],
+            "dynamic_attrs": [],
+            "event_attrs": [],
+            "children": [
+               {
+                  "type": "TEXT_NODE",
+                  "value": "Val2",
+                  "attrs": [],
+                  "event_attrs": [],
+                  "children": [],
+                  "location": {
+                     "start": {
+                        "offset": 37,
+                        "line": 1,
+                        "column": 38
+                     },
+                     "end": {
+                        "offset": 41,
+                        "line": 1,
+                        "column": 42
+                     }
+                  }
+               }
+            ],
+            "location": {
+               "start": {
+                  "offset": 29,
+                  "line": 1,
+                  "column": 30
+               },
+               "end": {
+                  "offset": 50,
+                  "line": 1,
+                  "column": 51
+               }
+            }
+         }
+      ],
+      "location": {
+         "start": {
+            "offset": 0,
+            "line": 1,
+            "column": 1
+         },
+         "end": {
+            "offset": 59,
+            "line": 1,
+            "column": 60
+         }
+      }
+   }
+]

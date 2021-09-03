@@ -1,0 +1,42 @@
+[
+   {
+      "type": "NESTED_TAG",
+      "value": "B",
+      "attrs": [],
+      "dynamic_attrs": [],
+      "event_attrs": [],
+      "children": [
+         {
+            "type": "TEXT_NODE",
+            "value": "Inner Text",
+            "attrs": [],
+            "event_attrs": [],
+            "children": [],
+            "location": {
+               "start": {
+                  "offset": 3,
+                  "line": 1,
+                  "column": 4
+               },
+               "end": {
+                  "offset": 13,
+                  "line": 1,
+                  "column": 14
+               }
+            }
+         }
+      ],
+      "location": {
+         "start": {
+            "offset": 0,
+            "line": 1,
+            "column": 1
+         },
+         "end": {
+            "offset": 17,
+            "line": 1,
+            "column": 18
+         }
+      }
+   }
+]

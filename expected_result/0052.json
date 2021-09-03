@@ -1,0 +1,59 @@
+[
+    {
+       "type": "TEXT_NODE",
+       "value": "<input type=\"text\" @click:ctrl.right.alt.stop.prevent=",
+       "attrs": [],
+       "event_attrs": [],
+       "children": [],
+       "location": {
+          "start": {
+             "offset": 0,
+             "line": 1,
+             "column": 1
+          },
+          "end": {
+             "offset": 54,
+             "line": 1,
+             "column": 55
+          }
+       }
+    },
+    {
+       "type": "DYNAMIC_TEXT_NODE",
+       "value": "postForm",
+       "attrs": [],
+       "event_attrs": [],
+       "children": [],
+       "location": {
+          "start": {
+             "offset": 54,
+             "line": 1,
+             "column": 55
+          },
+          "end": {
+             "offset": 64,
+             "line": 1,
+             "column": 65
+          }
+       }
+    },
+    {
+       "type": "TEXT_NODE",
+       "value": " />",
+       "attrs": [],
+       "event_attrs": [],
+       "children": [],
+       "location": {
+          "start": {
+             "offset": 64,
+             "line": 1,
+             "column": 65
+          },
+          "end": {
+             "offset": 67,
+             "line": 1,
+             "column": 68
+          }
+       }
+    }
+] 

@@ -1,0 +1,70 @@
+[
+   {
+      "type": "NESTED_TAG",
+      "value": "SELECT",
+      "attrs": [
+         {
+            "name": "obs",
+            "value": "",
+            "category": "custom_attribute",
+            "pos": 0
+         }
+      ],
+      "dynamic_attrs": [],
+      "event_attrs": [],
+      "children": [
+         {
+            "type": "NESTED_TAG",
+            "value": "OPTION",
+            "attrs": [],
+            "dynamic_attrs": [],
+            "event_attrs": [],
+            "children": [
+               {
+                  "type": "TEXT_NODE",
+                  "value": "Val1",
+                  "attrs": [],
+                  "event_attrs": [],
+                  "children": [],
+                  "location": {
+                     "start": {
+                        "offset": 23,
+                        "line": 1,
+                        "column": 24
+                     },
+                     "end": {
+                        "offset": 27,
+                        "line": 1,
+                        "column": 28
+                     }
+                  }
+               }
+            ],
+            "location": {
+               "start": {
+                  "offset": 15,
+                  "line": 1,
+                  "column": 16
+               },
+               "end": {
+                  "offset": 36,
+                  "line": 1,
+                  "column": 37
+               }
+            }
+         }
+      ],
+      "location": {
+         "start": {
+            "offset": 0,
+            "line": 1,
+            "column": 1
+         },
+         "end": {
+            "offset": 45,
+            "line": 1,
+            "column": 46
+         }
+      }
+   }
+]

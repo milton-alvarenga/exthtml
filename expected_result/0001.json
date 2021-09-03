@@ -1,0 +1,37 @@
+[
+    {
+      "type": "TEXT_NODE",
+      "value": "Sou um text node",
+      "attrs": [],
+      "event_attrs": [],
+      "children": [],
+      "location": {
+         "start": {
+            "offset": 0,
+            "line": 1,
+            "column": 1
+         },
+         "end": {
+            "offset": 16,
+            "line": 1,
+            "column": 17
+         }
+      }
+   },
+   {
+      "type": "COMMENT_TEXT",
+      "value": " comp ",
+      "location": {
+         "start": {
+            "offset": 16,
+            "line": 1,
+            "column": 17
+         },
+         "end": {
+            "offset": 29,
+            "line": 1,
+            "column": 30
+         }
+      }
+   }
+]

@@ -1,0 +1,35 @@
+[
+    {
+       "type": "NESTED_TAG",
+       "value": "BUTTON",
+       "attrs": [],
+       "dynamic_attrs": [],
+       "event_attrs": [
+          {
+             "name": "click",
+             "value": "evt",
+             "category": "html_attribute",
+             "modifiers": [
+                "prevent",
+                "passive"
+             ],
+            "mouse_keys": "",
+            "keyboard_modifiers_keys":[],
+             "pos": 0
+          }
+       ],
+       "children": [],
+       "location": {
+          "start": {
+             "offset": 0,
+             "line": 1,
+             "column": 1
+          },
+          "end": {
+             "offset": 46,
+             "line": 1,
+             "column": 47
+          }
+       }
+    }
+]

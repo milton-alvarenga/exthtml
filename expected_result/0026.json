@@ -1,0 +1,43 @@
+[
+   {
+      "type": "NESTED_TAG",
+      "value": "B",
+      "attrs": [],
+      "dynamic_attrs": [],
+      "event_attrs": [],
+      "children": [
+         {
+            "type": "NESTED_TAG",
+            "value": "CENTER",
+            "attrs": [],
+            "dynamic_attrs": [],
+            "event_attrs": [],
+            "children": [],
+            "location": {
+               "start": {
+                  "offset": 3,
+                  "line": 1,
+                  "column": 4
+               },
+               "end": {
+                  "offset": 20,
+                  "line": 1,
+                  "column": 21
+               }
+            }
+         }
+      ],
+      "location": {
+         "start": {
+            "offset": 0,
+            "line": 1,
+            "column": 1
+         },
+         "end": {
+            "offset": 24,
+            "line": 1,
+            "column": 25
+         }
+      }
+   }
+]

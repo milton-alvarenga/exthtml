@@ -1,0 +1,59 @@
+[
+   {
+      "type": "TEXT_NODE",
+      "value": "Sou um ",
+      "attrs": [],
+      "event_attrs": [],
+      "children": [],
+      "location": {
+         "start": {
+            "offset": 0,
+            "line": 1,
+            "column": 1
+         },
+         "end": {
+            "offset": 7,
+            "line": 1,
+            "column": 8
+         }
+      }
+   },
+   {
+      "type": "DYNAMIC_TEXT_NODE",
+      "value": "dynamic",
+      "attrs": [],
+      "event_attrs": [],
+      "children": [],
+      "location": {
+         "start": {
+            "offset": 7,
+            "line": 1,
+            "column": 8
+         },
+         "end": {
+            "offset": 16,
+            "line": 1,
+            "column": 17
+         }
+      }
+   },
+   {
+      "type": "TEXT_NODE",
+      "value": " text node",
+      "attrs": [],
+      "event_attrs": [],
+      "children": [],
+      "location": {
+         "start": {
+            "offset": 16,
+            "line": 1,
+            "column": 17
+         },
+         "end": {
+            "offset": 26,
+            "line": 1,
+            "column": 27
+         }
+      }
+   }
+]

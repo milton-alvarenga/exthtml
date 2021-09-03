@@ -1,0 +1,1 @@
+<input type="text" @click:ctrl.right.alt.stop.prevent={postForm} />

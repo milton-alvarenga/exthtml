@@ -1,0 +1,59 @@
+[
+   {
+      "type": "SINGLE_LINE_COMMENT",
+      "value": "Isto daqui funciona como comentário de uma linha?",
+      "location": {
+         "start": {
+            "offset": 0,
+            "line": 1,
+            "column": 1
+         },
+         "end": {
+            "offset": 51,
+            "line": 1,
+            "column": 52
+         }
+      }
+   },
+   {
+      "type": "NEW_LINE",
+      "value": [
+         "\n"
+      ],
+      "attrs": [],
+      "dynamic_attrs": [],
+      "event_attrs": [],
+      "children": [],
+      "location": {
+         "start": {
+            "offset": 51,
+            "line": 1,
+            "column": 52
+         },
+         "end": {
+            "offset": 52,
+            "line": 2,
+            "column": 1
+         }
+      }
+   },
+   {
+      "type": "TEXT_NODE",
+      "value": "Sim",
+      "attrs": [],
+      "event_attrs": [],
+      "children": [],
+      "location": {
+         "start": {
+            "offset": 52,
+            "line": 2,
+            "column": 1
+         },
+         "end": {
+            "offset": 55,
+            "line": 2,
+            "column": 4
+         }
+      }
+   }
+]

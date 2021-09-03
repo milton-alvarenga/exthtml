@@ -1,0 +1,8 @@
+<html>
+    <head>
+        <script></script>
+    </head>
+    <comp text={val} @attr={evt} attr1="val1">
+        <b>oi</b>
+    </comp>
+</html>

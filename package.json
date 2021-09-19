@@ -1,0 +1,30 @@
+{
+  "name": "exthtml",
+  "version": "0.1.0",
+  "description": "Parser project for an extended version of HTML with native support to basic programming logics",
+  "main": "parse_exthtml.js",
+  "dependencies": {
+    "pegjs": "latest"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "parse_exthtml.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/milton-alvarenga/exthtml.git"
+  },
+  "keywords": [
+    "peg",
+    "peg.js",
+    "html",
+    "html5",
+    "exthtml"
+  ],
+  "author": "alvarenga.milton",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/milton-alvarenga/exthtml/issues"
+  },
+  "homepage": "https://github.com/milton-alvarenga/exthtml#readme"
+}

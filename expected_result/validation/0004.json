@@ -1,0 +1,14 @@
+{
+   "method": "OUT",
+   "attrs": [
+      {
+         "attribute": "attr",
+         "rules": [
+            {
+               "object": "Validation",
+               "method": "ok"
+            }
+         ]
+      }
+   ]
+}

@@ -1,0 +1,27 @@
+{
+   "method": "IN",
+   "attrs": [
+      {
+         "attribute": "attr",
+         "rules": [
+            {
+               "object": "Validation",
+               "method": "require"
+            },
+            {
+               "object": "Validation",
+               "method": "string"
+            }
+         ]
+      },
+      {
+         "attribute": "attr2",
+         "rules": [
+            {
+               "object": "Validation",
+               "method": "positive"
+            }
+         ]
+      }
+   ]
+}

@@ -13,7 +13,7 @@ Out = "Out" _ "=" _ content:ContextRules { return { method: "OUT", attrs: conten
 ContextRules = "{" _ rule:Rules loop:( _ "," _ loop:Rules {return loop})* _ "}" { return [rule,...loop]; }
 
 
-Rules = _ begin:Rule loop:( _ ";" _ loop:Rule _ {return loop})* { return { rules:[begin,...loop] }; }
+Rules = _ attr:Attribute _ ":" _ begin:Rule loop:( _ ";" _ loop:Rule _ {return loop})* { return { attribute: attr, rules:[begin,...loop] }; }
 		/ "[" ContextRules "]"
 
 Rule = obj:Object _ ":" _ method:Method { return {object:obj,method:method} }

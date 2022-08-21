@@ -1,0 +1,3 @@
+<span>Your name is {name}</span>
+<input type="text" @click:ctrl.right.alt.stop.prevent={postForm} />//right and alt on invalid order. They are inverted
+<input type="text" @click:ctrl.alt.right.stop.prevent={postForm} />#Problem fixed

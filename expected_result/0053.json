@@ -1,0 +1,201 @@
+[
+   {
+      "type": "NESTED_TAG",
+      "value": "SPAN",
+      "attrs": [],
+      "dynamic_attrs": [],
+      "event_attrs": [],
+      "children": [
+         {
+            "type": "TEXT_NODE",
+            "value": "Your name is ",
+            "attrs": [],
+            "event_attrs": [],
+            "children": [],
+            "location": {
+               "start": {
+                  "offset": 6,
+                  "line": 1,
+                  "column": 7
+               },
+               "end": {
+                  "offset": 19,
+                  "line": 1,
+                  "column": 20
+               }
+            }
+         },
+         {
+            "type": "DYNAMIC_TEXT_NODE",
+            "value": "name",
+            "attrs": [],
+            "event_attrs": [],
+            "children": [],
+            "location": {
+               "start": {
+                  "offset": 19,
+                  "line": 1,
+                  "column": 20
+               },
+               "end": {
+                  "offset": 25,
+                  "line": 1,
+                  "column": 26
+               }
+            }
+         }
+      ],
+      "location": {
+         "start": {
+            "offset": 0,
+            "line": 1,
+            "column": 1
+         },
+         "end": {
+            "offset": 32,
+            "line": 1,
+            "column": 33
+         }
+      }
+   },
+   {
+      "type": "NEW_LINE",
+      "value": [
+         "
+"
+      ],
+      "attrs": [],
+      "dynamic_attrs": [],
+      "event_attrs": [],
+      "children": [],
+      "location": {
+         "start": {
+            "offset": 32,
+            "line": 1,
+            "column": 33
+         },
+         "end": {
+            "offset": 33,
+            "line": 2,
+            "column": 1
+         }
+      }
+   },
+   {
+      "type": "TEXT_NODE",
+      "value": "<input type=\"text\" @click:ctrl.right.alt.stop.prevent=",
+      "attrs": [],
+      "event_attrs": [],
+      "children": [],
+      "location": {
+         "start": {
+            "offset": 33,
+            "line": 2,
+            "column": 1
+         },
+         "end": {
+            "offset": 87,
+            "line": 2,
+            "column": 55
+         }
+      }
+   },
+   {
+      "type": "DYNAMIC_TEXT_NODE",
+      "value": "postForm",
+      "attrs": [],
+      "event_attrs": [],
+      "children": [],
+      "location": {
+         "start": {
+            "offset": 87,
+            "line": 2,
+            "column": 55
+         },
+         "end": {
+            "offset": 97,
+            "line": 2,
+            "column": 65
+         }
+      }
+   },
+   {
+      "type": "TEXT_NODE",
+      "value": " />//right and alt on invalid order. They are inverted
+",
+      "attrs": [],
+      "event_attrs": [],
+      "children": [],
+      "location": {
+         "start": {
+            "offset": 97,
+            "line": 2,
+            "column": 65
+         },
+         "end": {
+            "offset": 152,
+            "line": 3,
+            "column": 1
+         }
+      }
+   },
+   {
+      "type": "SELF_CLOSE_TAG",
+      "value": "INPUT",
+      "attrs": [
+         {
+            "name": "type",
+            "value": "text",
+            "category": "html_attribute",
+            "pos": 0
+         }
+      ],
+      "dynamic_attrs": [],
+      "event_attrs": [
+         {
+            "name": "click",
+            "value": "postForm",
+            "category": "html_attribute",
+            "modifiers": [
+               "stop",
+               "prevent"
+            ],
+            "mouse_keys": "right",
+            "keyboard_modifiers_keys": [
+               "ctrl",
+               "alt"
+            ],
+            "pos": 1
+         }
+      ],
+      "children": [],
+      "location": {
+         "start": {
+            "offset": 152,
+            "line": 3,
+            "column": 1
+         },
+         "end": {
+            "offset": 219,
+            "line": 3,
+            "column": 68
+         }
+      }
+   },
+   {
+      "type": "SINGLE_LINE_COMMENT",
+      "value": "Problem fixed",
+      "location": {
+         "start": {
+            "offset": 219,
+            "line": 3,
+            "column": 68
+         },
+         "end": {
+            "offset": 233,
+            "line": 3,
+            "column": 82
+         }
+      }
+   }
+]

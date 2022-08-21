@@ -1,0 +1,4 @@
+In = {
+    attr: Validation:require;Validation:string,
+    attr2: Validation:positive
+}

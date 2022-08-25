@@ -1,8 +1,7 @@
 const fs = require("fs");
 const peg = require("pegjs");
 
-//@todo Need to convert to grammar directory to follow the pattern
-const grammar_content = fs.readFileSync("./validation.peg", "utf8");
+const grammar_content = fs.readFileSync("./grammar/validation/validation.peg", "utf8");
 
 const parser = peg.generate(grammar_content);
 

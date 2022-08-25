@@ -61,8 +61,7 @@
    {
       "type": "NEW_LINE",
       "value": [
-         "
-"
+         "\n"
       ],
       "attrs": [],
       "dynamic_attrs": [],
@@ -121,8 +120,7 @@
    },
    {
       "type": "TEXT_NODE",
-      "value": " />//right and alt on invalid order. They are inverted
-",
+      "value": " />//right and alt on invalid order. They are inverted\n",
       "attrs": [],
       "event_attrs": [],
       "children": [],

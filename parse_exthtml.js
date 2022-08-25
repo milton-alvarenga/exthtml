@@ -1,12 +1,12 @@
 const fs = require("fs");
 const peg = require("pegjs");
 
-const grammar_content = fs.readFileSync("./grammar/current.peg", "utf8");
+const grammar_content = fs.readFileSync("./grammar/exthtml/current.peg", "utf8");
 
 const parser = peg.generate(grammar_content);
 
-const directoryPath = "./source_code/";
-const directoryPathResults = "./expected_result/";
+const directoryPath = "./source_code/exthtml/";
+const directoryPathResults = "./expected_result/exthtml/";
 
 fs.readdir(directoryPath, function(err, files) {
     if (err) {

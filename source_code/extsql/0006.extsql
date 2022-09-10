@@ -1,0 +1,8 @@
+variable = DB.user[
+    name = first | ' ' | last
+](
+    deleted = false
+).order(name ASC)
+.groupby(name)
+.limit(100)
+.offset(101)

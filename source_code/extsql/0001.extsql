@@ -1,1 +1,1 @@
-datasource = DB.account($id)
+datasource = DB.account($id);

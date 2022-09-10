@@ -1,0 +1,1 @@
+match = DB.match($id AND deleted = false);

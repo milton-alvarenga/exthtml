@@ -8,7 +8,7 @@
   },
   "devDependencies": {},
   "scripts": {
-    "test": "parse_exthtml.js"
+    "test": "node parse_exthtml.js"
   },
   "repository": {
     "type": "git",

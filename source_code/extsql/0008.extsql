@@ -1,0 +1,8 @@
+datasource = DB.account[
+    COUNT(*) AS total,
+    country.state
+]($id).order(entity.name ASC)
+.groupby(field_identitication,...)
+.limit(#)
+.offset(#)
+

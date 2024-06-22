@@ -1,5 +1,5 @@
 const fs = require("fs");
-const peg = require("pegjs");
+const peg = require("peggy");
 
 const grammar_content = fs.readFileSync("./grammar/validation/validation.peg", "utf8");
 

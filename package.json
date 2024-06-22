@@ -3,10 +3,6 @@
   "version": "0.1.0",
   "description": "Parser project for an extended version of HTML with native support to basic programming logics",
   "main": "parse_exthtml.js",
-  "dependencies": {
-    "pegjs": "latest"
-  },
-  "devDependencies": {},
   "scripts": {
     "test": "node parse_exthtml.js"
   },
@@ -26,5 +22,8 @@
   "bugs": {
     "url": "https://github.com/milton-alvarenga/exthtml/issues"
   },
-  "homepage": "https://github.com/milton-alvarenga/exthtml#readme"
+  "homepage": "https://github.com/milton-alvarenga/exthtml#readme",
+  "devDependencies": {
+    "peggy": "^4.0.3"
+  }
 }

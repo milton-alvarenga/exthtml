@@ -1,6 +1,6 @@
 [
    {
-      "type": "NESTED_TAG",
+      "type": "HTML_NESTED_TAG",
       "value": "HTML",
       "attrs": [],
       "dynamic_attrs": [],
@@ -48,7 +48,7 @@
             }
          },
          {
-            "type": "NESTED_TAG",
+            "type": "HTML_NESTED_TAG",
             "value": "HEAD",
             "attrs": [],
             "dynamic_attrs": [],
@@ -282,7 +282,7 @@
                   }
                },
                {
-                  "type": "NESTED_TAG",
+                  "type": "HTML_NESTED_TAG",
                   "value": "B",
                   "attrs": [],
                   "dynamic_attrs": [],

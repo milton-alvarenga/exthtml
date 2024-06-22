@@ -1,6 +1,6 @@
 [
     {
-       "type": "NESTED_TAG",
+       "type": "HTML_NESTED_TAG",
        "value": "BUTTON",
        "attrs": [],
        "dynamic_attrs": [],

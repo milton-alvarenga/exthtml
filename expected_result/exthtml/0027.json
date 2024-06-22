@@ -1,13 +1,13 @@
 [
    {
-      "type": "NESTED_TAG",
+      "type": "HTML_NESTED_TAG",
       "value": "B",
       "attrs": [],
       "dynamic_attrs": [],
       "event_attrs": [],
       "children": [
          {
-            "type": "NESTED_TAG",
+            "type": "HTML_NESTED_TAG",
             "value": "CENTER",
             "attrs": [],
             "dynamic_attrs": [],

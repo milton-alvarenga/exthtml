@@ -3,6 +3,6 @@
     </head>
     <body>
     	<label>Name</label>
-        <input type="text" model={} perm={}/>
+        <input type="text" *model={} *perm={}/>
     </body>
 </html>

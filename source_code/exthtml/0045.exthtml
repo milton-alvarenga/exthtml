@@ -1,1 +1,1 @@
-<input type="text" if={var_name} class="ok" attr="1" attr2="2"/>
+<input type="text" *if={var_name} class="ok" attr="1" attr2="2"/>

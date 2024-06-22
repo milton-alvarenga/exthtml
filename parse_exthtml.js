@@ -1,7 +1,7 @@
 const fs = require("fs");
 const peg = require("peggy");
 
-const grammar_content = fs.readFileSync("./grammar/exthtml/current.peg", "utf8");
+const grammar_content = fs.readFileSync("./grammar/exthtml/current.pegjs", "utf8");
 
 const parser = peg.generate(grammar_content);
 

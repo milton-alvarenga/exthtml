@@ -1,0 +1,8 @@
+<html>
+	<head>
+    </head>
+    <body>
+    	<label>Name</label>
+        <input type="text" model={} perm={}/>
+    </body>
+</html>

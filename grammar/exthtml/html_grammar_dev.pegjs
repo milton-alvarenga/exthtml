@@ -97,7 +97,9 @@ LanguageReservedDirectives = 'if' / 'for' / 'model' / 'in' / 'out'
 
 OptimizationReservedDirectives = 'show'
 
-SpecificDrallDirectives = 'perm' / 'val' / 'mask'
+SpecificDrallDirectives = 'perm' / SpecificDrallPermSimplificationDirectives / 'val' / 'mask'
+
+SpecificDrallPermSimplificationDirectives = 'perm-group' / 'perm-mirror' / 'perm-redirect'
 
 HTMLAttrName "html attribute" = LegacyHtmlAttrName / CurrentHtmlAttrName
 

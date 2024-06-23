@@ -16,7 +16,19 @@ fs.readdir(directoryPath, function(err, files) {
         files.forEach(function(file) {
             var source_code_content = fs.readFileSync(directoryPath + `/${file}`, "utf8");
             var filename = file.split(".exthtml")[0];
-            var parser_expected_result = fs.readFileSync(directoryPathResults + `/${filename}.json`, "utf8");
+            try {
+                var parser_expected_result = fs.readFileSync(directoryPathResults + `/${filename}.json`, "utf8");
+            } catch(err){
+                if (err.code === 'ENOENT') {
+                    // Handle file not found error
+                    console.log(filename +':', '\x1b[31m','JSON result File not found','\x1b[0m');
+                    return;
+                } else {
+                    // Handle other possible errors
+                    console.error(`An error occurred while reading the file: ${err.message}`);
+                    return;
+                }
+            }
             var ast = parser.parse(source_code_content);
 
             try{ 

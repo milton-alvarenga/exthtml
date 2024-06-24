@@ -1,0 +1,36 @@
+[
+    {
+      "type": "SELF_CLOSE_TAG",
+      "value": "INPUT",
+      "attrs": [
+        {
+          "name": "type",
+          "value": "text",
+          "category": "html_attribute",
+          "pos": 0
+        }
+      ],
+      "dynamic_attrs": [
+        {
+          "name": "oi",
+          "value": null,
+          "category": "html_dom_ref_directive",
+          "pos": 2
+        }
+      ],
+      "event_attrs": [],
+      "children": [],
+      "location": {
+        "start": {
+          "offset": 0,
+          "line": 1,
+          "column": 1
+        },
+        "end": {
+          "offset": 25,
+          "line": 1,
+          "column": 26
+        }
+      }
+    }
+]  

@@ -76,7 +76,7 @@ Text "text"
 /**
  * Element attributes
  */
-Attributes = whitespace attrs:( HTMLDomReferenceDirective / DynamicAttribute / EventAttribute / StaticAttribute )+ &GeneralCloseTag { return attrs; }
+Attributes = whitespace attrs:( HTMLDomReferenceDirectiveAttribute / DynamicAttribute / EventAttribute / StaticAttribute )+ &GeneralCloseTag { return attrs; }
 
 StaticAttribute "attribute" = ( name:HTMLAttrName text:(__ '=' __ s:DoubleQuoteString)  __ { return { name: name, value: (text && text[3]) ? text[3] : "", type:"attr", category: "html_attribute"}} )
 							  / ( name:AttrName text:(__ '=' __ s:DoubleQuoteString)  __ { return { name: name, value: (text && text[3]) ? text[3] : "", type:"attr", category: "custom_attribute"}} )
@@ -93,7 +93,7 @@ EventAttribute "event attribute" = ( '@'name:HTMLAttrName event_modifiers:('.'Ev
                                    / ( '@'name:MouseEvent keyboard_modifiers_keys:(':' (KeyboardSystemModifiersKeys'.')+ )? mouse_keys:MouseClick event_modifiers:('.' EventModifiers)* text:(__ '=' __ s:VariableQuoteString) __ { return { name: name, value: (text && text[3]) ? text[3] : "", type:"event_attr", category: "html_attribute", modifiers:event_modifiers.map(v=>v[1]), mouse_keys:mouse_keys ? mouse_keys : "", keyboard_modifiers_keys:keyboard_modifiers_keys ? keyboard_modifiers_keys.flat(2).filter(v=>[".",":"].indexOf(v) == -1) : []}} )
 								   / ( '@'name:AttrName event_modifiers:('.'EventModifiers)* text:(__ '=' __ s:VariableQuoteString) __ { return { name: name, value: (text && text[3]) ? text[3] : "", type:"event_attr", category: "custom_attribute", modifiers:event_modifiers.map(v=>v[1])}} ) 
 
-HTMLDomReferenceDirective = '#'name:HTMLDomVarName __ { return { name: name, value: null, type:"dyn_attr", category: "html_dom_ref_directive"}}
+HTMLDomReferenceDirectiveAttribute = '#'name:HTMLDomVarName __ { return { name: name, value: null, type:"dyn_attr", category: "html_dom_ref_directive"}}
 
 PrimitiveLanguageReservedDirectives = 'if' / 'for' / 'model'
 

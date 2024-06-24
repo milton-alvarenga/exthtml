@@ -1,5 +1,8 @@
 const fs = require("fs");
 const peg = require("peggy");
+const jsonDiff = require('json-diff');
+
+
 
 const grammar_content = fs.readFileSync("./grammar/exthtml/current.pegjs", "utf8");
 
@@ -74,6 +77,9 @@ fs.readdir(directoryPath, function(err, files) {
             console.log("==============");
             console.log("AST");
             console.log(string_ast);
+            console.log("++++++++++++++");
+            console.log("Diff");
+            console.log(jsonDiff.diffString(JSON.parse(string_ast),JSON.parse(string_result)));
             console.log("-------------------------------------------------");
         });
         console.log("Final status:");

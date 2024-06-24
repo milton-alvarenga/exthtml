@@ -8,17 +8,25 @@ const parser = peg.generate(grammar_content);
 const directoryPath = "./source_code/exthtml/";
 const directoryPathResults = "./expected_result/exthtml/";
 
+let final_status = {
+    total_files:0,
+    total_sucess:0,
+    total_fail:0,
+    total_not_tested:0,
+}
 fs.readdir(directoryPath, function(err, files) {
     if (err) {
         console.log("Error getting directory information.")
     } else {
         let fails = [];
         files.forEach(function(file) {
+            final_status.total_files++
             var source_code_content = fs.readFileSync(directoryPath + `/${file}`, "utf8");
             var filename = file.split(".exthtml")[0];
             try {
                 var parser_expected_result = fs.readFileSync(directoryPathResults + `/${filename}.json`, "utf8");
             } catch(err){
+                final_status.total_not_tested++;
                 if (err.code === 'ENOENT') {
                     // Handle file not found error
                     console.log(filename +':', '\x1b[31m','JSON result File not found','\x1b[0m');
@@ -44,8 +52,10 @@ fs.readdir(directoryPath, function(err, files) {
             var result =  string_result == string_ast;
 
             if(result){
+                final_status.total_sucess++;
                 console.log(filename +':', '\x1b[32m','Success','\x1b[0m');
             } else {
+                final_status.total_fail++;
                 console.log(filename +':', '\x1b[31m','Failed','\x1b[0m');
                 fails.push([filename,string_result,string_ast]);
             }
@@ -66,5 +76,10 @@ fs.readdir(directoryPath, function(err, files) {
             console.log(string_ast);
             console.log("-------------------------------------------------");
         });
+        console.log("Final status:");
+        console.log(`\tTotal files: ${final_status.total_files}`);
+        console.log(`\tTotal success: ${final_status.total_sucess}`);
+        console.log(`\tTotal fails: ${final_status.total_fail}`);
+        console.log(`\tTotal files not tested: ${final_status.total_not_tested}`);
     }
 });

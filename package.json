@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/milton-alvarenga/exthtml#readme",
   "devDependencies": {
+    "json-diff": "^1.0.6",
     "peggy": "^4.0.3"
   }
 }

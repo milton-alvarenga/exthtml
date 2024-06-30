@@ -1,0 +1,4 @@
+<div *for={k,v in variable}>
+	<input type="text" *model={} *perm="value_here"/>
+	<input type="text" *model={} *perm={variable_name_here}/>
+</div>

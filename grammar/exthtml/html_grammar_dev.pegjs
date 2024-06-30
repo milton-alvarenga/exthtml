@@ -80,6 +80,7 @@ Attributes = whitespace attrs:( HTMLDomReferenceDirectiveAttribute / DynamicAttr
 
 StaticAttribute "attribute" = ( name:HTMLAttrName text:(__ '=' __ s:DoubleQuoteString)  __ { return { name: name, value: (text && text[3]) ? text[3] : "", type:"attr", category: "html_attribute"}} )
 							  / ( name:AttrName text:(__ '=' __ s:DoubleQuoteString)  __ { return { name: name, value: (text && text[3]) ? text[3] : "", type:"attr", category: "custom_attribute"}} )
+                              / ( '*'name:SpecificDrallDirectives text:(__ '=' __ s:DoubleQuoteString) __ { return { name: name, value: (text && text[3]) ? text[3] : "", type:"attr", category: "drall_directive"}} )
 
 DynamicAttribute "dynamic attribute" = ( name:HTMLAttrName text:(__ '=' __ s:VariableQuoteString) __ { return { name: name, value: (text && text[3]) ? text[3] : "", type:"dyn_attr", category: "html_attribute"}} )
 									   / ( '*'name:PrimitiveLanguageReservedDirectives text:(__ '=' __ s:VariableQuoteString) __ { return { name: name, value: (text && text[3]) ? text[3] : "", type:"dyn_attr", category: "lang_directive"}} )

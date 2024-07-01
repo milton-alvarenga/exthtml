@@ -1,3 +1,50 @@
+Code = ExtHTML / Document
+
+ExtHTML = statements
+
+statements = statement+
+
+statement = compound_stmt / simple_stmts / drall_stmts
+
+drall_stmts = ExtFrontend / ExtBackend / ExtSQL / ExtRoutine
+
+compound_stmt = 'pass'//function_def / if_stmt / class_def / with_stmt / for_stmt / try_stmt / match_stmt / while_stmt
+
+simple_stmts = 'pass'
+
+ExtFrontend = ExtRouter / ExtCSS / ExtVIEW
+
+ExtBackend = ExtGO / ExtJS / ExtPHP
+
+ExtSQL = 'DB::'
+
+ExtRouter = 'ROUTER::'
+
+ExtVIEW = 'VIEW::' content:ExternalLanguageContent '}' { return content; }
+
+ExtCSS = 'CSS::' content:ExternalLanguageContent '}' { return content; }
+
+ExtGO = 'GO::' content:ExternalLanguageContent '}' { return content; }
+
+ExtJS = 'JS::{' content:ExternalLanguageContent '}' { return content; }
+
+ExtPHP = 'PHP::' content:ExternalLanguageContent '}' { return content; }
+
+ExtRoutine = '#%' name:VarName __ NL
+
+ExternalLanguageContent
+  = chars:($ExternalLanguageContentNestedBraces*) { return chars; }
+
+ExternalLanguageContentNestedBraces
+  = "{" ExternalLanguageContent "}"     // Match balanced braces recursively
+  / !"}" .                // Match any character except the closing brace of the outermost level
+
+
+VarName = $([a-zA-Z_][a-zA-Z0-9:_]*)
+
+
+/********************************** HTML ************************************/
+
 /**
  * Document is just a collection of elements.
  */

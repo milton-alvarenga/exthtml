@@ -16,7 +16,7 @@ ExtFrontend = ExtRouter / ExtCSS / ExtVIEW
 
 ExtBackend = ExtGO / ExtJS / ExtPHP
 
-ExtSQL = 'DB::' DrallExtSQL / SQL
+ExtSQL = ExtSQLStreamVar __ '=' __ 'DB::' DrallExtSQL / SQL
 
 ExtRouter = 'ROUTER::'
 
@@ -46,7 +46,11 @@ ExternalLanguageContentNestedBraces
 
 VarName = $([a-zA-Z_][a-zA-Z0-9:_]*)
 
+ExtSQLStreamVar = ExtSQLStreamSingleVar / ExtSQLStreamMultipleVar
 
+ExtSQLStreamSingleVar = '@' VarName
+
+ExtSQLStreamMultipleVar = '@{' __ name:VarName names:(',' __ VarName)* __'}' { names = (names.length) ? names.map(o=>o[2]) : []; return {names:[name,...names]} }
 
 DrallExtSQL = DrallExtSQLSELECT / DrallExtSQLNew / DrallExtSQLOptimized
 
@@ -54,11 +58,13 @@ DrallExtSQLSELECT = "SELECT"
 
 DrallExtSQLNew = tables:DrallExtSQLSingleTableSelector __ '.new' __ '(' __ ')' __ { return tables }
 
-DrallExtSQLOptimized = tables:DrallExtSQLSingleTableSelector / tables:DrallExtSQLMultiTableSelector
+DrallExtSQLOptimized = DrallExtSQLOptimizedTableSelector
+
+DrallExtSQLOptimizedTableSelector = tables:DrallExtSQLSingleTableSelector / tables:DrallExtSQLMultiTableSelector
 
 DrallExtSQLSingleTableSelector = VarName
 
-DrallExtSQLMultiTableSelector = '[' __ table:VarName tables:(',' __ VarName)* __ ']' { tables = (tables.length) ? tables.map(o=>o[2]) : []; console.log(tables); return {tables:[table,...tables]} }
+DrallExtSQLMultiTableSelector = '{' __ table:VarName tables:(',' __ VarName)* __ '}' { tables = (tables.length) ? tables.map(o=>o[2]) : []; return {tables:[table,...tables]} }
 
 SQL = 'COMPLEXO'
 

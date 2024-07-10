@@ -48,7 +48,7 @@ Target ExtHTML
 
 On JS integration
 
-DB::<table>[fields AS ]?(<WHERE>).groupby(field ASC|DESC,...,field ASC|DESC).having().orderby().limit(#).offset(#)
+DB::<table>[fields AS ]?(<WHERE>).groupby().having().orderby(field ASC|DESC,...,field ASC|DESC).limit(#).offset(#)
 
 
 @course = DB::course(course_id = $id AND deleted = false)

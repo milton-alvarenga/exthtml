@@ -1,4 +1,4 @@
-Code = ExtHTML / Document
+Code = ExtHTML / ExtHTMLDocument
 
 ExtHTML = statements
 
@@ -16,39 +16,58 @@ ExtFrontend = ExtRouter / ExtCSS / ExtVIEW
 
 ExtBackend = ExtGO / ExtJS / ExtPHP
 
-ExtSQL = 'DB::'
+ExtSQL = 'DB::' DrallExtSQL / SQL
 
 ExtRouter = 'ROUTER::'
 
-ExtVIEW = 'VIEW::' content:ExternalLanguageContent '}' { return content; }
+ExtVIEW = 'VIEW::{' __ content:ExternalLanguageContent / String __ '}' __ { return content; }
 
-ExtCSS = 'CSS::' content:ExternalLanguageContent '}' { return content; }
+ExtCSS = 'CSS::{' __ content:ExternalLanguageContent / String __ '}' __ { return content; }
 
-ExtGO = 'GO::' content:ExternalLanguageContent '}' { return content; }
+ExtGO = 'GO::{' __ content:ExternalLanguageContent / String __ '}' __ { return content; }
 
-ExtJS = 'JS::{' content:ExternalLanguageContent '}' { return content; }
+ExtJS = 'JS::{' __ content:ExternalLanguageContent / String __ '}' __ { return content; }
 
-ExtPHP = 'PHP::' content:ExternalLanguageContent '}' { return content; }
+ExtPHP = 'PHP::{' __ content:ExternalLanguageContent / String __ '}' __ { return content; }
 
-ExtRoutine = '#%' name:VarName __ NL
+ExtRoutine = SimpleExtRoutine / BlockExtRoutine
+
+SimpleExtRoutine = '#%' name:VarName __ { return name }
+
+BlockExtRoutine = '#%' name:VarName __ '{' '}' __ { return name }
 
 ExternalLanguageContent
-  = chars:($ExternalLanguageContentNestedBraces*) { return chars; }
+  = chars:($ExternalLanguageContentNestedBraces*) { return chars }
 
 ExternalLanguageContentNestedBraces
   = "{" ExternalLanguageContent "}"     // Match balanced braces recursively
-  / !"}" .                // Match any character except the closing brace of the outermost level
+  / !"}" .                              // Match any character except the closing brace of the outermost level
 
 
 VarName = $([a-zA-Z_][a-zA-Z0-9:_]*)
 
+
+
+DrallExtSQL = DrallExtSQLSELECT / DrallExtSQLNew / DrallExtSQLOptimized
+
+DrallExtSQLSELECT = "SELECT"
+
+DrallExtSQLNew = tables:DrallExtSQLSingleTableSelector __ '.new' __ '(' __ ')' __ { return tables }
+
+DrallExtSQLOptimized = tables:DrallExtSQLSingleTableSelector / tables:DrallExtSQLMultiTableSelector
+
+DrallExtSQLSingleTableSelector = VarName
+
+DrallExtSQLMultiTableSelector = '[' __ table:VarName tables:(',' __ VarName)* __ ']' { tables = (tables.length) ? tables.map(o=>o[2]) : []; console.log(tables); return {tables:[table,...tables]} }
+
+SQL = 'COMPLEXO'
 
 /********************************** HTML ************************************/
 
 /**
  * Document is just a collection of elements.
  */
-Document = __ nodes:Element* { return nodes; }
+ExtHTMLDocument = __ nodes:Element* { return nodes; }
 
 /**
  * Elements - https://www.w3.org/TR/html5/syntax.html#elements-0
@@ -59,18 +78,18 @@ Element  = NL / RawText / Nested / SelfClose / Comment / ExtHTMLComment / DocTyp
 
 RawText  = Script / Style / Textarea / Title / PlainText
 
-Script    "script"    = '<script'i    attrs:Attributes* '>' __ content:(ch:(!('</script'i    __ '>') c:. { return c; })*) __ '</script'i    __ '>' __ { attrs = attrs[0] || []; return { type: 'SCRIPT_TAG', value: content.join(""), attrs:attrs.filter((v) => { return v.type == 'attr'}).map( (v) => { delete v.type;  v.pos = attrs.indexOf(v); return v}), dynamic_attrs:attrs.filter((v) => { return v.type == 'dyn_attr'}).map( (v) => { delete v.type;  v.pos = attrs.indexOf(v); return v}), event_attrs:attrs.filter((v) => { return v.type == 'event_attr'}).map( (v) => { delete v.type;  v.pos = attrs.indexOf(v); return v}), children:[], location: location() }; }
-Style     "style"     = '<style'i     attrs:Attributes* '>' __ content:(ch:(!('</style'i     __ '>') c:. { return c; })*) __ '</style'i     __ '>' __ { attrs = attrs[0] || []; return { type: 'STYLE_TAG', value: content.join(""), attrs:attrs.filter((v) => { return v.type == 'attr'}).map( (v) => { delete v.type;  v.pos = attrs.indexOf(v); return v}), dynamic_attrs:attrs.filter((v) => { return v.type == 'dyn_attr'}).map( (v) => { delete v.type;  v.pos = attrs.indexOf(v); return v}), event_attrs:attrs.filter((v) => { return v.type == 'event_attr'}).map( (v) => { delete v.type;  v.pos = attrs.indexOf(v); return v}), children:[], location: location() }; }
-Textarea  "textarea"  = '<textarea'i  attrs:Attributes* '>' __ content:(ch:(!('</textarea'i  __ '>') c:. { return c; })*) __ '</textarea'i  __ '>' __ { attrs = attrs[0] || []; return { type: 'TEXTAREA_TAG', value: content.join(""), attrs:attrs.filter((v) => { return v.type == 'attr'}).map( (v) => { delete v.type;  v.pos = attrs.indexOf(v); return v}), dynamic_attrs:attrs.filter((v) => { return v.type == 'dyn_attr'}).map( (v) => { delete v.type;  v.pos = attrs.indexOf(v); return v}), event_attrs:attrs.filter((v) => { return v.type == 'event_attr'}).map( (v) => { delete v.type;  v.pos = attrs.indexOf(v); return v}), children:[], location: location() }; }
-Title     "title"     = '<title'i     attrs:Attributes* '>' __ content:(ch:(!('</title'i     __ '>') c:. { return c; })*) __ '</title'i     __ '>' __ { attrs = attrs[0] || []; return { type: 'TITLE_TAG', value: content.join(""), attrs:attrs.filter((v) => { return v.type == 'attr'}).map( (v) => { delete v.type;  v.pos = attrs.indexOf(v); return v}), dynamic_attrs:attrs.filter((v) => { return v.type == 'dyn_attr'}).map( (v) => { delete v.type;  v.pos = attrs.indexOf(v); return v}), event_attrs:attrs.filter((v) => { return v.type == 'event_attr'}).map( (v) => { delete v.type;  v.pos = attrs.indexOf(v); return v}), children:[], location: location() }; }
-PlainText "plaintext" = '<plaintext'i attrs:Attributes* '>' __ content:(ch:(!('</plaintext'i __ '>') c:. { return c; })*) __ '</plaintext'i __ '>' __ { attrs = attrs[0] || []; return { type: 'PLAINTEXT_TAG', value: content.join(""), attrs:attrs.filter((v) => { return v.type == 'attr'}).map( (v) => { delete v.type;  v.pos = attrs.indexOf(v); return v}), dynamic_attrs:attrs.filter((v) => { return v.type == 'dyn_attr'}).map( (v) => { delete v.type;  v.pos = attrs.indexOf(v); return v}), event_attrs:attrs.filter((v) => { return v.type == 'event_attr'}).map( (v) => { delete v.type;  v.pos = attrs.indexOf(v); return v}), children:[], location: location() }; }
+Script    "script"    = '<script'i    attrs:Attributes* '>' __ content:(ch:(!('</script'i    __ '>') c:. { return c; })*) __ '</script'i    __ '>' __ { attrs = attrs[0] || []; return { section: 'ExtHTMLDocument', type: 'SCRIPT_TAG', value: content.join(""), attrs:attrs.filter((v) => { return v.type == 'attr'}).map( (v) => { delete v.type;  v.pos = attrs.indexOf(v); return v}), dynamic_attrs:attrs.filter((v) => { return v.type == 'dyn_attr'}).map( (v) => { delete v.type;  v.pos = attrs.indexOf(v); return v}), event_attrs:attrs.filter((v) => { return v.type == 'event_attr'}).map( (v) => { delete v.type;  v.pos = attrs.indexOf(v); return v}), children:[], location: location() }; }
+Style     "style"     = '<style'i     attrs:Attributes* '>' __ content:(ch:(!('</style'i     __ '>') c:. { return c; })*) __ '</style'i     __ '>' __ { attrs = attrs[0] || []; return { section: 'ExtHTMLDocument', type: 'STYLE_TAG', value: content.join(""), attrs:attrs.filter((v) => { return v.type == 'attr'}).map( (v) => { delete v.type;  v.pos = attrs.indexOf(v); return v}), dynamic_attrs:attrs.filter((v) => { return v.type == 'dyn_attr'}).map( (v) => { delete v.type;  v.pos = attrs.indexOf(v); return v}), event_attrs:attrs.filter((v) => { return v.type == 'event_attr'}).map( (v) => { delete v.type;  v.pos = attrs.indexOf(v); return v}), children:[], location: location() }; }
+Textarea  "textarea"  = '<textarea'i  attrs:Attributes* '>' __ content:(ch:(!('</textarea'i  __ '>') c:. { return c; })*) __ '</textarea'i  __ '>' __ { attrs = attrs[0] || []; return { section: 'ExtHTMLDocument', type: 'TEXTAREA_TAG', value: content.join(""), attrs:attrs.filter((v) => { return v.type == 'attr'}).map( (v) => { delete v.type;  v.pos = attrs.indexOf(v); return v}), dynamic_attrs:attrs.filter((v) => { return v.type == 'dyn_attr'}).map( (v) => { delete v.type;  v.pos = attrs.indexOf(v); return v}), event_attrs:attrs.filter((v) => { return v.type == 'event_attr'}).map( (v) => { delete v.type;  v.pos = attrs.indexOf(v); return v}), children:[], location: location() }; }
+Title     "title"     = '<title'i     attrs:Attributes* '>' __ content:(ch:(!('</title'i     __ '>') c:. { return c; })*) __ '</title'i     __ '>' __ { attrs = attrs[0] || []; return { section: 'ExtHTMLDocument', type: 'TITLE_TAG', value: content.join(""), attrs:attrs.filter((v) => { return v.type == 'attr'}).map( (v) => { delete v.type;  v.pos = attrs.indexOf(v); return v}), dynamic_attrs:attrs.filter((v) => { return v.type == 'dyn_attr'}).map( (v) => { delete v.type;  v.pos = attrs.indexOf(v); return v}), event_attrs:attrs.filter((v) => { return v.type == 'event_attr'}).map( (v) => { delete v.type;  v.pos = attrs.indexOf(v); return v}), children:[], location: location() }; }
+PlainText "plaintext" = '<plaintext'i attrs:Attributes* '>' __ content:(ch:(!('</plaintext'i __ '>') c:. { return c; })*) __ '</plaintext'i __ '>' __ { attrs = attrs[0] || []; return { section: 'ExtHTMLDocument', type: 'PLAINTEXT_TAG', value: content.join(""), attrs:attrs.filter((v) => { return v.type == 'attr'}).map( (v) => { delete v.type;  v.pos = attrs.indexOf(v); return v}), dynamic_attrs:attrs.filter((v) => { return v.type == 'dyn_attr'}).map( (v) => { delete v.type;  v.pos = attrs.indexOf(v); return v}), event_attrs:attrs.filter((v) => { return v.type == 'event_attr'}).map( (v) => { delete v.type;  v.pos = attrs.indexOf(v); return v}), children:[], location: location() }; }
 
 Nested    "element"   = begin:HTMLTagBegin __ children:Element* end:HTMLTagEnd __ { begin.location = location(); begin.children.push(...children); return begin; }
 
-HTMLTagBegin  "begin tag" = '<'  name:HTMLTagName attrs:Attributes* '>' { attrs = attrs[0] || []; return { type: 'HTML_NESTED_TAG', value: name.toUpperCase(), attrs:attrs.filter((v) => { return v.type == 'attr'}).map( (v) => { delete v.type;  v.pos = attrs.indexOf(v); return v}), dynamic_attrs:attrs.filter((v) => { return v.type == 'dyn_attr'}).map( (v) => { delete v.type;  v.pos = attrs.indexOf(v); return v}), event_attrs:attrs.filter((v) => { return v.type == 'event_attr'}).map( (v) => { delete v.type;  v.pos = attrs.indexOf(v); return v}), children:[], location: location() }; }
+HTMLTagBegin  "begin tag" = '<'  name:HTMLTagName attrs:Attributes* '>' { attrs = attrs[0] || []; return { section: 'ExtHTMLDocument', type: 'HTML_NESTED_TAG', value: name.toUpperCase(), attrs:attrs.filter((v) => { return v.type == 'attr'}).map( (v) => { delete v.type;  v.pos = attrs.indexOf(v); return v}), dynamic_attrs:attrs.filter((v) => { return v.type == 'dyn_attr'}).map( (v) => { delete v.type;  v.pos = attrs.indexOf(v); return v}), event_attrs:attrs.filter((v) => { return v.type == 'event_attr'}).map( (v) => { delete v.type;  v.pos = attrs.indexOf(v); return v}), children:[], location: location() }; }
 HTMLTagEnd    "end tag"   = '</' name:HTMLTagName __               '>'
 
-TagBegin  "begin tag" = '<'  name:TagName attrs:Attributes* '>' { attrs = attrs[0] || []; return { type: 'NESTED_TAG', value: name.toUpperCase(), attrs:attrs.filter((v) => { return v.type == 'attr'}).map( (v) => { delete v.type;  v.pos = attrs.indexOf(v); return v}), dynamic_attrs:attrs.filter((v) => { return v.type == 'dyn_attr'}).map( (v) => { delete v.type;  v.pos = attrs.indexOf(v); return v}), event_attrs:attrs.filter((v) => { return v.type == 'event_attr'}).map( (v) => { delete v.type;  v.pos = attrs.indexOf(v); return v}), children:[], location: location() }; }
+TagBegin  "begin tag" = '<'  name:TagName attrs:Attributes* '>' { attrs = attrs[0] || []; return { section: 'ExtHTMLDocument', type: 'NESTED_TAG', value: name.toUpperCase(), attrs:attrs.filter((v) => { return v.type == 'attr'}).map( (v) => { delete v.type;  v.pos = attrs.indexOf(v); return v}), dynamic_attrs:attrs.filter((v) => { return v.type == 'dyn_attr'}).map( (v) => { delete v.type;  v.pos = attrs.indexOf(v); return v}), event_attrs:attrs.filter((v) => { return v.type == 'event_attr'}).map( (v) => { delete v.type;  v.pos = attrs.indexOf(v); return v}), children:[], location: location() }; }
 TagEnd    "end tag"   = '</' name:TagName __               '>'
 
 
@@ -78,22 +97,22 @@ TagEnd    "end tag"   = '</' name:TagName __               '>'
  * Void element (with self closing tag, w/o content)
  * - 'area'i / 'base'i / 'br'i / 'col'i / 'embed'i / 'hr'i / 'img'i / 'input'i / 'keygen'i / 'link'i / 'meta'i / 'param'i / 'source'i / 'track'i / 'wbr'i
  */
-SelfClose "self close element" = '<' name:SelfCloseTagName attrs:Attributes* SelfCloseTag { attrs = attrs[0] || [];  return { type: 'SELF_CLOSE_TAG', value: name.toUpperCase(), attrs:attrs.filter((v) => { return v.type == 'attr'}).map( (v) => { delete v.type;  v.pos = attrs.indexOf(v); return v}), dynamic_attrs:attrs.filter((v) => { return v.type == 'dyn_attr'}).map( (v) => { delete v.type;  v.pos = attrs.indexOf(v); return v}), event_attrs:attrs.filter((v) => { return v.type == 'event_attr'}).map( (v) => { delete v.type;  v.pos = attrs.indexOf(v); return v}), children:[], location: location() }; }
+SelfClose "self close element" = '<' name:SelfCloseTagName attrs:Attributes* SelfCloseTag { attrs = attrs[0] || [];  return { section: 'ExtHTMLDocument', type: 'SELF_CLOSE_TAG', value: name.toUpperCase(), attrs:attrs.filter((v) => { return v.type == 'attr'}).map( (v) => { delete v.type;  v.pos = attrs.indexOf(v); return v}), dynamic_attrs:attrs.filter((v) => { return v.type == 'dyn_attr'}).map( (v) => { delete v.type;  v.pos = attrs.indexOf(v); return v}), event_attrs:attrs.filter((v) => { return v.type == 'event_attr'}).map( (v) => { delete v.type;  v.pos = attrs.indexOf(v); return v}), children:[], location: location() }; }
 
 Component "component" = NestedComponent / SelfCloseComponent
 
-NestedComponent = begin:TagBegin __ children:Element* __ end:TagEnd __ { return { type: 'COMPONENT', value: begin.value, attrs:[...begin.attrs], dynamic_attrs:[...begin.dynamic_attrs], event_attrs:[...begin.event_attrs], children:[...children], location: location() }; }
+NestedComponent = begin:TagBegin __ children:Element* __ end:TagEnd __ { return { section: 'ExtHTMLDocument', type: 'COMPONENT', value: begin.value, attrs:[...begin.attrs], dynamic_attrs:[...begin.dynamic_attrs], event_attrs:[...begin.event_attrs], children:[...children], location: location() }; }
 
-SelfCloseComponent = '<' name:TagName attrs:Attributes* SelfCloseTag __ { attrs = attrs[0] || []; return { type: 'COMPONENT', value: name.toUpperCase(), attrs:attrs.filter((v) => { return v.type == 'attr'}).map( (v) => { delete v.type;  v.pos = attrs.indexOf(v); return v}), dynamic_attrs:attrs.filter((v) => { return v.type == 'dyn_attr'}).map( (v) => { delete v.type;  v.pos = attrs.indexOf(v); return v}), event_attrs:attrs.filter((v) => { return v.type == 'event_attr'}).map( (v) => { delete v.type;  v.pos = attrs.indexOf(v); return v}), children:[], location: location() }; }
+SelfCloseComponent = '<' name:TagName attrs:Attributes* SelfCloseTag __ { attrs = attrs[0] || []; return { section: 'ExtHTMLDocument', type: 'COMPONENT', value: name.toUpperCase(), attrs:attrs.filter((v) => { return v.type == 'attr'}).map( (v) => { delete v.type;  v.pos = attrs.indexOf(v); return v}), dynamic_attrs:attrs.filter((v) => { return v.type == 'dyn_attr'}).map( (v) => { delete v.type;  v.pos = attrs.indexOf(v); return v}), event_attrs:attrs.filter((v) => { return v.type == 'event_attr'}).map( (v) => { delete v.type;  v.pos = attrs.indexOf(v); return v}), children:[], location: location() }; }
 					
  
-Comment   "comment"   = '<!--' text:CommentText '-->' __ { return { type: 'COMMENT_TEXT', value: text, location: location()} }
+Comment   "comment"   = '<!--' text:CommentText '-->' __ { return { section: 'ExtHTMLDocument', type: 'COMMENT_TEXT', value: text, location: location()} }
 
 ExtHTMLComment "ExtHTML comment" = __ comments:(SingleLineComment / MultipleLineComment) __ { return comments; }
 
-SingleLineComment "single line comment" = ( '//' / '#' ) c:(!NL .)* { return { type: 'SINGLE_LINE_COMMENT', value: c.map(aV =>{ return aV[1]}).join(""), location: location() } }
+SingleLineComment "single line comment" = ( '//' / '#' ) c:(!NL .)* { return { section: 'ExtHTMLDocument', type: 'SINGLE_LINE_COMMENT', value: c.map(aV =>{ return aV[1]}).join(""), location: location() } }
 
-MultipleLineComment "multiple line comment" = OpenMultipleLineComment text:(!CloseMultipleLineComment .)* CloseMultipleLineComment { return { type: 'MULTIPLE_LINE_COMMENT', value: text.map(aV =>{ return aV[1]}).join(""), location: location() } }
+MultipleLineComment "multiple line comment" = OpenMultipleLineComment text:(!CloseMultipleLineComment .)* CloseMultipleLineComment { return { section: 'ExtHTMLDocument', type: 'MULTIPLE_LINE_COMMENT', value: text.map(aV =>{ return aV[1]}).join(""), location: location() } }
 
 OpenMultipleLineComment = '/*'
 
@@ -110,9 +129,9 @@ SelfCloseTag = __ '/>' __
 CloseTag = __ '>' __
 
 
-TextNode "text node" = v:Text { return { type: 'TEXT_NODE', value: v.join(""), attrs:[], event_attrs:[], children:[], location: location() }; }
+TextNode "text node" = v:Text { return { section: 'ExtHTMLDocument', type: 'TEXT_NODE', value: v.join(""), attrs:[], event_attrs:[], children:[], location: location() }; }
 
-DynamicTextNode "dynamic text node" =  v:DynamicText { return { type: 'DYNAMIC_TEXT_NODE', value: v, attrs:[], event_attrs:[], children:[], location: location() }; }
+DynamicTextNode "dynamic text node" =  v:DynamicText { return { section: 'ExtHTMLDocument', type: 'DYNAMIC_TEXT_NODE', value: v, attrs:[], event_attrs:[], children:[], location: location() }; }
 
 DynamicText "dynamic text" = v:VariableQuoteString { return v; }
 
@@ -246,4 +265,4 @@ whitespace "required space characters" = [ \t\u000C]+ / NL
 
 __ "space characters" = [ \t\u000C]* / NL*
 
-NL "new line" = v:[\r\n]+ { return { type: 'NEW_LINE', value: v, attrs:[], dynamic_attrs:[], event_attrs:[], children:[], location: location() }; }
+NL "new line" = v:[\r\n]+ { return { section: 'ExtHTMLDocument', type: 'NEW_LINE', value: v, attrs:[], dynamic_attrs:[], event_attrs:[], children:[], location: location() }; }

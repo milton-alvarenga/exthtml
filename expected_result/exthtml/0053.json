@@ -1,5 +1,6 @@
 [
    {
+      "section":"ExtHTMLDocument",
       "type": "HTML_NESTED_TAG",
       "value": "SPAN",
       "attrs": [],
@@ -7,6 +8,7 @@
       "event_attrs": [],
       "children": [
          {
+            "section":"ExtHTMLDocument",
             "type": "TEXT_NODE",
             "value": "Your name is ",
             "attrs": [],
@@ -26,6 +28,7 @@
             }
          },
          {
+            "section":"ExtHTMLDocument",
             "type": "DYNAMIC_TEXT_NODE",
             "value": "name",
             "attrs": [],
@@ -59,6 +62,7 @@
       }
    },
    {
+      "section":"ExtHTMLDocument",
       "type": "NEW_LINE",
       "value": [
          "\n"
@@ -81,6 +85,7 @@
       }
    },
    {
+      "section":"ExtHTMLDocument",
       "type": "TEXT_NODE",
       "value": "<input type=\"text\" @click:ctrl.right.alt.stop.prevent=",
       "attrs": [],
@@ -100,6 +105,7 @@
       }
    },
    {
+      "section":"ExtHTMLDocument",
       "type": "DYNAMIC_TEXT_NODE",
       "value": "postForm",
       "attrs": [],
@@ -119,6 +125,7 @@
       }
    },
    {
+      "section":"ExtHTMLDocument",
       "type": "TEXT_NODE",
       "value": " />//right and alt on invalid order. They are inverted\n",
       "attrs": [],
@@ -138,6 +145,7 @@
       }
    },
    {
+      "section":"ExtHTMLDocument",
       "type": "SELF_CLOSE_TAG",
       "value": "INPUT",
       "attrs": [
@@ -181,6 +189,7 @@
       }
    },
    {
+      "section":"ExtHTMLDocument",
       "type": "SINGLE_LINE_COMMENT",
       "value": "Problem fixed",
       "location": {

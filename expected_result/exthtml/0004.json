@@ -1,5 +1,6 @@
 [
    {
+      "section": "ExtHTMLDocument",
       "type": "DYNAMIC_TEXT_NODE",
       "value": "Funcionou2",
       "attrs": [],
@@ -19,6 +20,7 @@
       }
    },
    {
+      "section": "ExtHTMLDocument",
       "type": "NEW_LINE",
       "value": [
          "\n"

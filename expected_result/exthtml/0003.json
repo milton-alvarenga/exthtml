@@ -1,5 +1,6 @@
 [
    {
+      "section": "ExtHTMLDocument",
       "type": "DYNAMIC_TEXT_NODE",
       "value": "Funcionou",
       "attrs": [],

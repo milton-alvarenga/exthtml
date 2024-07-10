@@ -1,5 +1,6 @@
 [
    {
+      "section": "ExtHTMLDocument",
       "type": "TEXT_NODE",
       "value": "Sou um ",
       "attrs": [],
@@ -19,6 +20,7 @@
       }
    },
    {
+      "section": "ExtHTMLDocument",
       "type": "DYNAMIC_TEXT_NODE",
       "value": "dynamic",
       "attrs": [],
@@ -38,6 +40,7 @@
       }
    },
    {
+      "section": "ExtHTMLDocument",
       "type": "TEXT_NODE",
       "value": " text node",
       "attrs": [],

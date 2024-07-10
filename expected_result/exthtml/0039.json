@@ -1,5 +1,6 @@
 [
    {
+      "section":"ExtHTMLDocument",
       "type": "SINGLE_LINE_COMMENT",
       "value": "Isto daqui funciona como comentário de uma linha?",
       "location": {
@@ -16,6 +17,7 @@
       }
    },
    {
+      "section":"ExtHTMLDocument",
       "type": "NEW_LINE",
       "value": [
          "\n"
@@ -38,6 +40,7 @@
       }
    },
    {
+      "section":"ExtHTMLDocument",
       "type": "TEXT_NODE",
       "value": "Sim",
       "attrs": [],

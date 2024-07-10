@@ -1,5 +1,6 @@
 [
     {
+      "section":"ExtHTMLDocument",
        "type": "HTML_NESTED_TAG",
        "value": "BUTTON",
        "attrs": [],

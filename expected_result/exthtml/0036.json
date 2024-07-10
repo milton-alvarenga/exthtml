@@ -1,5 +1,6 @@
 [
    {
+      "section": "ExtHTMLDocument",
       "type": "STYLE_TAG",
       "value": "\n    css content here\n",
       "attrs": [],

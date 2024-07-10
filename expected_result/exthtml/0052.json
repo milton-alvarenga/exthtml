@@ -1,5 +1,6 @@
 [
     {
+      "section":"ExtHTMLDocument",
        "type": "TEXT_NODE",
        "value": "<input type=\"text\" @click:ctrl.right.alt.stop.prevent=",
        "attrs": [],
@@ -19,6 +20,7 @@
        }
     },
     {
+      "section":"ExtHTMLDocument",
        "type": "DYNAMIC_TEXT_NODE",
        "value": "postForm",
        "attrs": [],
@@ -38,6 +40,7 @@
        }
     },
     {
+      "section":"ExtHTMLDocument",
        "type": "TEXT_NODE",
        "value": " />",
        "attrs": [],

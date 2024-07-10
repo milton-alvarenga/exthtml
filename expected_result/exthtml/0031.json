@@ -1,5 +1,6 @@
 [
    {
+      "section": "ExtHTMLDocument",
       "type": "HTML_NESTED_TAG",
       "value": "SELECT",
       "attrs": [
@@ -14,6 +15,7 @@
       "event_attrs": [],
       "children": [
          {
+            "section": "ExtHTMLDocument",
             "type": "HTML_NESTED_TAG",
             "value": "OPTION",
             "attrs": [],
@@ -21,6 +23,7 @@
             "event_attrs": [],
             "children": [
                {
+                  "section": "ExtHTMLDocument",
                   "type": "TEXT_NODE",
                   "value": "Val1",
                   "attrs": [],

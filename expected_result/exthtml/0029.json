@@ -1,5 +1,6 @@
 [
    {
+      "section": "ExtHTMLDocument",
       "type": "HTML_NESTED_TAG",
       "value": "HTML",
       "attrs": [],
@@ -7,6 +8,7 @@
       "event_attrs": [],
       "children": [
          {
+            "section": "ExtHTMLDocument",
             "type": "NEW_LINE",
             "value": [
                "\n"
@@ -29,6 +31,7 @@
             }
          },
          {
+            "section": "ExtHTMLDocument",
             "type": "TEXT_NODE",
             "value": "    ",
             "attrs": [],
@@ -48,6 +51,7 @@
             }
          },
          {
+            "section": "ExtHTMLDocument",
             "type": "HTML_NESTED_TAG",
             "value": "HEAD",
             "attrs": [],
@@ -55,6 +59,7 @@
             "event_attrs": [],
             "children": [
                {
+                  "section": "ExtHTMLDocument",
                   "type": "NEW_LINE",
                   "value": [
                      "\n"
@@ -77,6 +82,7 @@
                   }
                },
                {
+                  "section": "ExtHTMLDocument",
                   "type": "TEXT_NODE",
                   "value": "        ",
                   "attrs": [],
@@ -96,6 +102,7 @@
                   }
                },
                {
+                  "section": "ExtHTMLDocument",
                   "type": "SCRIPT_TAG",
                   "value": "",
                   "attrs": [],
@@ -116,6 +123,7 @@
                   }
                },
                {
+                  "section": "ExtHTMLDocument",
                   "type": "NEW_LINE",
                   "value": [
                      "\n"
@@ -138,6 +146,7 @@
                   }
                },
                {
+                  "section": "ExtHTMLDocument",
                   "type": "TEXT_NODE",
                   "value": "    ",
                   "attrs": [],
@@ -171,6 +180,7 @@
             }
          },
          {
+            "section": "ExtHTMLDocument",
             "type": "NEW_LINE",
             "value": [
                "\n"
@@ -193,6 +203,7 @@
             }
          },
          {
+            "section": "ExtHTMLDocument",
             "type": "TEXT_NODE",
             "value": "    ",
             "attrs": [],
@@ -212,6 +223,7 @@
             }
          },
          {
+            "section": "ExtHTMLDocument",
             "type": "COMPONENT",
             "value": "COMP",
             "attrs": [
@@ -241,6 +253,7 @@
             ],
             "children": [
                {
+                  "section": "ExtHTMLDocument",
                   "type": "NEW_LINE",
                   "value": [
                      "\n"
@@ -263,6 +276,7 @@
                   }
                },
                {
+                  "section": "ExtHTMLDocument",
                   "type": "TEXT_NODE",
                   "value": "        ",
                   "attrs": [],
@@ -282,6 +296,7 @@
                   }
                },
                {
+                  "section": "ExtHTMLDocument",
                   "type": "HTML_NESTED_TAG",
                   "value": "B",
                   "attrs": [],
@@ -289,6 +304,7 @@
                   "event_attrs": [],
                   "children": [
                      {
+                        "section":"ExtHTMLDocument",
                         "type": "TEXT_NODE",
                         "value": "oi",
                         "attrs": [],
@@ -322,6 +338,7 @@
                   }
                },
                {
+                  "section": "ExtHTMLDocument",
                   "type": "NEW_LINE",
                   "value": [
                      "\n"
@@ -344,6 +361,7 @@
                   }
                },
                {
+                  "section": "ExtHTMLDocument",
                   "type": "TEXT_NODE",
                   "value": "    ",
                   "attrs": [],
@@ -377,6 +395,7 @@
             }
          },
          {
+            "section": "ExtHTMLDocument",
             "type": "NEW_LINE",
             "value": [
                "\n"
@@ -413,6 +432,7 @@
       }
    },
    {
+      "section": "ExtHTMLDocument",
       "type": "NEW_LINE",
       "value": [
          "\n"

@@ -1,5 +1,6 @@
 [
   {
+    "section":"ExtHTMLDocument",
     "type": "HTML_NESTED_TAG",
     "value": "DIV",
     "attrs": [],
@@ -14,6 +15,7 @@
     "event_attrs": [],
     "children": [
       {
+        "section":"ExtHTMLDocument",
         "type": "NEW_LINE",
         "value": [
           "\n"
@@ -36,6 +38,7 @@
         }
       },
       {
+        "section":"ExtHTMLDocument",
         "type": "TEXT_NODE",
         "value": "\t",
         "attrs": [],
@@ -55,6 +58,7 @@
         }
       },
       {
+        "section":"ExtHTMLDocument",
         "type": "SELF_CLOSE_TAG",
         "value": "INPUT",
         "attrs": [
@@ -95,6 +99,7 @@
         }
       },
       {
+        "section":"ExtHTMLDocument",
         "type": "NEW_LINE",
         "value": [
           "\n"
@@ -117,6 +122,7 @@
         }
       },
       {
+        "section":"ExtHTMLDocument",
         "type": "TEXT_NODE",
         "value": "\t",
         "attrs": [],
@@ -136,6 +142,7 @@
         }
       },
       {
+        "section":"ExtHTMLDocument",
         "type": "SELF_CLOSE_TAG",
         "value": "INPUT",
         "attrs": [
@@ -176,6 +183,7 @@
         }
       },
       {
+        "section":"ExtHTMLDocument",
         "type": "NEW_LINE",
         "value": [
           "\n"

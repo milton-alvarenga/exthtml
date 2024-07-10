@@ -1,5 +1,6 @@
 [
    {
+      "section": "ExtHTMLDocument",
       "type": "HTML_NESTED_TAG",
       "value": "B",
       "attrs": [],
@@ -7,6 +8,7 @@
       "event_attrs": [],
       "children": [
          {
+            "section": "ExtHTMLDocument",
             "type": "HTML_NESTED_TAG",
             "value": "CENTER",
             "attrs": [],

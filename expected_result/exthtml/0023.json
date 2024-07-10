@@ -1,5 +1,6 @@
 [
    {
+      "section": "ExtHTMLDocument",
       "type": "TEXTAREA_TAG",
       "value": "Inner Text",
       "attrs": [

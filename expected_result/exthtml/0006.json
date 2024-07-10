@@ -1,5 +1,6 @@
 [
    {
+      "section": "ExtHTMLDocument",
       "type": "COMMENT_TEXT",
       "value": " Comentario aqui ",
       "location": {

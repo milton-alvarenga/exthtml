@@ -1,5 +1,6 @@
 [
    {
+      "section": "ExtHTMLDocument",
       "type": "SCRIPT_TAG",
       "value": "\n    javascript content here\n",
       "attrs": [],

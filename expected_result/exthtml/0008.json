@@ -1,5 +1,6 @@
 [
    {
+      "section": "ExtHTMLDocument",
       "type": "COMPONENT",
       "value": "TESTE",
       "attrs": [

@@ -1,5 +1,6 @@
 [
     {
+      "section": "ExtHTMLDocument",
       "type": "TEXT_NODE",
       "value": "Sou um text node",
       "attrs": [],
@@ -19,6 +20,7 @@
       }
    },
    {
+      "section": "ExtHTMLDocument",
       "type": "COMMENT_TEXT",
       "value": " comp ",
       "location": {

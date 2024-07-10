@@ -1,0 +1,210 @@
+https://dev.to/joshnuss/svelte-compiler-under-the-hood-4j20
+https://docs.python.org/3/reference/grammar.html
+<datasource>
+@ => DBstream
+DBField =>
+$ => Router variable origin
+: => Add reactive
+@course = DB::course(course_id = $id AND deleted = false)
+@teachers = DB::teacher(deleted = false)
+
+
+</datasource>
+<back>
+#%routine
+@course = DB::course(course_id = $id AND deleted = false)
+#%routine
+@teachers = DB::teacher(deleted = false)
+@course = DB::SELECT <optional_arguments> FROM course WHERE course_id = $id AND deleted = false
+@course = DB::FROM course WHERE course_id = $id AND deleted = false
+@course = DB::course WHERE course_id = $id AND deleted = false
+</back>
+<ctrl>
+function total_courses(teacher_id){
+    return DB::course[COUNT(*) AS total_courses](teacher_id = :teacher_id:).total_courses
+}
+
+
+#%routine() <= How to execute
+datasource
+
+let cep = DB or External Endpoint
+
+
+Kinds of variables
+    language_variable
+    ExtSQL variable
+    db variable
+
+
+Target ExtSQL
+@course = DB::course(course_id = $id AND deleted = :language_variable:)
+
+
+Target ExtHTML
+<div class={varname} class="" class:cssname={<bool>} *if={} *for={}>
+</div>
+
+
+On JS integration
+
+DB::<table>[fields AS ]?(<WHERE>).groupby(field ASC|DESC,...,field ASC|DESC).having().orderby().limit(#).offset(#)
+
+
+@course = DB::course(course_id = $id AND deleted = false)
+@teachers = DB::teacher(deleted = false)
+
+
+//It is a Browser JS function
+function VIEW::total_courses(teacher_id){
+    return DB::course[COUNT(*) AS total_courses](teacher_id = :teacher_id:).total_courses
+}
+
+//It will create a nodejs server code
+function JS::total_courses(teacher_id){
+    return DB::course[COUNT(*) AS total_courses](teacher_id = :teacher_id:).total_courses
+}
+
+function GO::get_notion(){
+    // go code to access notion data
+}
+function GO::get_trello(){
+    // go code to access notion data
+}
+
+Variables = {
+    in:
+    out:
+    value:
+    context:
+}
+
+//How to update without have the variable on HTML, just on JS or backend
+@var = DB::table.new()
+@var.field = value
+DB::table.save()
+DB::save() (Analyze and save all DBstream variables loaded)
+
+
+@var = DB::table.new(){
+    field1: val1
+    ,field2: val2
+    ,field3: val3
+}
+@var.field3 = val3b;
+@var.save()
+
+
+function GO::save() {
+    //Operacoes q quero com qualquer variavel do Sistema
+    DB::table.save()
+    //Continua operacoes
+}
+
+
+<html>
+	<head>
+    </head>
+    <body>
+        <form>
+    	<label>Course Name</label>
+        <input #htmlref type="text" *model={@course.nm}/>
+        <!-- Modal aqui Como??? -->
+        <label>Teacher</label><a href="">Cadastrar Novo</a>
+        <select *model={@course.teacher_id}>
+            <options *for={key,teacher in @teachers} value={teacher.id}>{teacher.nm} - (Total courses: {JS::total_courses(teacher.teacher_id)})</options>
+        </select>
+        <label>CEP</label>
+        <input type="text" *mask={Filter:cep} *val={Validation:cep} *in={cep} *out={DB::address.zipcode} />
+        <!-- Problem with global reserved word by ExtHTML -->
+        <button @click="DB::[course,address].save()>Save</button>
+        </form>
+    </body>
+</html>
+
+
+
+@course = DB::course(course_id = $id AND deleted = false)
+@teachers = DB::teacher(deleted = false)
+function total_courses(teacher_id){
+    return DB::course[COUNT(*) AS total_courses](teacher_id = :teacher_id:).total_courses
+}
+<html>
+	<head>
+    </head>
+    <body>
+        <form>
+    	<label>Course Name</label>
+        <input type="text" *model={@course.nm}/>
+        <select *model={@course.teacher_id}>
+            <options *for={key,teacher in @teachers} value={teacher.id}>{teacher.nm} - (Total courses: {total_courses(teacher.teacher_id)})</options>
+        </select>
+        <button @click="DB::address.save()>Save</button>
+        ou
+        <button @click="DB.save()>Save</button>
+        ou
+        <button @click="@course.save()>Save</button>
+    </body>
+</html>
+
+@course = DB::course(course_id = $id AND deleted = false)
+<html>
+	<head>
+    </head>
+    <body>
+        <form>
+    	<label>Course Name</label>
+        <input type="text" *model={@course.nm}/>
+        <button @click="DB::address.save()>Save</button>
+        ou
+        <button @click="DB.save()>Save</button>
+        ou
+        <button @click="DB::save()>Save</button>
+        ou
+        <button @click="@course.save()>Save</button>
+    </body>
+</html>
+
+
+<!-- Start cep comming from database -->
+@doc = DB::documents(person_id = $id)
+<input type="text" *mask={Filter:cep} *val={Validation:cep} *model={@doc(type='cpf').v} />
+<input type="text" *mask={Filter:rg} *val={Validation:rg} *model={@doc(type='rg').v} />
+<!-- Start cep comming from api and need to save on database -->
+@doc = DB::documents(person_id = $id)
+@doc(type='cpf').v = fetch(target_url,{method:POST,header:{Content-Type:application/json}})
+<input type="text" *mask={Filter:cep} *val={Validation:cep} *model={@doc(type='cpf').v} />
+<input type="text" *mask={Filter:rg} *val={Validation:rg} *model={@doc(type='rg').v} />
+
+<!-- How to do a INNER, LEFT, RIGHT, FULL, OUTTER JOINS -->
+@data = DB::SELECT <fields> FROM <table> <JOINS> <WHERE> ...
+
+<!-- How to update or insert using NOW() for example -->
+@person = DB::person(id = $id)
+@person.last_login = DB::now()
+or
+@person.last_login = DB::[now()]
+or
+@person.last_login = DB::{now()}
+
+
+<!-- How to update like table.field = table.field+1 -->
+@person.total_signin = DB::person.total_signin+1
+or
+@person.total_signin = DB::{person.total_signin+1}
+or
+@person.total_signin = @person.total_signin+1 (Which is the right?)
+
+
+<!-- How to update like table.field = table.field+Variavel???? -->
+@person = DB::person(person_id = $id)
+@person.balance = DB::{
+    (SELECT current FROM balance WHERE person_id = $id)
+    +
+    (SELECT SUM(CRED) FROM moviments WHERE person_id = $id AND month=TO_CHAR(CURRENT_DATE, 'MM'))
+    -
+    (SELECT SUM(DEB) FROM moviments WHERE person_id = $id AND month=TO_CHAR(CURRENT_DATE, 'MM'))
+    +
+    :variable_to_add:
+    AS total
+}.total

@@ -55,7 +55,7 @@ ExtSQLStreamMultipleVar = '@{' __ name:VarName names:(',' __ VarName)* __'}' { n
 DrallExtSQL = DrallExtSQLStandard / DrallExtSQLNew / DrallExtSQLOptimized
 
 DrallExtSQLStandard = 	SQLDataDefinitionStatements
-						/ SQLDataManipulationStatements
+						            / SQLDataManipulationStatements
                         / SQLTransactionalAndLockingStatements
                         / SQLReplicationStatements
                         / SQLPreparedStatements
@@ -65,17 +65,18 @@ DrallExtSQLStandard = 	SQLDataDefinitionStatements
 
 /* https://dev.mysql.com/doc/refman/8.0/en/sql-data-definition-statements.html */
 SQLDataDefinitionStatements = 	SQLDataDefinitionStatementsAlter / 
-								SQLDataDefinitionStatementsCreate /
+								                SQLDataDefinitionStatementsCreate /
                                 SQLDataDefinitionStatementsDrop /
                                 SQLDataDefinitionStatementsRename /
                                 SQLDataDefinitionStatementsTruncate
 
 /* https://dev.mysql.com/doc/refman/8.0/en/sql-data-manipulation-statements.html */
-SQLDataManipulationStatements = 'TODO'
+SQLDataManipulationStatements = DrallExtSQLStandardSELECT
+
 
 /* https://dev.mysql.com/doc/refman/8.0/en/sql-transactional-statements.html */
 SQLTransactionalAndLockingStatements = 	SQLTransactionalAndLockingStatementsBegin /
-									  	SQLTransactionalAndLockingStatementsCommit /
+									  	                  SQLTransactionalAndLockingStatementsCommit /
                                         SQLTransactionalAndLockingStatementsRollback /
                                         SQLTransactionalAndLockingStatementsStartTransaction
 /*
@@ -97,7 +98,7 @@ DrallExtSQLStandardAlterTable
 / DrallExtSQLStandardRelease // See who use it
 
 / DrallExtSQLStandardSavepoint
-/ DrallExtSQLStandardSelect
+/ 
 / DrallExtSQLStandardUpdate
 / DrallExtSQLStandardVaccuum
 */
@@ -121,7 +122,7 @@ SQLDatabaseAdministrationStatements = 	'TODO'
 
 /* https://dev.mysql.com/doc/refman/8.0/en/sql-utility-statements.html */
 SQLUtilityStatements = 	SQLUtilityStatementsDescribe /
-						SQLUtilityStatementsExplain /
+						            SQLUtilityStatementsExplain /
                         SQLUtilityStatementsHelp /
                         SQLUtilityStatementsUse
 
@@ -157,7 +158,7 @@ DrallExtSQLStandardDropTable = "TODO"
 DrallExtSQLStandardDropTrigger = "TODO"
 DrallExtSQLStandardDropView = "TODO"
 
-DrallExtSQLStandardSELECT = DrallExtSQLStandardWITH? "SELECT" DrallExtSQLStandardSELECTDistinctOrAll? DrallExtSQLStandardFields
+DrallExtSQLStandardSELECT = DrallExtSQLStandardWITH? "SELECT" whitespace (DrallExtSQLStandardSELECTDistinctOrAll? whitespace)? DrallExtSQLStandardFields DrallExtSQLStandardFrom DrallExtSQLStandardWhere? DrallExtSQLStandardGroup? DrallExtSQLStandardHaving?
 
 /* [ ALL | DISTINCT [ ON ( expression [, ...] ) ] ] */
 DrallExtSQLStandardSELECTDistinctOrAll = "ALL" / DrallExtSQLStandardSELECTDistinct
@@ -166,11 +167,35 @@ DrallExtSQLStandardSELECTDistinct = "DISTINCT" whitespace ("ON" __ "(" __ DrallE
 
 DrallExtSQLStandardExpr = "TODO"
 
-DrallExtSQLStandardWITH = "WITH" "RECURSIVE"? DrallExtSQLStandardWITHQuery
+DrallExtSQLStandardWITH = "WITH" (whitespace "RECURSIVE")? whitespace DrallExtSQLStandardWITHQuery
 
 DrallExtSQLStandardWITHQuery = "TODO"
 
 DrallExtSQLStandardFields = 'TODO'
+
+DrallExtSQLStandardFrom = 'FROM' (whitespace 'ONLY')?  SQLTableName '*'? DrallExtSQLStandardTableAS? DrallExtSQLStandardTableSample? DrallExtSQLStandardFromSubSelect?
+
+DrallExtSQLStandardTableAS = 'AS'? whitespace SQLNameAlias __ '(' __ SQLColumnAlias __  ')'
+
+DrallExtSQLStandardTableSample = 'TABLESAMPLE' whitespace ( 'SYSTEM' / 'BERNOULLI' ) __ '(' __ ([0-9] / [0-9]{2} / '100') __ ')' (whitespace 'REPEATABLE' '(' __ Integer __')')?
+
+SQLColumnAlias = SQLColumnName 'AS'? SQLNameAlias ("," SQLColumnAlias)*
+
+DrallExtSQLStandardFromSubSelect = (whitespace 'LATERAL')? whitespace '(' __ DrallExtSQLStandardSELECT __')' DrallExtSQLStandardTableAS?
+
+SQLTableName = VarName
+
+SQLNameAlias = VarName
+
+SQLColumnName = VarName
+
+DrallExtSQLStandardWhere = 'TODO'
+
+DrallExtSQLStandardGroup = 'GROUP BY' whitespace ( 'ALL' / 'DISTINCT' )? DrallExtSQLStandardGroupElement
+
+DrallExtSQLStandardGroupElement = 'TODO'
+
+DrallExtSQLStandardHaving = 'HAVING' 'TODO'
 
 /*
 [ WITH [ RECURSIVE ] with_query [, ...] ]

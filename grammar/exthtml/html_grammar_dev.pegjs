@@ -20,15 +20,15 @@ ExtSQL = ExtSQLStreamVar __ '=' __ 'DB::' DrallExtSQL / SQL
 
 ExtRouter = 'ROUTER::'
 
-ExtVIEW = 'VIEW::{' __ content:ExternalLanguageContent / String __ '}' __ { return content; }
+ExtVIEW = 'VIEW::' __ content:ExternalLanguageContent __ { return content; }
 
-ExtCSS = 'CSS::{' __ content:ExternalLanguageContent / String __ '}' __ { return content; }
+ExtCSS = 'CSS::' __ content:ExternalLanguageContent __ { return content; }
 
-ExtGO = 'GO::{' __ content:ExternalLanguageContent / String __ '}' __ { return content; }
+ExtGO = 'GO::' __ content:ExternalLanguageContent __ { return content; }
 
-ExtJS = 'JS::{' __ content:ExternalLanguageContent / String __ '}' __ { return content; }
+ExtJS = 'JS::' __ content:ExternalLanguageContent __ { return content; }
 
-ExtPHP = 'PHP::{' __ content:ExternalLanguageContent / String __ '}' __ { return content; }
+ExtPHP = 'PHP::' __ content:ExternalLanguageContent __ { return content; }
 
 ExtRoutine = SimpleExtRoutine / BlockExtRoutine
 
@@ -44,7 +44,7 @@ ExternalLanguageContentNestedBraces
   / !"}" .                              // Match any character except the closing brace of the outermost level
 
 
-VarName = $([a-zA-Z_][a-zA-Z0-9:_]*)
+VarName = $([a-zA-Z_][a-zA-Z0-9_]*)
 
 ExtSQLStreamVar = ExtSQLStreamSingleVar / ExtSQLStreamMultipleVar
 
@@ -54,14 +54,20 @@ ExtSQLStreamMultipleVar = '@{' __ name:VarName names:(',' __ VarName)* __'}' { n
 
 DrallExtSQL = DrallExtSQLStandard / DrallExtSQLNew / DrallExtSQLOptimized
 
-DrallExtSQLStandard = 	SQLDataDefinitionStatements
-						            / SQLDataManipulationStatements
-                        / SQLTransactionalAndLockingStatements
-                        / SQLReplicationStatements
-                        / SQLPreparedStatements
-                        / SQLCompoundStatementSyntax
-                        / SQLDatabaseAdministrationStatements
-                        / SQLUtilityStatements
+DrallExtSQLStandard = DrallExtSQLStandardTable 'todo'
+
+DrallExtSQLStandardTable = table:SQLTableName / '{' __ table:SQLTableName tables:(',' __ SQLTableName)* __ '}'
+
+/* see this classification */
+/* https://trello.com/c/rYgLLi5U/1195-devblog-pesquisar-e-escrever-sobre */
+SQL = 	SQLDataDefinitionStatements
+        / SQLDataManipulationStatements
+        / SQLTransactionalAndLockingStatements
+        / SQLReplicationStatements
+        / SQLPreparedStatements
+        / SQLCompoundStatementSyntax
+        / SQLDatabaseAdministrationStatements
+        / SQLUtilityStatements
 
 /* https://dev.mysql.com/doc/refman/8.0/en/sql-data-definition-statements.html */
 SQLDataDefinitionStatements = 	SQLDataDefinitionStatementsAlter / 
@@ -76,7 +82,7 @@ SQLDataManipulationStatements = DrallExtSQLStandardSELECT
 
 /* https://dev.mysql.com/doc/refman/8.0/en/sql-transactional-statements.html */
 SQLTransactionalAndLockingStatements = 	SQLTransactionalAndLockingStatementsBegin /
-									  	                  SQLTransactionalAndLockingStatementsCommit /
+									  	SQLTransactionalAndLockingStatementsCommit /
                                         SQLTransactionalAndLockingStatementsRollback /
                                         SQLTransactionalAndLockingStatementsStartTransaction
 /*
@@ -122,7 +128,7 @@ SQLDatabaseAdministrationStatements = 	'TODO'
 
 /* https://dev.mysql.com/doc/refman/8.0/en/sql-utility-statements.html */
 SQLUtilityStatements = 	SQLUtilityStatementsDescribe /
-						            SQLUtilityStatementsExplain /
+						SQLUtilityStatementsExplain /
                         SQLUtilityStatementsHelp /
                         SQLUtilityStatementsUse
 
@@ -158,7 +164,9 @@ DrallExtSQLStandardDropTable = "TODO"
 DrallExtSQLStandardDropTrigger = "TODO"
 DrallExtSQLStandardDropView = "TODO"
 
-DrallExtSQLStandardSELECT = DrallExtSQLStandardWITH? "SELECT" whitespace (DrallExtSQLStandardSELECTDistinctOrAll? whitespace)? DrallExtSQLStandardFields DrallExtSQLStandardFrom DrallExtSQLStandardWhere? DrallExtSQLStandardGroup? DrallExtSQLStandardHaving?
+
+
+DrallExtSQLStandardSELECT = DrallExtSQLStandardWITH? "SELECT" whitespace (DrallExtSQLStandardSELECTDistinctOrAll? whitespace)? DrallExtSQLStandardColumns DrallExtSQLStandardFrom DrallExtSQLStandardWhere? DrallExtSQLStandardGroup? DrallExtSQLStandardHaving?
 
 /* [ ALL | DISTINCT [ ON ( expression [, ...] ) ] ] */
 DrallExtSQLStandardSELECTDistinctOrAll = "ALL" / DrallExtSQLStandardSELECTDistinct
@@ -171,7 +179,7 @@ DrallExtSQLStandardWITH = "WITH" (whitespace "RECURSIVE")? whitespace DrallExtSQ
 
 DrallExtSQLStandardWITHQuery = "TODO"
 
-DrallExtSQLStandardFields = 'TODO'
+DrallExtSQLStandardColumns = 'TODO'
 
 DrallExtSQLStandardFrom = 'FROM' (whitespace 'ONLY')?  SQLTableName '*'? DrallExtSQLStandardTableAS? DrallExtSQLStandardTableSample? DrallExtSQLStandardFromSubSelect?
 
@@ -183,13 +191,23 @@ SQLColumnAlias = SQLColumnName 'AS'? SQLNameAlias ("," SQLColumnAlias)*
 
 DrallExtSQLStandardFromSubSelect = (whitespace 'LATERAL')? whitespace '(' __ DrallExtSQLStandardSELECT __')' DrallExtSQLStandardTableAS?
 
-SQLTableName = VarName
+SQLTableName = $([a-zA-Z_][a-zA-Z0-9_]{0,62})
 
 SQLNameAlias = VarName
 
 SQLColumnName = VarName
 
-DrallExtSQLStandardWhere = 'TODO'
+DrallExtSQLStandardWhere = whitespace 'WHERE' whitespace SQLExpression
+
+SQLComparisonOperator = $("=") / $("!=") / $("<>") / $("<=") / $(">=") / $("<") / $(">")
+
+SQLLogicalAndOperator = $("AND")
+
+SQLLogicalOrOperator = $("OR")
+
+SQLExpression = SQLColumnName
+
+SQLComparison = SQLColumnName
 
 DrallExtSQLStandardGroup = 'GROUP BY' whitespace ( 'ALL' / 'DISTINCT' )? DrallExtSQLStandardGroupElement
 
@@ -250,6 +268,8 @@ DrallExtSQLStandardEXPLAIN = "EXPLAIN" DrallExtSQLStandardSELECT
 
 DrallExtSQLNew = tables:DrallExtSQLSingleTableSelector __ '.new' __ '(' __ ')' __ { return tables }
 
+DrallExtSQLUpdate = tables:DrallExtSQLSingleTableSelector __ '.set' __ 'WHITE SET FIELD AND WHERE RULES AND RETURNING RULES TOO' __ { return tables }
+
 DrallExtSQLOptimized = DrallExtSQLOptimizedTableSelector DrallExtSQLOptimizedTableFieldsSelector? DrallExtSQLOptimizedWhereRules? DrallExtSQLOptimizedGroupBy? DrallExtSQLOptimizedHaving? DrallExtSQLOptimizedOrderBy? DrallExtSQLOptimizedLimit? DrallExtSQLOptimizedOffset?
 
 DrallExtSQLOptimizedTableSelector = tables:DrallExtSQLSingleTableSelector / tables:DrallExtSQLMultiTableSelector
@@ -271,8 +291,6 @@ DrallExtSQLOptimizedOrderBy = '.orderby' __ '(' __ '@TODO' __ ')'
 DrallExtSQLOptimizedLimit = '.limit' __ '(' __ Integer __ ')'
 
 DrallExtSQLOptimizedOffset = '.offset' __ '(' __ Integer __ ')' /* pode ser VIEW var or some other language var */
-
-SQL = 'COMPLEXO'
 
 /********************************** HTML ************************************/
 
@@ -359,11 +377,13 @@ Attributes = whitespace attrs:( HTMLDomReferenceDirectiveAttribute / DynamicAttr
 StaticAttribute "attribute" = ( name:HTMLAttrName text:(__ '=' __ s:DoubleQuoteString)  __ { return { name: name, value: (text && text[3]) ? text[3] : "", type:"attr", category: "html_attribute"}} )
 							  / ( name:AttrName text:(__ '=' __ s:DoubleQuoteString)  __ { return { name: name, value: (text && text[3]) ? text[3] : "", type:"attr", category: "custom_attribute"}} )
                               / ( '*'name:SpecificDrallDirectives text:(__ '=' __ s:DoubleQuoteString) __ { return { name: name, value: (text && text[3]) ? text[3] : "", type:"attr", category: "drall_directive"}} )
+                              / ( '*'name:OptimizationReservedDirectivesOrMarcro text:(__ '=' __ s:DoubleQuoteString) __ { return { name: name, value: (text && text[3]) ? text[3] : "", type:"attr", category: "macro_directive"}} )
 
 DynamicAttribute "dynamic attribute" = ( name:HTMLAttrName text:(__ '=' __ s:VariableQuoteString) __ { return { name: name, value: (text && text[3]) ? text[3] : "", type:"dyn_attr", category: "html_attribute"}} )
 									   / ( '*'name:PrimitiveLanguageReservedDirectives text:(__ '=' __ s:VariableQuoteString) __ { return { name: name, value: (text && text[3]) ? text[3] : "", type:"dyn_attr", category: "lang_directive"}} )
                                        / ( '*'name:SpecificDrallDirectives text:(__ '=' __ s:VariableQuoteString) __ { return { name: name, value: (text && text[3]) ? text[3] : "", type:"dyn_attr", category: "drall_directive"}} )
                                        / ( '*'name:OptimizationReservedDirectives text:(__ '=' __ s:VariableQuoteString) __ { return { name: name, value: (text && text[3]) ? text[3] : "", type:"dyn_attr", category: "optimization_directive"}} )
+                                       / ( '*'name:OptimizationReservedDirectivesOrMarcro text:(__ '=' __ s:VariableQuoteString) __ { return { name: name, value: (text && text[3]) ? text[3] : "", type:"dyn_attr", category: "macro_directive"}} )
                                        / ( name:AttrName text:(__ '=' __ s:VariableQuoteString) __ { return { name: name, value: (text && text[3]) ? text[3] : "", type:"dyn_attr", category: "custom_attribute"}} )
 
 EventAttribute "event attribute" = ( '@'name:HTMLAttrName event_modifiers:('.'EventModifiers)* text:(__ '=' __ s:VariableQuoteString) __ { return { name: name, value: (text && text[3]) ? text[3] : "", type:"event_attr", category: "html_attribute", modifiers:event_modifiers.map(v=>v[1])}} )
@@ -379,6 +399,8 @@ PrimitiveLanguageReservedDirectives = 'if' / 'for' / 'model'
 ExtendedLanguageReservedDirectives = 'else' / 'elseif' / 'forelse' / 'switch' / 'case' / 'default' / 'fallthrough'
 
 OptimizationReservedDirectives = 'show' / 'hide'
+
+OptimizationReservedDirectivesOrMarcro = 'idname'
 
 SpecificDrallDirectives = 'perm' / SpecificDrallPermSimplificationDirectives / 'val' / 'mask'
 

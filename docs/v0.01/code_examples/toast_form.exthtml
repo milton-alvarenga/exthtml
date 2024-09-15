@@ -1,0 +1,29 @@
+function addToast(){
+    toast(title,msg)
+    title = msg = ""
+}
+<html>
+    <body>
+        <label (for)>Title</label>
+        <dwtext idname="title" *model={title} />
+        <label (for)>Message</label>
+        <dwtext idname="message" *model={msg} />
+        <button @click={addToast}>Add toast!</button>
+
+        or
+        <label (for)>Title</label>
+        <dwtext *model={title} />
+        <label (for)>Message</label>
+        <dwtext *model={msg} />
+        <button @click={addToast}>Add toast!</button>
+
+    </body>
+</html>
+
+def => python
+
+func => golang
+
+function JS/PHP
+
+fn => rust

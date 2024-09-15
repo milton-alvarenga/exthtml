@@ -1,0 +1,7 @@
+let form_name = 'onboarding'
+@form = DB::dynform(name = form_name AND user_id = $id)
+
+<html>
+    <body>
+    </body>
+</html>

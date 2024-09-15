@@ -1,0 +1,40 @@
+if($id){
+    @class = DB::class(class_id = $id)
+} else {
+    @class = DB::class.new()
+}
+
+modal_teacher = false
+
+@teachers = DB::teacher()
+
+
+<html>
+    <head>
+    </head>
+    <body>
+        <label for???>Class name</label>
+        <input type="text" *model={@class.nm} *val={required} />
+        <label for???>Teacher</label><a @click={modal_teacher = true}>Add new teacher</a>
+        <select *model={@class.teacher_id} *val={required}>
+            <option *for={_,teacher in @teachers} id={teacher.teacher_id}>{teacher.nm}</option>
+        </select>
+        <modal *show={modal_teacher}/>
+    </body>
+</html>
+
+
+//file modal.component.exthtml
+@teacher = DB::teacher.new()
+
+function save(){
+    //How it will works to add the value on the HTMLSelect?
+}
+<div>
+    <h3>Add Teacher</h3>
+    <div>
+        <label (for)>Name</label>
+        <input type="text" *model={@teacher.nm} />
+        <button @click={save}>Create</button>
+    </div>
+</div>

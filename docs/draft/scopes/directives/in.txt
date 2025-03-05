@@ -1,0 +1,5 @@
+The last value on in will go to .value
+
+*in={variable;this.value}
+or
+*in={origin;chain;chain;chain;elem.value}

@@ -1,0 +1,64 @@
+DYNAMIC EVENT:
+    @{variable_or_fn_string_name_event}.{dynamic_modifiers}={action}
+
+STATIC EVENT:
+    @event.modifiers={action}
+
+    Modifiers
+
+        .stop - call event.stopPropagation().
+        .prevent - call event.preventDefault().
+        .capture - add event listener in capture mode.
+        .self - only trigger handler if event was dispatched from this element.
+        .{keyAlias} - only trigger handler on certain keys.
+        .once - trigger handler at most once.
+        .left - only trigger handler for left button mouse events.
+        .right - only trigger handler for right button mouse events.
+        .middle - only trigger handler for middle button mouse events.
+        .passive - attaches a DOM event with { passive: true }.
+
+    Replace event by some of the list below:
+
+        Mouse Events
+            click: Triggered when an element is clicked.
+            dblclick: Triggered when an element is double-clicked.
+            mousedown: Triggered when the mouse button is pressed down.
+            mouseup: Triggered when the mouse button is released.
+            mousemove: Triggered when the mouse is moved.
+            mouseover: Triggered when the mouse is moved over an element.
+            mouseout: Triggered when the mouse is moved out of an element.
+            mouseenter: Triggered when the mouse enters an element.
+            mouseleave: Triggered when the mouse leaves an element.
+
+        Keyboard Events
+            keydown: Triggered when a key is pressed down.
+            keyup: Triggered when a key is released.
+            keypress: Triggered when a key is pressed (not recommended, use keydown instead).
+
+        Form Events
+            submit: Triggered when a form is submitted.
+            reset: Triggered when a form is reset.
+
+        Focus Events
+            focus: Triggered when an element receives focus.
+            blur: Triggered when an element loses focus.
+
+        Touch Events
+            touchstart: Triggered when a touch event starts.
+            touchmove: Triggered when a touch event moves.
+            touchend: Triggered when a touch event ends.
+            touchcancel: Triggered when a touch event is canceled.
+
+        Wheel Events
+            wheel: Triggered when the mouse wheel is rotated.
+
+        Other Events
+            drag: Triggered when an element is dragged.
+            dragstart: Triggered when a drag operation starts.
+            dragend: Triggered when a drag operation ends.
+            drop: Triggered when an element is dropped.
+            load: Triggered when an element finishes loading.
+            error: Triggered when an element encounters an error.
+            scroll: Triggered when an element is scrolled.
+
+        You can use these events with the @

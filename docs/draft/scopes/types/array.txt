@@ -1,0 +1,10 @@
+It is a group or collections of the same type
+
+
+METHODS
+    plunk (for array of struct)
+    wait (for array of thread or coroutine)
+    delete (for array of DBRegisters)
+        - How it will works? Delete the item from array or from db or both?
+    
+    Some methods do not be from array, but from an specific type?

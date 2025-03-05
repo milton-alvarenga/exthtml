@@ -1,0 +1,77 @@
+In programming, a value that can be either true or false is commonly known as a:
+
+Possible values:
+    true    True    t   T
+    false   False   f   F
+
+Boolean
+A Boolean value can be one of two values:
+
+- True: Representing a true or affirmative condition.
+- False: Representing a false or negative condition.
+
+In some programming languages, Boolean values can also be represented as:
+
+- Bool: A shorthand for Boolean.
+
+Other terms you might come across include:
+
+- Truthy: A value that evaluates to true in a Boolean context, such as a non-zero number or a non-empty string.
+- Falsy: A value that evaluates to false in a Boolean context, such as zero, null, or an empty string.
+
+So, to summarize:
+
+- Boolean: A value that can be either true or false.
+- Truthy: A value that evaluates to true in a Boolean context.
+- Falsy: A value that evaluates to false in a Boolean context.
+
+
+Falsy
+    String
+        "" | <spaces>+ |
+
+    Bytes
+        00000000
+
+    Integer
+        0
+    
+    Struct
+        {} => all attributes empties
+
+    Enum
+        Never
+    
+    Numeric
+        0 | 0.0
+    
+    File
+        File did not Exists or Empty file?
+    
+    DB
+        Empty
+
+    PATH
+
+    URL
+
+    Array
+        []
+
+    Thread
+        Status Finished / Completed
+    
+    Coroutine
+        Status Finished / Completed
+
+    Function
+        Void | According to the returned type
+
+    Channel
+        Closed
+    
+    WaitingGroup
+        Zero
+    
+    DBRegister
+        Like struct?

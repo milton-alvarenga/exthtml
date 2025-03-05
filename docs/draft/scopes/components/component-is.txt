@@ -1,0 +1,8 @@
+variable = "a"
+<component is={variable} attr1...attrn>
+
+result
+<a attr1...attrn>
+
+This component is responsable to turns itself into any other.
+All attributes are kept equal on generated component.

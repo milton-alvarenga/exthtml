@@ -1,0 +1,51 @@
+Create a new type
+type cep:
+    string get():
+        return this.value
+    string [Validation,Filter]set(v):
+        v
+        .!Filter:trim
+        .!Filter:onlyNumbers
+            ->Validation:required
+            ->Validation:string
+        this.value = v
+        OU
+        this.value = v
+            .Filter:trim
+            .Filter:onlyNumbers
+                ->Validation:required
+                ->Validation:string
+
+
+
+
+type cnpj:
+    string get():
+        return this.value
+    string [vendor/path/cnpj,Validation,Filter] set(v):
+    ou
+    string [cnpj = vendor/path/cnpj,Validation,Filter] set(v):
+    ou
+    string [vendor/path/cnpj as cnpj,Validation,Filter] set(v):
+        v
+            .!Filter:trim
+            .!Filter:onlyNumbers
+                //Promise.all
+                //Promise.any
+                //promise.race
+                ->[
+                    Validation:required
+                    Validation:string
+                ]
+                .cnpj:val
+
+
+type MDOperation int8
+type BookType string
+    const (
+        BookTypeBid         BookType = "bid"
+        BookTypeAsk         BookType = "offer"
+        PriceTypeOpening    BookType = "opening_price"
+        PriceTypeClosing    BookType = "closing_price"
+        VolumeTypeTrade     BookType = "trade_volume"
+    )

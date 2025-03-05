@@ -1,0 +1,13 @@
+string_var = "font-size:16px;font-weight:bold"
+style={string_var}
+
+or
+{
+    "font-size":"16px",
+    "font-weight":"bold"
+}
+style={{key:value}}
+
+or
+["font-size:16px","font-weight:bold"]
+style={array[string]}

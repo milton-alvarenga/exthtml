@@ -1,0 +1,18 @@
+Conditionally render an element based on the truthy-ness of the expression value
+
+bool and bool
+bool or bool
+
+falsify | truthy && bool | falsify | truthy
+
+*if={ bool | falsify | trythy}
+
+Falsify | Truthy | Bool
+    !   =>  NOT
+    &&  =>  AND
+    ||  =>  OR
+
+Only Boolean type
+    not =>  not
+    and =>  and
+    or  =>  or

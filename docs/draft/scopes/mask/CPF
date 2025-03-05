@@ -1,0 +1,19 @@
+#This is extHTML, so it could have specific browser language
+Mask cpf:
+    JS:
+        get:
+        set:
+    HTML:
+        get:
+        set:
+
+
+
+Mask cpf:
+    CODE:
+        string get():
+        string set(v):
+    VIEW:
+        get:
+        set:
+

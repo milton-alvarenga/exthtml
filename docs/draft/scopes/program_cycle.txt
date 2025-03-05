@@ -1,0 +1,6 @@
+- User request the URL
+- php, go or v will be requested?
+    - generate the html and js pre-processed with all value saved on js
+- browser execute and display the generated html
+- browser execute the js for it get all the html references on js
+- js now is under control for reactiviness 

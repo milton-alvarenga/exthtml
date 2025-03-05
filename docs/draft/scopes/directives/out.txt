@@ -1,0 +1,18 @@
+
+
+destination = variable | function
+
+*out={destination}
+or
+*out={origin;chain;chain;chain;destination}
+
+$=> current value
+    *out={[$]chain;[$]chain;[$]chain;[$]destination}
+
+@=> Initial value
+
+$var
+@other_variable
+
+
+How to have validation???

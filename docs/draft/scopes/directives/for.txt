@@ -1,0 +1,37 @@
+It can interate on arrays, string, enum and struct.
+
+
+
+
+Index
+    .first
+    .middle
+    .last
+    .odd
+    .even
+
+
+Array
+    *for={index,value in array}
+    *foreelse (when empty is executed)
+
+String
+    *for={index,char in string}
+    *foreelse (when empty is executed)
+
+Enum
+    *for={declaring_position,enum.value in enum}
+    *foreelse (when empty is executed)
+
+Struct
+    *for={key,value in Struct}
+    *forelse (when no attribute is executed)
+
+
+DRAFT:
+    File
+        *for={line_number,content in File.TXT}
+        *foreelse (when empty is executed)
+        *for={line_number,Struct.<header_name> in File.CSV}
+        *for={page_number,Page in File.PDF}
+            *for={line_number,LineContent??? in Page}

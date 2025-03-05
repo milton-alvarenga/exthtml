@@ -1,0 +1,289 @@
+PUA => Process Unit Address
+directory are the namespace
+/
+    main.exthtml
+
+//How to import
+from PUA??? <= should be the import.
+    local directory
+        autoral vs vendor
+    external URL?
+
+
+Everything is async
+Everything is a pointer. If it is a value, it must to be explicit?
+
+
+PATH = /opt/new/data
+
+
+Validation
+    devolvo o valor original if TRUE
+    throw Exception
+Filter
+    sempre devolve o valor filtra IF TRUE
+    devolve o original
+ValFilter
+
+    Otimizacao de execucao
+    reutilizacao
+    Validation | Filter
+
+
+variavel
+    .trim!
+    .capitalize!
+        ->
+        ->
+
+
+objX
+    context
+    Mobile
+    Browser
+    Desktop
+
+
+@decorator
+@decorator
+@decorator
+@decorator
+type
+    bool
+    string | str
+    Byte
+    int | integer
+        Binary
+        Octal
+        Hexadecimal
+    enum
+    scope???
+    Numeric(precision)
+    File
+        CSV
+        TXT
+        XLS
+        DOC
+        PDF
+    DB
+        DBRegister
+    PATH
+    URL
+    Repetition groups?
+        array
+        collections
+    Organization or complex structures
+        struct
+        vs map ???
+    Thread
+    Coroutine
+    Function | Executable
+    Channel
+    WaitingGroup
+
+
+constant
+variable
+reactive_variable
+
+
+
+Array and struct are not type. They are structure to organizer
+
+
+
+main
+    validation
+
+
+function add()
+func add()
+fn add()
+def add()
+return_type add()
+
+description:
+    in: string;required;Filter:
+    out: string
+    value:
+    old_value:
+
+modules
+
+
+    DB::
+
+    event
+    procedural_top_down
+    reactive
+
+
+Named Arguments
+Property Promotion
+
+fn name()
+
+
+<type> varname = value
+<type>? varname = value
+?<type> varname = value
+<type>|<type> varname = value
+<type>|<type>|nil varname = value
+varname := value
+
+varname:<type> = value
+varname:<type>? = value
+varname:?<type> = value
+varname:<type>|<type> = value
+varname:<type>|<type>|nil = value
+
+varname <type> = value
+varname <type>? = value
+varname ?<type> = value
+varname <type>|<type> = value
+varname <type>|<type>|nil = value
+
+
+expressao = trim(expressao)
+expressao = strings.trim(expressao)
+expressao = expressao.trim()
+expressao!trim()
+expressao.trim()!
+
+expressao.trim()
+expressao
+    .trim()
+    .capitalize()
+    ->
+    ->
+
+
+expressao = capitalize(trim(expressao))
+expressao = string.capitalize(strings.trim(expressao))
+expressao = expressao.trim().capitalize()
+expressao!trim().capitalize()
+expressao.trim()!.capitalize()
+
+
+
+Validation.class.exthtml
+
+
+trim(string)
+string.trim()
+
+variable:
+    get:
+    set:
+    value:
+    old_values:
+
+
+
+
+falsify
+
+[]
+[].length
+
+[] => false
+
+{},[]
+0,""
+null
+false
+
+int 0
+
+false ?? <usar_este>
+
+
+
+Behaviors:
+    go Context ctx
+    Cache
+
+
+Sync and how async?
+error[] <- fetchExchange()
+error[] <- fetchStock()
+fetchExchange or {error execution action}
+
+if error.any():
+
+
+function component(parent,ctx){
+    return {
+        init: function(){
+
+        },
+        update: function(){
+
+        },
+        destroy: function(){
+
+        }
+    }
+}
+
+
+function directive(elem,result){
+    return {
+        init: function(){
+
+        }
+        ,update: function(){
+
+        }
+        ,destroy: function(){
+
+        }
+    }
+}
+
+a = 3
+b = a + 1
+
+
+<div *if={a > 2}>
+    <div *if={b > 3}>
+        { a + b }
+    </div>
+</div>
+
+variable tables
+inputs (or dependencies) – Represents the variables used to calculate the current variable.
+dependents (or outputs) – Represents the variables that depend on the current variable for their calculation.
+a = {
+    value: 3
+    old_value:[]
+    dependencies:{
+        variable:[]
+        components:[]
+        directives:[]
+    }
+    dependents:{
+        variable:[b]
+        components:[]
+        directives:[]
+    }
+}
+
+b = {
+    value: 4
+    old_value:[]
+    dependencies:{
+        variable:[a]
+        components:[]
+        directives:[]
+    }
+    dependents:{
+        variable:[]
+        components:[]
+        directives:[]
+    }
+}
+
+
+It is a hybrid language. A regular programming language plus html extension.
+So, it must to support both mode and possibility. Every operation in one paradigm should have a corresponding operation in the other.

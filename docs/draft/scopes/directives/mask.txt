@@ -1,0 +1,3 @@
+mask get the current value and save on elem.value
+
+*mask={Filter:onlyNumbers;Validation:cpf;Filter:cpf}

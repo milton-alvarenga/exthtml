@@ -1,0 +1,6 @@
+- Create the source code
+- Call the compiler process
+- Script remove exthtml code from specifics languages calls
+    - How to do with specifics languange on middle of another?
+- Compiler parse the code and create the AST
+- AST should be converted into JS

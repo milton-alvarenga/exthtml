@@ -41,6 +41,13 @@ type cnpj:
 
 
 type MDOperation int8
+turns:
+    type MDOperation:
+      int8 get():
+           return this.value
+      int8 set(v int8):
+          this.value = v
+
 type BookType string
     const (
         BookTypeBid         BookType = "bid"

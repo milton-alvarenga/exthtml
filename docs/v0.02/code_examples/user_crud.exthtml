@@ -1,0 +1,92 @@
+https://www.youtube.com/watch?v=mgQRRBPg17o&list=UULFmEOmPv9Ey3uwJh5ZH0jP_w&index=117
+
+//DB analyzes tool check if need to create table, fields or execute any change on database
+if(id) {
+    user = DB::user(user_id = :id:)
+    SELECT user_id,nm FROM user WHERE user_id = :id
+
+    document = DB::document(type = 'cpf' AND user_id = user.user_id)
+    //SELECT document_id,v FROM document WHERE type = 'cpf' AND user_id = user.user_id
+} else {
+    user = DB::user.new()
+    document = DB::document.new(){
+        type = 'cpf'
+    }
+
+    or 
+
+    document = DB::document.new(){
+        type:'cpf'
+    }
+}
+
+
+function checkpass(){
+    if(new_password != check_new_password){
+        throw Error("Invalid new password and its confirmation")
+    }
+    return //Check if need to return
+}
+
+function save(){
+    //Como criptografar?
+    user.password = GO::encrypt_pass(@new_password)
+    user.save()
+    if(id){
+        //Reset validation
+        form.reset()
+    } else {
+        window.location.href += "/" + user.id
+    }
+}
+
+or
+function save(){
+    //Crypted pass did not returns to JS
+    GO::{
+        user.password = encrypt_pass(@new_password)
+        r := user.save()
+    }
+
+    if(!@r){
+        alert("Failed to save the new password")
+        return
+    }
+
+    if(id){
+        //Reset validation
+        form.reset()
+    } else {
+        window.location.href += "/" + user.id
+    }
+}
+
+<html>
+    <head>
+    </head>
+    <body>
+        <label (for)>Name</label>
+        <input type="text" *model={user.nm} *val.form={Validation:required}>
+        <label (for)>CPF</label>
+        <input type="text" *model={document.v} *val.form={Validation:required}>
+        <label (for)>New password</label>
+        <input type="text" *model={new_password} *val.form={Validation:email;checkpass}>
+        <label (for)>Check new password</label>
+        <input type="text" *model={check_new_password} *val.form={Validation:email;checkpass}>
+        <button @click={save} disabled={!form.valid()}>Salvar</button>
+    </body>
+    ou
+    <body>
+        <form name="form">
+            <label (for)>Name</label>
+            <input type="text" *model={user.nm} *val={Validation:required}>
+            <label (for)>CPF</label>
+            <input type="text" *model={document.v} *val={Validation:required}>
+            <label (for)>New password</label>
+            <input type="text" *model={new_password} *val={Validation:email;checkpass}>
+            <label (for)>Check new password</label>
+            <input type="text" *model={check_new_password} *val={Validation:email;checkpass}>
+            <button @click={save} disabled={!form.valid()}>Salvar</button>
+        </form>
+    </body>
+</html>

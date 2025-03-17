@@ -1,0 +1,40 @@
+task = DB::task(task_id = :task_id:)
+
+workers = DB::worker(active = true)
+
+worker = DB::worker.new()
+
+modal = false
+error = ""
+
+function new_worker(){
+    modal = true
+}
+
+function save(){
+    error = ""
+    if(!worker.save()){
+        error = "Not possible to add new worker."
+    }
+    workers = DB::worker(active = true)
+    task.worker.worker_id = worker.worker_id
+    worker = DB::worker.new()
+}
+
+<html>
+    <body>
+        <div class="alert-error" *show={error}>{error}</div>
+        <h1>Task</h1>
+        <label (for)>Title</label>
+        <dwtext *model={task.v} />
+        <label (for)>Worker</label><a @click={new_worker}>Add new worker</a>
+        <select *model={task.worker.worker_id}>
+            <option *for={workers as _,o} value={o.id}>{o.nm}</option>
+        </select>
+        <div *show={modal}>
+            <label (for)>Name</label>
+            <dwtext *model={worker.nm} />
+            <button @click={save}>Add new worker</button>
+        </div>
+    </body>
+</html>

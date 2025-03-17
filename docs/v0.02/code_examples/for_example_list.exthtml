@@ -1,0 +1,15 @@
+tasks = DB::task()
+
+<html>
+    <body>
+        <ul>
+            <li *for={i,o in tasks} class={odd: i.odd,even: i.even}>
+                <span *show={i.first}>1st</span>
+                <span *show={i.last}>Ending</span>
+                <span *show={!i.first && !i.last}>{i.index}</span>
+                {o.name}
+            </li>
+            <li *forelse>There is no task</li>
+        </ul>
+    </body>
+</html>

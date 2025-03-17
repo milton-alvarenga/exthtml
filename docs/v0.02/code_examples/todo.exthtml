@@ -1,0 +1,57 @@
+//Should it be a reactive when the target table + where conditions change on database like on the save button?
+//Should it change to any table change or just the one made by the user?
+tasks = DB::task(user_id = :id:)
+
+
+let attr = "v"
+
+function add(){
+    task = DB::task.new(){
+        v: description,
+        //How to avoid injection using direct and not checked value. Should we have a session here, where the values are checked?
+        user: id
+    }
+
+    or
+
+    task = DB::task.new(){
+        @attr: description,
+        //How to avoid injection using direct and not checked value. Should we have a session here, where the values are checked?
+        user: id
+    }
+
+
+    task.done = false;
+    task.save()
+}
+
+function delete(task_id){
+    if(confirm("Delete the task?")){
+        task = DB::task(task_id = :task_id:) //<= How the parser will know which is a table field name and which one is a variable name?
+        task.delete()
+    }
+}
+
+
+
+<html>
+    <head>
+    </head>
+    <body>
+        <input type="text" *model={description} *val={required}><button @click={add}>Add</button>
+        <ul>
+            <li *for={idx,task in tasks} class={overwrite:task.done}>
+                <input type="checkbox" *model={task.done}>
+                {task.v}
+                <button @click={DB::task(task_id = :task.id:).delete()}>X</button>
+                ou?
+                <button @click={task.delete()}>X</button>
+                ou?
+                
+                <button @click={@click={confirm("DeleteTheTask);task.delete()}}>X</button>
+                ou?
+                <button @click={delete(task.id)}>X</button>
+            </li>
+            <li *forelse>No task</li>
+    </body>
+</html>

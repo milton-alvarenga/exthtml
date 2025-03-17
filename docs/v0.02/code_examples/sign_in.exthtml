@@ -1,0 +1,29 @@
+PHP::{
+    if(is_numeric($_SESSION['user_id'])){
+       header("Location: main.php");
+    }
+}
+
+function PHP::sign_in(){
+    $crypted_k = crypt_key(@k);
+    user = DB::user(login = @l AND password = $crypted)
+
+    if(user){
+        $_SESSION['user_id'] = user.user_id
+    } else {
+        unset($_SESSION['user_id']);
+    }
+    return (bool)user
+}
+
+<html>
+    <body>
+        <div>
+            <label (for)>Usuário</label>
+            <dwtext *model={l} />
+            <label (for)>Senha</label>
+            <dwtext *model={k} />
+            <button @click={sign_in}>Sign in</button>
+        </div>
+    </body>
+</html>

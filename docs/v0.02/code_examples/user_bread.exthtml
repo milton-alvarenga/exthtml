@@ -1,0 +1,54 @@
+users = DB::user(active = 't')
+
+
+function delete(user_id,nm){
+    if(confirm("Confirma excluir o usuário "+nm+"?")){
+        ok = DB::user(user_id = :user_id:).delete()
+
+        if(ok){
+            users = DB::user(active = 't')
+            alert("Usuário excluído com sucesso!")
+        } else {
+            alert("Não foi possível excluir o usuário alvo.")
+        }
+    }
+}
+
+<html>
+    <body>
+        <div>
+            <table>
+                <tr>
+                    <td>Name</td>
+                    <td>Email</td>
+                    <td>Data Criação</td>
+                    <td>Cidade</td>
+                    <td>Actions</td>
+                </tr>
+                <tr *for={users as i,o}>
+                    <td class={odd: i.odd}>
+                        {o.entity.nm}
+                    </td>
+                    <td>
+                        {o.directory_data(type = 'email').v}
+                    </td>
+                    <td>
+                        {o.dthrcriacao | dthrbr}
+                    </td>
+                    <td>
+                        {o.address().orderby(dthrcreated DESC).limit(1).state}
+                    </td>
+                    <td>
+                        <a href={window.location.href + '/' + o.user_id}>Edit</a>
+                        <a @click={delete(o.user_id, o.nm)}>Remove</a>
+                    </td>
+                </tr>
+                <tr *forelse>
+                    <td colspan="5">
+                        There is not user on the system
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,33 @@
+//DB analyzes tool check if need to create table, fields or execute any change on database
+
+<html>
+    <head>
+    </head>
+    <body>
+        <label (for)>Nome</label>
+        <input type="text" *model={DB::contact.nm} *val={Validation:required}>
+        <label (for)>Email</label>
+        <input type="text" *model={DB::contact.email} *val={Validation:email}>
+        <label (for)>Mensagem</label>
+        <textarea *model={DB::contact.mensagem}></textarea>
+        <button @click={DB::save()}>Salvar</button>
+    </body>
+</html>
+
+or
+
+contact = DB::contact()
+
+<html>
+    <head>
+    </head>
+    <body>
+        <label (for)>Nome</label>
+        <input type="text" *model={contact.nm} *val={Validation:required}>
+        <label (for)>Email</label>
+        <input type="text" *model={contact.email} *val={Validation:email}>
+        <label (for)>Mensagem</label>
+        <textarea *model={DB::contact.mensagem}></textarea>
+        <button @click={DB::save()}>Salvar</button>
+    </body>
+</html>

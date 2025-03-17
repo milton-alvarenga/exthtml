@@ -13,7 +13,7 @@
           {
              "name": "class",
              "value": "ok",
-             "category": "html_attribute",
+             "category": "html_global_non_boolean_attribute",
              "pos": 2
           },
           {

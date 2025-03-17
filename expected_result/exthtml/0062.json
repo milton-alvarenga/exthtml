@@ -1,0 +1,51 @@
+[
+  {
+    "section": "ExtHTMLDocument",
+    "type": "HTML_NESTED_TAG",
+    "value": "LABEL",
+    "attrs": [
+      {
+        "name": "for",
+        "value": null,
+        "category": "macro_directive",
+        "pos": 0
+      }
+    ],
+    "dynamic_attrs": [],
+    "event_attrs": [],
+    "children": [
+      {
+        "section": "ExtHTMLDocument",
+        "type": "TEXT_NODE",
+        "value": "Test",
+        "attrs": [],
+        "event_attrs": [],
+        "children": [],
+        "location": {
+          "start": {
+            "offset": 13,
+            "line": 1,
+            "column": 14
+          },
+          "end": {
+            "offset": 17,
+            "line": 1,
+            "column": 18
+          }
+        }
+      }
+    ],
+    "location": {
+      "start": {
+        "offset": 0,
+        "line": 1,
+        "column": 1
+      },
+      "end": {
+        "offset": 25,
+        "line": 1,
+        "column": 26
+      }
+    }
+  }
+]

@@ -1,0 +1,1 @@
+<input type="text" disabled={var1} autofocus={var2} tabindex={var3} />

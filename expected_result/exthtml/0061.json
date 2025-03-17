@@ -1,20 +1,14 @@
 [
   {
     "section": "ExtHTMLDocument",
-    "type": "SELF_CLOSE_TAG",
-    "value": "INPUT",
+    "type": "HTML_NESTED_TAG",
+    "value": "TR",
     "attrs": [
       {
-        "name": "type",
-        "value": "text",
-        "category": "html_attribute",
+        "name": "forelse",
+        "value": null,
+        "category": "lang_directive",
         "pos": 0
-      },
-      {
-        "name": "idname",
-        "value": "teste",
-        "category": "macro_directive",
-        "pos": 1
       }
     ],
     "dynamic_attrs": [],
@@ -27,9 +21,9 @@
         "column": 1
       },
       "end": {
-        "offset": 38,
+        "offset": 18,
         "line": 1,
-        "column": 39
+        "column": 19
       }
     }
   }

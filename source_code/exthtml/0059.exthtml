@@ -1,1 +1,1 @@
-<input type="text" *idname="teste"/>
+<input type="text" (idname)="teste" />

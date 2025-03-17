@@ -1,0 +1,48 @@
+[
+    {
+      "section": "ExtHTMLDocument",
+      "type": "SELF_CLOSE_TAG",
+      "value": "INPUT",
+      "attrs": [
+        {
+          "name": "type",
+          "value": "text",
+          "category": "html_attribute",
+          "pos": 0
+        },
+        {
+          "name": "disabled",
+          "value": "",
+          "category": "html_global_boolean_attribute",
+          "pos": 1
+        },
+        {
+          "name": "autofocus",
+          "value": "",
+          "category": "html_boolean_attribute",
+          "pos": 2
+        },
+        {
+          "name": "tabindex",
+          "value": "",
+          "category": "html_global_non_boolean_attribute",
+          "pos": 3
+        }
+      ],
+      "dynamic_attrs": [],
+      "event_attrs": [],
+      "children": [],
+      "location": {
+        "start": {
+          "offset": 0,
+          "line": 1,
+          "column": 1
+        },
+        "end": {
+          "offset": 58,
+          "line": 1,
+          "column": 59
+        }
+      }
+    }
+]

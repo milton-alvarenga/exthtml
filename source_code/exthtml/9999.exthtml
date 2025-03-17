@@ -40,6 +40,8 @@ Kinds of variables
 Target ExtSQL
 @course = DB::course(course_id = $id AND deleted = :language_variable:)
 
+@{account,entity} = DB::{account,entity}(entity_id = $1)
+
 
 Target ExtHTML
 <div class={varname} class="" class:cssname={<bool>} *if={} *for={}>
@@ -82,10 +84,12 @@ Variables = {
 //How to update without have the variable on HTML, just on JS or backend
 @var = DB::table.new()
 @var.field = value
+@var.save()
 DB::table.save()
 DB::save() (Analyze and save all DBstream variables loaded)
 
 
+//How to create a new register
 @var = DB::table.new(){
     field1: val1
     ,field2: val2
@@ -94,12 +98,18 @@ DB::save() (Analyze and save all DBstream variables loaded)
 @var.field3 = val3b;
 @var.save()
 
+//How to delete
+@var = DB::table(WHERE)
+@var.delete()
+
 
 function GO::save() {
     //Operacoes q quero com qualquer variavel do Sistema
     DB::table.save()
     //Continua operacoes
 }
+
+htmlref = document.getElementById()
 
 
 <html>
@@ -123,6 +133,33 @@ function GO::save() {
 </html>
 
 
+S elect => Update | Memory + persistencia
+I nsert => Nao muda | Memory
+
+S elect <= D elete | Memory + persistencia
+I nsert <= d elete | Memory
+Teach.i_status = U update
+
+POST
+PUT
+DELETE
+Processador de operacoes
+Struct + estado
+ID => negativo
+[[IDOld,IDNew],...[IDOld,IDNew]]
+
+
+DB.save()
+Begin()
+Teach => U
+Teach => I
+Course => D
+Commit()
+
+
+
+[DBRegister, DBRegister]
+@course.<array_methods>
 
 @course = DB::course(course_id = $id AND deleted = false)
 @teachers = DB::teacher(deleted = false)

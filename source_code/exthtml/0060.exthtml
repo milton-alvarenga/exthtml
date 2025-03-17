@@ -1,0 +1,5 @@
+JS::{
+	function abc(){
+    	alert("ok");
+    }
+}

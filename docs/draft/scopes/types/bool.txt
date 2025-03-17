@@ -52,8 +52,11 @@ Falsy
         Empty
 
     PATH
+        Diretorio
+        File
 
     URL
+
 
     Array
         []
@@ -75,3 +78,4 @@ Falsy
     
     DBRegister
         Like struct?
+        tuple do python

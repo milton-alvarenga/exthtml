@@ -2,10 +2,22 @@
 Mask cpf:
     JS:
         get:
-        set:
+            return this.value
+        set(v):
+            this.value = 
+                v
+                .Validation:cpf
     HTML:
         get:
+            this.value
         set:
+            $.mask(this)
+    
+    DB:
+        Ordered????
+        History????
+
+
 
 
 
@@ -16,4 +28,21 @@ Mask cpf:
     VIEW:
         get:
         set:
+
+    PERSISTENCE:
+
+
+val
+mask=0000 0.000
+    Converter o estado em memória na forma como o usuário vai interagir
+
+    -1 => red
+    0 => amarelo
+    1 => verde
+
+
+Memory
+    Database format
+    Nenhum dado tem mascara
+        - É uma função de visualização
 

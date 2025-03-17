@@ -1,0 +1,4 @@
+<input type="text" (idname)="teste"/>
+
+turns into
+<input type="text" id="teste" name="teste"/>

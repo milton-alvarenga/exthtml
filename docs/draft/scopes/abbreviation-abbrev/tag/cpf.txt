@@ -1,0 +1,3 @@
+<dwcpf
+turns to 
+<input type=”text” *mask={cpf} *val={cpf}

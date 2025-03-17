@@ -1,6 +1,14 @@
 - User request the URL
 - php, go or v will be requested?
     - generate the html and js pre-processed with all value saved on js
+        sobe igual PHP
 - browser execute and display the generated html
 - browser execute the js for it get all the html references on js
-- js now is under control for reactiviness 
+- js now is under control for reactiviness
+
+
+exe
+html com todos os valores e no estado final
+    js com os valores que foram usados para gerar o html
+    js que sabe gerar o html gerado
+    js reativo qdo já pegou os elementos que estão gerados ou os que tem gerar

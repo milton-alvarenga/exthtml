@@ -5,10 +5,26 @@ It can interate on arrays, string, enum and struct.
 
 Index
     .first
+         <bool>
     .middle
+        <bool>
+        if > 2
+            if length is odd
+                floor(len()/2) == internal_properties.index
+            if lenght is even (It will have 2 middle)
+                floor(len()/2) == internal_properties.index
+                or
+                floor(len()/2)-1 == internal_properties.index
     .last
-    .odd
-    .even
+        <bool>   
+    .odd <bool>
+    .even <bool>
+    .index <int> starting in zero
+    .index1 <int> starting on one
+
+
+
+
 
 
 Array

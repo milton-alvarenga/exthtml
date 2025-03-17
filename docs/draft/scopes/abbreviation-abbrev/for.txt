@@ -1,0 +1,7 @@
+<label (for)>Name</label>
+<input type="text" *model={name} />
+
+Turns into:
+
+<label for="id_field_name">Name</label>
+<input type="text" *model={name} id="id_field_name">

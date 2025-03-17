@@ -6,7 +6,7 @@ or
     "font-size":"16px",
     "font-weight":"bold"
 }
-style={{key:value}}
+style={key:value}
 
 or
 ["font-size:16px","font-weight:bold"]

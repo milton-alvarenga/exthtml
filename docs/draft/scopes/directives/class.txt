@@ -1,12 +1,12 @@
-
-
-
 class={css_class:bool}
 class={css_class:bool,css_class2:bool}
+    class="css_class css_class2"
 class={css-class:bool,css-class2:bool}
+    class="css-class css-class2"
 or
 class:css_class={bool}
 or
 class:css-class={bool}
 or
 class:css-class={bool} class:css-class2={bool}
+    class="css-class css-class2"

@@ -1,0 +1,8 @@
+//How to set a variable to have the validation result and a group of variable validated
+<input type="text" *val={required;cpf} />
+
+//How to set a variable to have the validation result and a group of variable validated
+<input type="text" *val:variable_name={required;cpf} />
+
+//Group of variable could be created by form
+<form name="group_variable_name">

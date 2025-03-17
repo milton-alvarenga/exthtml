@@ -1,3 +1,6 @@
 mask get the current value and save on elem.value
 
 *mask={Filter:onlyNumbers;Validation:cpf;Filter:cpf}
+//I think Validation:cpf could not be here, as it is validation
+
+<input type="text" *mask={cpf} />

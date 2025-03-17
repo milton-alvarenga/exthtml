@@ -1,0 +1,19 @@
+Show is not a necessary directive. So, it did not exists.
+
+You should use hidden. It is a standard HTML attribute.
+
+It is a global attribute that can be applied to any HTML element to prevent it from being displayed by the browser. The attribute is part of the HTML5 specification and is supported by all modern browsers.
+
+The hidden attribute is a boolean attribute, meaning it can either be present or absent. When present, it indicates that the element should not be displayed on the webpage. This attribute is useful for managing content visibility dynamically, such as hiding elements until certain conditions are met.
+
+Here's an example of how to use the hidden attribute:
+
+
+<p hidden>This paragraph will not be displayed.</p>
+
+You can also toggle the hidden attribute using JavaScript to dynamically show or hide elements
+
+
+
+Way to use: 
+hidden={ bool | falsify | trythy}

@@ -1,0 +1,32 @@
+Example 1:
+<table>
+    <thead>
+        <slot name="name1" />
+    </thread>
+    <tbody>
+        <slot name="name2" />
+    </tbody>
+</table>
+
+
+Example 2:
+<FancyButton>
+  Click me! <!-- slot content -->
+</FancyButton>
+
+<button class="fancy-btn">
+  <slot></slot> <!-- slot outlet -->
+</button>
+
+    Result:
+    <button class="fancy-btn">
+        Click me
+    </button>
+
+
+Example 3:
+<button type="submit">
+  <slot>
+    Submit <!-- fallback content -->
+  </slot>
+</button>

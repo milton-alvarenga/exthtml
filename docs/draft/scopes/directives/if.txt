@@ -12,7 +12,21 @@ Falsify | Truthy | Bool
     &&  =>  AND
     ||  =>  OR
 
-Only Boolean type
+Only Boolean type => Bool and other Bool
     not =>  not
     and =>  and
     or  =>  or
+
+
+
+if File::localizacao {
+
+}
+
+
+//V
+Thread.wait()
+
+if Thread.done {
+
+}

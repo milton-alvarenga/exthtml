@@ -24,10 +24,10 @@ Filter
     sempre devolve o valor filtra IF TRUE
     devolve o original
 ValFilter
-
     Otimizacao de execucao
     reutilizacao
     Validation | Filter
+Mask
 
 
 variavel
@@ -74,12 +74,15 @@ type
         collections
     Organization or complex structures
         struct
+            static key
         vs map ???
+            dynamic key
     Thread
     Coroutine
     Function | Executable
     Channel
     WaitingGroup
+    JSON ???
 
 
 constant
@@ -89,6 +92,7 @@ reactive_variable
 
 
 Array and struct are not type. They are structure to organizer
+Structure is a composite 
 
 
 
@@ -202,6 +206,9 @@ false ?? <usar_este>
 Behaviors:
     go Context ctx
     Cache
+    Order
+    History
+
 
 
 Sync and how async?
@@ -244,10 +251,20 @@ function directive(elem,result){
 a = 3
 b = a + 1
 
+setTimeout(()=>{
+    a = 1
+})
+
 
 <div *if={a > 2}>
-    <div *if={b > 3}>
-        { a + b }
+    <div *if={b > 3} @click={a++}>
+        { a + b | formatMoney }
+    </div>
+</div>
+backend output:
+<div>
+    <div onclick="funcao que processa adicionando 1 ao a">
+        4
     </div>
 </div>
 

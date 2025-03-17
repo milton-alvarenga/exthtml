@@ -1,0 +1,81 @@
+Boolean attributes in HTML are attributes that represent true or false values based on their presence or absence. If a boolean attribute is present, it is considered true; if it is absent, it is considered false.
+
+<!-- Global boolean attribute -->
+<div hidden>This element is hidden.</div>
+
+<!-- Non-global boolean attribute (used with form elements) -->
+<input type="text" disabled readonly required>
+
+
+disabled=""
+disabled={ bool | falsify | trythy}
+
+hidden={ bool | falsify | trythy}
+
+
+readonly={ bool | falsify | trythy}
+
+required={}
+
+contenteditable: Specifies whether the content of an element is editable by the user.
+
+draggable: Specifies whether an element is draggable or not.
+
+inert: Specifies that the browser should ignore this section.
+
+
+allowfullscreen
+
+async
+
+autofocus
+
+autoplay
+
+checked
+
+controls
+
+default
+
+defer
+
+disabled
+
+formnovalidate
+
+hidden
+
+inert
+
+ismap
+
+itemscope
+
+loop
+
+multiple
+
+muted
+
+nomodule
+
+novalidate
+
+open
+
+playsinline
+
+readonly
+
+required
+
+reversed
+
+selected
+
+shadowrootclonable
+
+shadowrootdelegatesfocus
+
+shadowrootserializable.

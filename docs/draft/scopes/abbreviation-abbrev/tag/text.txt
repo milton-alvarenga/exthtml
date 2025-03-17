@@ -1,0 +1,5 @@
+<dwtext *model={name} />
+
+turns into
+
+<input type="text" *model={name} />

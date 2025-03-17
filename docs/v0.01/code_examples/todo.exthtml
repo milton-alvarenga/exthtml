@@ -3,7 +3,7 @@
 @tasks = DB::task(user_id = $id)
 
 function add(){
-    @task = DB:task.new(){
+    @task = DB::task.new(){
         v: description,
         //How to avoid injection using direct and not checked value. Should we have a session here, where the values are checked?
         user: $id

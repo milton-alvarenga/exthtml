@@ -11,7 +11,6 @@ if($id) {
     }
 }
 
-
 function checkpass(){
     if(new_password != check_new_password){
         throw Error("Invalid new password and its confirmation")
@@ -30,6 +29,7 @@ function save(){
         window.location.href += "/" + @user.id
     }
 }
+
 <html>
     <head>
     </head>
@@ -59,3 +59,34 @@ function save(){
         </form>
     </body>
 </html>
+
+
+CREATE
+    user->document (user_id)
+update
+    user (user_id)
+    document (document_id)
+DELETE
+    document (user_id)->user
+
+CREATE document AND UPDATE User
+    user (user_id)
+    INSERT document (document_id)
+
+
+{
+    id:
+    user:{
+        id:
+        nm:
+        document:{
+            v
+            callif::id
+        }
+        alias: {
+            v
+            callif::id
+        }
+        callif::id
+    }
+}

@@ -13,9 +13,9 @@ modal_teacher = false
     <head>
     </head>
     <body>
-        <label for???>Class name</label>
+        <label (for)>Class name</label>
         <input type="text" *model={@class.nm} *val={required} />
-        <label for???>Teacher</label><a @click={modal_teacher = true}>Add new teacher</a>
+        <label (for)>Teacher</label><a @click={modal_teacher = true}>Add new teacher</a>
         <select *model={@class.teacher_id} *val={required}>
             <option *for={_,teacher in @teachers} id={teacher.teacher_id}>{teacher.nm}</option>
         </select>

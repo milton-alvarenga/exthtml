@@ -1,0 +1,124 @@
+SOURCE CODE:
+
+count := 0
+<html>
+    <head>
+    </head>
+    <body>
+        {{count}}
+        <button @click={count++}>Increase</button>
+        <button @click={count--}>Decrease</button>
+    </body>
+</html>
+
+
+<html>
+    <head>
+    </head>
+    <body>
+        {{count}}
+        <button @click={DB::table.nomeDoCampo++}>Increase</button>
+        <button @click={DB::table.nomeDoCampo--}>Decrease</button>
+        <button @click={DB::table.save()}
+        or
+        <button @click={DB.save()}
+    </body>
+</html>
+
+
+
+GENERATED CODE:
+<html>
+    <head>
+    </head>
+    <body>
+        <span id="_0">0</span>
+        <button on-click="">Increase</button>
+        <button on-click="">Decrease</button>
+    </body>
+    <script>
+        function getById(id){
+
+        }
+
+        function setAttr(elem, name, value){
+
+        }
+
+        function rmAttr(elem,name){
+            return elem.parent.removeChild(elem)
+        }
+
+        function rmElem(elem)
+
+        function append(parent,elem){
+            parent.appendChild(elem)
+        }
+
+        function elem(tagName){
+            return document.createElement(tagName)
+        }
+
+        function text(txt){
+            return document.createTextNode(txt)
+        }
+
+        function getUniqueID(){
+            
+        }
+
+        let elems = [
+            
+        ]
+
+
+
+        let vars = {
+            count: {
+                v:[0],
+                ,dependencies:{
+                    variable:[],
+                    components:[],
+                    directives:[]
+                },
+                dependents:{
+                    variable:[],
+                    components:[],
+                    directives:[]
+                }
+            }
+        };
+
+        let dirty_queue = {
+            target_var:{
+                generated_by
+            }
+        }
+
+        function element(parent,ctx,elem){
+
+        }
+
+        function component(parent,ctx,elem){
+            let elem = null;
+            let parent = parent
+
+            return {
+                create:function(){
+                    if(elem) return;
+                },
+                mount:???
+                update:function(){
+
+                },
+                destroy:function(){
+
+                },
+                hydratate:function(){
+                    elem = getById("_0")
+                }
+            }
+        }
+        vars[0].dependencies.components.append()
+    </script>
+</html>

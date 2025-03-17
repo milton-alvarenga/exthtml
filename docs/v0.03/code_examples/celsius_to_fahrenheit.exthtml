@@ -1,0 +1,27 @@
+<html>
+    <head>
+    </head>
+    <body>
+        <label (for)>Celsius</label>
+        <input type="text" *in={celsius} *out={it*9/5+32;fahrenheit}>
+        or
+        <input type="text" *in={celsius} *out={$*9/5+32;fahrenheit}>
+        <br />
+        <label (for)>fahrenheit</label>
+        <input type="text" *in={fahrenheit} *mask={#+.##} *val={} *out={(it-32)*5*9;celsius}>
+        or
+        <input type="text" *in={fahrenheit} *mask={#+.##} *val={} *out={($-32)*5*9;celsius}>
+    </body>
+</html>
+
+
+js=>dom                     *in
+user=>?validation=>js       *out.@input={}
+user=>dom                   *mask
+
+
+And validation???
+
+out => input event is the default
+
+how to debounce and throttle?

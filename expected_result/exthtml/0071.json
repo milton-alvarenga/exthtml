@@ -1,0 +1,712 @@
+[
+    {
+      "section": "ExtHTMLDocument",
+      "type": "HTML_NESTED_TAG",
+      "value": "HTML",
+      "attrs": [],
+      "dynamic_attrs": [],
+      "event_attrs": [],
+      "children": [
+        {
+          "section": "ExtHTMLDocument",
+          "type": "NEW_LINE",
+          "value": [
+            "\n"
+          ],
+          "attrs": [],
+          "dynamic_attrs": [],
+          "event_attrs": [],
+          "children": [],
+          "location": {
+            "start": {
+              "offset": 6,
+              "line": 1,
+              "column": 7
+            },
+            "end": {
+              "offset": 7,
+              "line": 2,
+              "column": 1
+            }
+          }
+        },
+        {
+          "section": "ExtHTMLDocument",
+          "type": "TEXT_NODE",
+          "value": "    ",
+          "attrs": [],
+          "event_attrs": [],
+          "children": [],
+          "location": {
+            "start": {
+              "offset": 7,
+              "line": 2,
+              "column": 1
+            },
+            "end": {
+              "offset": 11,
+              "line": 2,
+              "column": 5
+            }
+          }
+        },
+        {
+          "section": "ExtHTMLDocument",
+          "type": "HTML_NESTED_TAG",
+          "value": "HEAD",
+          "attrs": [],
+          "dynamic_attrs": [],
+          "event_attrs": [],
+          "children": [
+            {
+              "section": "ExtHTMLDocument",
+              "type": "NEW_LINE",
+              "value": [
+                "\n"
+              ],
+              "attrs": [],
+              "dynamic_attrs": [],
+              "event_attrs": [],
+              "children": [],
+              "location": {
+                "start": {
+                  "offset": 17,
+                  "line": 2,
+                  "column": 11
+                },
+                "end": {
+                  "offset": 18,
+                  "line": 3,
+                  "column": 1
+                }
+              }
+            },
+            {
+              "section": "ExtHTMLDocument",
+              "type": "TEXT_NODE",
+              "value": "    ",
+              "attrs": [],
+              "event_attrs": [],
+              "children": [],
+              "location": {
+                "start": {
+                  "offset": 18,
+                  "line": 3,
+                  "column": 1
+                },
+                "end": {
+                  "offset": 22,
+                  "line": 3,
+                  "column": 5
+                }
+              }
+            }
+          ],
+          "location": {
+            "start": {
+              "offset": 11,
+              "line": 2,
+              "column": 5
+            },
+            "end": {
+              "offset": 29,
+              "line": 3,
+              "column": 12
+            }
+          }
+        },
+        {
+          "section": "ExtHTMLDocument",
+          "type": "NEW_LINE",
+          "value": [
+            "\n"
+          ],
+          "attrs": [],
+          "dynamic_attrs": [],
+          "event_attrs": [],
+          "children": [],
+          "location": {
+            "start": {
+              "offset": 29,
+              "line": 3,
+              "column": 12
+            },
+            "end": {
+              "offset": 30,
+              "line": 4,
+              "column": 1
+            }
+          }
+        },
+        {
+          "section": "ExtHTMLDocument",
+          "type": "TEXT_NODE",
+          "value": "    ",
+          "attrs": [],
+          "event_attrs": [],
+          "children": [],
+          "location": {
+            "start": {
+              "offset": 30,
+              "line": 4,
+              "column": 1
+            },
+            "end": {
+              "offset": 34,
+              "line": 4,
+              "column": 5
+            }
+          }
+        },
+        {
+          "section": "ExtHTMLDocument",
+          "type": "HTML_NESTED_TAG",
+          "value": "BODY",
+          "attrs": [],
+          "dynamic_attrs": [],
+          "event_attrs": [],
+          "children": [
+            {
+              "section": "ExtHTMLDocument",
+              "type": "NEW_LINE",
+              "value": [
+                "\n"
+              ],
+              "attrs": [],
+              "dynamic_attrs": [],
+              "event_attrs": [],
+              "children": [],
+              "location": {
+                "start": {
+                  "offset": 40,
+                  "line": 4,
+                  "column": 11
+                },
+                "end": {
+                  "offset": 41,
+                  "line": 5,
+                  "column": 1
+                }
+              }
+            },
+            {
+              "section": "ExtHTMLDocument",
+              "type": "TEXT_NODE",
+              "value": "        ",
+              "attrs": [],
+              "event_attrs": [],
+              "children": [],
+              "location": {
+                "start": {
+                  "offset": 41,
+                  "line": 5,
+                  "column": 1
+                },
+                "end": {
+                  "offset": 49,
+                  "line": 5,
+                  "column": 9
+                }
+              }
+            },
+            {
+              "section": "ExtHTMLDocument",
+              "type": "SELF_CLOSE_TAG",
+              "value": "INPUT",
+              "attrs": [
+                {
+                  "name": "type",
+                  "value": "text",
+                  "category": "html_attribute",
+                  "pos": 0
+                }
+              ],
+              "dynamic_attrs": [
+                {
+                  "name": "mask",
+                  "value": "Filter:onlyNumbers;Validation:cpf;Filter:cpf",
+                  "category": "drall_directive",
+                  "pos": 1
+                },
+                {
+                  "name": "in",
+                  "value": "DB::person.cpf;Filter:cpf",
+                  "category": "lang_directive",
+                  "pos": 2
+                },
+                {
+                  "name": "out",
+                  "value": "DB::person.cpf",
+                  "category": "lang_directive",
+                  "pos": 3
+                }
+              ],
+              "event_attrs": [],
+              "children": [],
+              "location": {
+                "start": {
+                  "offset": 49,
+                  "line": 5,
+                  "column": 9
+                },
+                "end": {
+                  "offset": 176,
+                  "line": 5,
+                  "column": 136
+                }
+              }
+            },
+            {
+              "section": "ExtHTMLDocument",
+              "type": "NEW_LINE",
+              "value": [
+                "\n"
+              ],
+              "attrs": [],
+              "dynamic_attrs": [],
+              "event_attrs": [],
+              "children": [],
+              "location": {
+                "start": {
+                  "offset": 176,
+                  "line": 5,
+                  "column": 136
+                },
+                "end": {
+                  "offset": 177,
+                  "line": 6,
+                  "column": 1
+                }
+              }
+            },
+            {
+              "section": "ExtHTMLDocument",
+              "type": "TEXT_NODE",
+              "value": "        or\n        ",
+              "attrs": [],
+              "event_attrs": [],
+              "children": [],
+              "location": {
+                "start": {
+                  "offset": 177,
+                  "line": 6,
+                  "column": 1
+                },
+                "end": {
+                  "offset": 196,
+                  "line": 7,
+                  "column": 9
+                }
+              }
+            },
+            {
+              "section": "ExtHTMLDocument",
+              "type": "SELF_CLOSE_TAG",
+              "value": "INPUT",
+              "attrs": [
+                {
+                  "name": "type",
+                  "value": "text",
+                  "category": "html_attribute",
+                  "pos": 0
+                }
+              ],
+              "dynamic_attrs": [
+                {
+                  "name": "mask",
+                  "value": "Mask:cpf",
+                  "category": "drall_directive",
+                  "pos": 1
+                },
+                {
+                  "name": "in",
+                  "value": "DB::person.cpf;Filter:cpf",
+                  "category": "lang_directive",
+                  "pos": 2
+                },
+                {
+                  "name": "out",
+                  "value": "DB::person.cpf",
+                  "category": "lang_directive",
+                  "pos": 3
+                }
+              ],
+              "event_attrs": [],
+              "children": [],
+              "location": {
+                "start": {
+                  "offset": 196,
+                  "line": 7,
+                  "column": 9
+                },
+                "end": {
+                  "offset": 287,
+                  "line": 7,
+                  "column": 100
+                }
+              }
+            },
+            {
+              "section": "ExtHTMLDocument",
+              "type": "NEW_LINE",
+              "value": [
+                "\n"
+              ],
+              "attrs": [],
+              "dynamic_attrs": [],
+              "event_attrs": [],
+              "children": [],
+              "location": {
+                "start": {
+                  "offset": 287,
+                  "line": 7,
+                  "column": 100
+                },
+                "end": {
+                  "offset": 288,
+                  "line": 8,
+                  "column": 1
+                }
+              }
+            },
+            {
+              "section": "ExtHTMLDocument",
+              "type": "TEXT_NODE",
+              "value": "        or\n        ",
+              "attrs": [],
+              "event_attrs": [],
+              "children": [],
+              "location": {
+                "start": {
+                  "offset": 288,
+                  "line": 8,
+                  "column": 1
+                },
+                "end": {
+                  "offset": 307,
+                  "line": 9,
+                  "column": 9
+                }
+              }
+            },
+            {
+              "section": "ExtHTMLDocument",
+              "type": "SELF_CLOSE_TAG",
+              "value": "INPUT",
+              "attrs": [
+                {
+                  "name": "type",
+                  "value": "text",
+                  "category": "html_attribute",
+                  "pos": 0
+                }
+              ],
+              "dynamic_attrs": [
+                {
+                  "name": "in",
+                  "value": "DB::person.cpf;Mask:cpf",
+                  "category": "lang_directive",
+                  "pos": 1
+                },
+                {
+                  "name": "out",
+                  "value": "Filter:onlyNumbers;DB::person.cpf",
+                  "category": "lang_directive",
+                  "pos": 2
+                }
+              ],
+              "event_attrs": [],
+              "children": [],
+              "location": {
+                "start": {
+                  "offset": 307,
+                  "line": 9,
+                  "column": 9
+                },
+                "end": {
+                  "offset": 398,
+                  "line": 9,
+                  "column": 100
+                }
+              }
+            },
+            {
+              "section": "ExtHTMLDocument",
+              "type": "NEW_LINE",
+              "value": [
+                "\n"
+              ],
+              "attrs": [],
+              "dynamic_attrs": [],
+              "event_attrs": [],
+              "children": [],
+              "location": {
+                "start": {
+                  "offset": 398,
+                  "line": 9,
+                  "column": 100
+                },
+                "end": {
+                  "offset": 399,
+                  "line": 10,
+                  "column": 1
+                }
+              }
+            },
+            {
+              "section": "ExtHTMLDocument",
+              "type": "TEXT_NODE",
+              "value": "        or\n        ",
+              "attrs": [],
+              "event_attrs": [],
+              "children": [],
+              "location": {
+                "start": {
+                  "offset": 399,
+                  "line": 10,
+                  "column": 1
+                },
+                "end": {
+                  "offset": 418,
+                  "line": 11,
+                  "column": 9
+                }
+              }
+            },
+            {
+              "section": "ExtHTMLDocument",
+              "type": "SELF_CLOSE_TAG",
+              "value": "INPUT",
+              "attrs": [
+                {
+                  "name": "type",
+                  "value": "text",
+                  "category": "html_attribute",
+                  "pos": 0
+                }
+              ],
+              "dynamic_attrs": [
+                {
+                  "name": "value",
+                  "value": "Filter:onlyNumbers;Validation:cpf;Filter:cpf",
+                  "category": "html_attribute",
+                  "pos": 1
+                },
+                {
+                  "name": "in",
+                  "value": "DB::person.cpf;Filter:cpf",
+                  "category": "lang_directive",
+                  "pos": 2
+                },
+                {
+                  "name": "out",
+                  "value": "DB::person.cpf",
+                  "category": "lang_directive",
+                  "pos": 3
+                }
+              ],
+              "event_attrs": [],
+              "children": [],
+              "location": {
+                "start": {
+                  "offset": 418,
+                  "line": 11,
+                  "column": 9
+                },
+                "end": {
+                  "offset": 545,
+                  "line": 11,
+                  "column": 136
+                }
+              }
+            },
+            {
+              "section": "ExtHTMLDocument",
+              "type": "NEW_LINE",
+              "value": [
+                "\n"
+              ],
+              "attrs": [],
+              "dynamic_attrs": [],
+              "event_attrs": [],
+              "children": [],
+              "location": {
+                "start": {
+                  "offset": 545,
+                  "line": 11,
+                  "column": 136
+                },
+                "end": {
+                  "offset": 546,
+                  "line": 12,
+                  "column": 1
+                }
+              }
+            },
+            {
+              "section": "ExtHTMLDocument",
+              "type": "TEXT_NODE",
+              "value": "        ",
+              "attrs": [],
+              "event_attrs": [],
+              "children": [],
+              "location": {
+                "start": {
+                  "offset": 546,
+                  "line": 12,
+                  "column": 1
+                },
+                "end": {
+                  "offset": 554,
+                  "line": 12,
+                  "column": 9
+                }
+              }
+            },
+            {
+              "section": "ExtHTMLDocument",
+              "type": "HTML_NESTED_TAG",
+              "value": "BUTTON",
+              "attrs": [],
+              "dynamic_attrs": [],
+              "event_attrs": [
+                {
+                  "name": "click",
+                  "value": "DB.save()",
+                  "category": "html_attribute",
+                  "modifiers": [],
+                  "mouse_keys": "",
+                  "keyboard_modifiers_keys": [],
+                  "pos": 0
+                }
+              ],
+              "children": [
+                {
+                  "section": "ExtHTMLDocument",
+                  "type": "TEXT_NODE",
+                  "value": "Save",
+                  "attrs": [],
+                  "event_attrs": [],
+                  "children": [],
+                  "location": {
+                    "start": {
+                      "offset": 581,
+                      "line": 12,
+                      "column": 36
+                    },
+                    "end": {
+                      "offset": 585,
+                      "line": 12,
+                      "column": 40
+                    }
+                  }
+                }
+              ],
+              "location": {
+                "start": {
+                  "offset": 554,
+                  "line": 12,
+                  "column": 9
+                },
+                "end": {
+                  "offset": 594,
+                  "line": 12,
+                  "column": 49
+                }
+              }
+            },
+            {
+              "section": "ExtHTMLDocument",
+              "type": "NEW_LINE",
+              "value": [
+                "\n"
+              ],
+              "attrs": [],
+              "dynamic_attrs": [],
+              "event_attrs": [],
+              "children": [],
+              "location": {
+                "start": {
+                  "offset": 594,
+                  "line": 12,
+                  "column": 49
+                },
+                "end": {
+                  "offset": 595,
+                  "line": 13,
+                  "column": 1
+                }
+              }
+            },
+            {
+              "section": "ExtHTMLDocument",
+              "type": "TEXT_NODE",
+              "value": "    ",
+              "attrs": [],
+              "event_attrs": [],
+              "children": [],
+              "location": {
+                "start": {
+                  "offset": 595,
+                  "line": 13,
+                  "column": 1
+                },
+                "end": {
+                  "offset": 599,
+                  "line": 13,
+                  "column": 5
+                }
+              }
+            }
+          ],
+          "location": {
+            "start": {
+              "offset": 34,
+              "line": 4,
+              "column": 5
+            },
+            "end": {
+              "offset": 606,
+              "line": 13,
+              "column": 12
+            }
+          }
+        },
+        {
+          "section": "ExtHTMLDocument",
+          "type": "NEW_LINE",
+          "value": [
+            "\n"
+          ],
+          "attrs": [],
+          "dynamic_attrs": [],
+          "event_attrs": [],
+          "children": [],
+          "location": {
+            "start": {
+              "offset": 606,
+              "line": 13,
+              "column": 12
+            },
+            "end": {
+              "offset": 607,
+              "line": 14,
+              "column": 1
+            }
+          }
+        }
+      ],
+      "location": {
+        "start": {
+          "offset": 0,
+          "line": 1,
+          "column": 1
+        },
+        "end": {
+          "offset": 614,
+          "line": 14,
+          "column": 8
+        }
+      }
+    }
+  ]

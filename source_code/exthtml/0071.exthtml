@@ -1,0 +1,14 @@
+<html>
+    <head>
+    </head>
+    <body>
+        <input type="text" *mask={Filter:onlyNumbers;Validation:cpf;Filter:cpf} *in={DB::person.cpf;Filter:cpf} *out={DB::person.cpf}/>
+        or
+        <input type="text" *mask={Mask:cpf} *in={DB::person.cpf;Filter:cpf} *out={DB::person.cpf}/>
+        or
+        <input type="text" *in={DB::person.cpf;Mask:cpf} *out={Filter:onlyNumbers;DB::person.cpf}/>
+        or
+        <input type="text" value={Filter:onlyNumbers;Validation:cpf;Filter:cpf} *in={DB::person.cpf;Filter:cpf} *out={DB::person.cpf}/>
+        <button @click={DB.save()}>Save</button>
+    </body>
+</html>

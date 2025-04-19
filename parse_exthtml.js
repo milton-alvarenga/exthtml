@@ -40,6 +40,13 @@ fs.readdir(directoryPath, function(err, files) {
                     return;
                 }
             }
+
+            if (!parser_expected_result || parser_expected_result.length === 0){
+                final_status.total_not_tested++;
+                console.log(filename +':', '\x1b[31m','JSON result File is empty','\x1b[0m');
+                return
+            }
+
             var ast = parser.parse(source_code_content);
 
             try{ 
@@ -48,7 +55,6 @@ fs.readdir(directoryPath, function(err, files) {
                 console.log(filename +':', '\x1b[31m','Parser Error','\x1b[0m');
                 return;
             }
-
             var string_result = JSON.stringify(JSON.parse(parser_expected_result));
             var string_ast = JSON.stringify(ast);
 

@@ -1,0 +1,49 @@
+[
+    {
+      "section": "ExtHTMLDocument",
+      "type": "SELF_CLOSE_TAG",
+      "value": "INPUT",
+      "attrs": [
+        {
+          "name": "type",
+          "value": "text",
+          "category": "html_attribute",
+          "pos": 0
+        }
+      ],
+      "dynamic_attrs": [
+        {
+          "name": "mask",
+          "value": "Filter:onlyNumbers;Validation:cpf;Filter:cpf",
+          "category": "drall_directive",
+          "pos": 1
+        },
+        {
+          "name": "in",
+          "value": "DB::person.cpf;Filter:cpf",
+          "category": "lang_directive",
+          "pos": 2
+        },
+        {
+          "name": "out",
+          "value": "DB::person.cpf",
+          "category": "lang_directive",
+          "pos": 3
+        }
+      ],
+      "event_attrs": [],
+      "children": [],
+      "location": {
+        "start": {
+          "offset": 8,
+          "line": 1,
+          "column": 9
+        },
+        "end": {
+          "offset": 135,
+          "line": 1,
+          "column": 136
+        }
+      }
+    }
+]

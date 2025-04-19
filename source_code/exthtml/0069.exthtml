@@ -1,0 +1,1 @@
+        <input type="text" *in={DB::person.cpf;Mask:cpf} *out={Filter:onlyNumbers;DB::person.cpf}/>

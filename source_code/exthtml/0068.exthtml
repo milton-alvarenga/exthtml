@@ -1,0 +1,1 @@
+        <input type="text" *mask={Mask:cpf} *in={DB::person.cpf;Filter:cpf} *out={DB::person.cpf}/>

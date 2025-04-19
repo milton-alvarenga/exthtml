@@ -1,0 +1,2 @@
+<input type="text" *model={description} *val={required} />
+<button @click={add}>Add</button>

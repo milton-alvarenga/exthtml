@@ -588,8 +588,8 @@ colconstraintelem
 generated_when = "ALWAYS" / "BY" "DEFAULT"
 
 constraintattr
-  = "DEFERRABLE" 
-  / "NOT" "DEFERRABLE" 
+  = "DEFERRABLE"
+  / "NOT" "DEFERRABLE"
   / "INITIALLY" ("DEFERRED" / "IMMEDIATE")
 
 tablelikeclause = "LIKE" qualified_name tablelikeoptionlist
@@ -597,14 +597,14 @@ tablelikeclause = "LIKE" qualified_name tablelikeoptionlist
 tablelikeoptionlist = (("INCLUDING" / "EXCLUDING") tablelikeoption)*
 
 tablelikeoption
-  = "COMMENTS" 
-  / "CONSTRAINTS" 
-  / "DEFAULTS" 
-  / "IDENTITY" 
-  / "GENERATED" 
-  / "INDEXES" 
-  / "STATISTICS" 
-  / "STORAGE" 
+  = "COMMENTS"
+  / "CONSTRAINTS"
+  / "DEFAULTS"
+  / "IDENTITY"
+  / "GENERATED"
+  / "INDEXES"
+  / "STATISTICS"
+  / "STORAGE"
   / "ALL"
 
 tableconstraint = ("CONSTRAINT" name)? constraintelem
@@ -827,7 +827,7 @@ generic_option_arg = sconst
 createforeignserverstmt
     = CREATE SERVER name type_? foreign_server_version_? FOREIGN DATA_P WRAPPER name create_generic_options?
     / CREATE SERVER IF_P NOT EXISTS name type_? foreign_server_version_? FOREIGN DATA_P WRAPPER name create_generic_options?
-  
+
 type_ = TYPE_P sconst
 
 foreign_server_version = VERSION_P (sconst / NULL_P)
@@ -852,24 +852,1023 @@ createusermappingstmt
     = CREATE USER MAPPING FOR auth_ident SERVER name create_generic_options?
     / CREATE USER MAPPING IF_P NOT EXISTS FOR auth_ident SERVER name create_generic_options?
 
-auth_ident
-    = rolespec
-    / USER
+auth_ident = rolespec / USER
+
+dropusermappingstmt
+    = DROP USER MAPPING FOR auth_ident SERVER name
+    / DROP USER MAPPING IF_P EXISTS FOR auth_ident SERVER name
+
+alterusermappingstmt
+    = ALTER USER MAPPING FOR auth_ident SERVER name alter_generic_options
+
+createpolicystmt
+    = CREATE POLICY name ON qualified_name rowsecuritydefaultpermissive? rowsecuritydefaultforcmd? rowsecuritydefaulttorole? rowsecurityoptionalexpr? rowsecurityoptionalwithcheck?
+
+alterpolicystmt = ALTER POLICY name ON qualified_name rowsecurityoptionaltorole? rowsecurityoptionalexpr? rowsecurityoptionalwithcheck?
+
+rowsecurityoptionalexpr = USING OPEN_PAREN a_expr CLOSE_PAREN
+
+rowsecurityoptionalwithcheck = WITH CHECK OPEN_PAREN a_expr CLOSE_PAREN
+
+rowsecuritydefaulttorole = TO role_list
+
+rowsecurityoptionaltorole = TO role_list
+
+rowsecuritydefaultpermissive = AS identifier
+
+rowsecuritydefaultforcmd = FOR row_security_cmd
+
+row_security_cmd
+    = ALL
+    / SELECT
+    / INSERT
+    / UPDATE
+    / DELETE_P
+
+createamstmt = CREATE ACCESS METHOD name TYPE_P am_type HANDLER handler_name
+
+am_type = INDEX  / TABLE
+
+createtrigstmt
+    = CREATE TRIGGER name triggeractiontime triggerevents ON qualified_name triggerreferencing? triggerforspec? triggerwhen? EXECUTE
+        function_or_procedure func_name OPEN_PAREN triggerfuncargs CLOSE_PAREN
+    / CREATE CONSTRAINT TRIGGER name AFTER triggerevents ON qualified_name optconstrfromtable? constraintattributespec FOR EACH ROW triggerwhen? EXECUTE
+        function_or_procedure func_name OPEN_PAREN triggerfuncargs CLOSE_PAREN
+
+triggeractiontime
+    = BEFORE
+    / AFTER
+    / INSTEAD OF
+
+triggerevents = triggeroneevent (OR triggeroneevent)*
+
+triggeroneevent
+    = INSERT
+    / DELETE_P
+    / UPDATE
+    / UPDATE OF columnlist
+    / TRUNCATE
+
+triggerreferencing = REFERENCING triggertransitions
+
+triggertransitions = triggertransition+
+
+triggertransition = transitionoldornew transitionrowortable as_? transitionrelname
+
+transitionoldornew = NEW / OLD
+
+transitionrowortable = TABLE / ROW
+
+transitionrelname = colid
+
+triggerforspec = FOR triggerforopteach? triggerfortype
+
+triggerforopteach = EACH
+
+triggerfortype = ROW / STATEMENT
+
+triggerwhen = WHEN OPEN_PAREN a_expr CLOSE_PAREN
+
+function_or_procedure = FUNCTION / PROCEDURE
+
+triggerfuncargs = (triggerfuncarg (COMMA triggerfuncarg)*)
+
+triggerfuncarg
+    = iconst
+    / fconst
+    / sconst
+    / colLabel
+
+optconstrfromtable = FROM qualified_name
+
+constraintattributespec = constraintattributeElem*
+
+constraintattributeElem
+    = NOT DEFERRABLE
+    / DEFERRABLE
+    / INITIALLY IMMEDIATE
+    / INITIALLY DEFERRED
+    / NOT VALID
+    / NO INHERIT
+
+createeventtrigstmt
+    = CREATE EVENT TRIGGER name ON colLabel EXECUTE function_or_procedure func_name OPEN_PAREN CLOSE_PAREN
+    / CREATE EVENT TRIGGER name ON colLabel WHEN event_trigger_when_list EXECUTE function_or_procedure func_name OPEN_PAREN CLOSE_PAREN
+
+event_trigger_when_list = event_trigger_when_item (AND event_trigger_when_item)*
+
+event_trigger_when_item = colid IN_P OPEN_PAREN event_trigger_value_list CLOSE_PAREN
+
+event_trigger_value_list = sconst (COMMA sconst)*
+
+altereventtrigstmt = ALTER EVENT TRIGGER name enable_trigger
+
+enable_trigger
+    = ENABLE_P
+    / ENABLE_P REPLICA
+    / ENABLE_P ALWAYS
+    / DISABLE_P
+
+createassertionstmt = CREATE ASSERTION any_name CHECK OPEN_PAREN a_expr CLOSE_PAREN constraintattributespec
+
+definestmt
+    = CREATE or_replace_? AGGREGATE func_name aggr_args definition
+    / CREATE or_replace_? AGGREGATE func_name old_aggr_definition
+    / CREATE OPERATOR any_operator definition
+    / CREATE TYPE_P any_name definition
+    / CREATE TYPE_P any_name
+    / CREATE TYPE_P any_name AS OPEN_PAREN opttablefuncelementlist? CLOSE_PAREN
+    / CREATE TYPE_P any_name AS ENUM_P OPEN_PAREN enum_val_list_? CLOSE_PAREN
+    / CREATE TYPE_P any_name AS RANGE definition
+    / CREATE TEXT_P SEARCH PARSER any_name definition
+    / CREATE TEXT_P SEARCH DICTIONARY any_name definition
+    / CREATE TEXT_P SEARCH TEMPLATE any_name definition
+    / CREATE TEXT_P SEARCH CONFIGURATION any_name definition
+    / CREATE COLLATION any_name definition
+    / CREATE COLLATION IF_P NOT EXISTS any_name definition
+    / CREATE COLLATION any_name FROM any_name
+    / CREATE COLLATION IF_P NOT EXISTS any_name FROM any_name
+
+definition = OPEN_PAREN def_list CLOSE_PAREN
+
+def_list = def_elem (COMMA def_elem)*
+
+def_elem = colLabel (EQUAL def_arg)?
+
+def_arg
+    = func_type
+    / reserved_keyword
+    / qual_all_op
+    / numericonly
+    / sconst
+    / NONE
+
+old_aggr_definition = OPEN_PAREN old_aggr_list CLOSE_PAREN
+
+old_aggr_list = old_aggr_elem (COMMA old_aggr_elem)*
+
+old_aggr_elem = identifier EQUAL def_arg
+
+enum_val_list_ = enum_val_list
+
+enum_val_list = sconst (COMMA sconst)*
+
+alterenumstmt
+    = ALTER TYPE_P any_name ADD_P VALUE_P if_not_exists_? sconst
+    / ALTER TYPE_P any_name ADD_P VALUE_P if_not_exists_? sconst BEFORE sconst
+    / ALTER TYPE_P any_name ADD_P VALUE_P if_not_exists_? sconst AFTER sconst
+    / ALTER TYPE_P any_name RENAME VALUE_P sconst TO sconst
+
+if_not_exists_ = IF_P NOT EXISTS
+
+createopclassstmt = CREATE OPERATOR CLASS any_name default_? FOR TYPE_P typename USING name opfamily_? AS opclass_item_list
+
+opclass_item_list = opclass_item (COMMA opclass_item)*
+
+opclass_item
+    = OPERATOR iconst any_operator opclass_purpose? recheck_?
+    / OPERATOR iconst operator_with_argtypes opclass_purpose? recheck_?
+    / FUNCTION iconst function_with_argtypes
+    / FUNCTION iconst OPEN_PAREN type_list CLOSE_PAREN function_with_argtypes
+    / STORAGE typename
+
+default_ = DEFAULT
+
+opfamily_ = FAMILY any_name
+
+opclass_purpose = FOR SEARCH / FOR ORDER BY any_name
+
+recheck_= RECHECK
+
+createopfamilystmt = CREATE OPERATOR FAMILY any_name USING name
+
+alteropfamilystmt
+    = ALTER OPERATOR FAMILY any_name USING name ADD_P opclass_item_list
+    / ALTER OPERATOR FAMILY any_name USING name DROP opclass_drop_list
+
+opclass_drop_list = opclass_drop (COMMA opclass_drop)*
+
+opclass_drop
+    = OPERATOR iconst OPEN_PAREN type_list CLOSE_PAREN
+    / FUNCTION iconst OPEN_PAREN type_list CLOSE_PAREN
+
+dropopclassstmt
+    = DROP OPERATOR CLASS any_name USING name drop_behavior_?
+    / DROP OPERATOR CLASS IF_P EXISTS any_name USING name drop_behavior_?
+
+dropopfamilystmt
+    = DROP OPERATOR FAMILY any_name USING name drop_behavior_?
+    / DROP OPERATOR FAMILY IF_P EXISTS any_name USING name drop_behavior_?
+
+dropownedstmt = DROP OWNED BY role_list drop_behavior_?
+
+reassignownedstmt = REASSIGN OWNED BY role_list TO rolespec
+
+dropstmt
+    = DROP object_type_any_name IF_P EXISTS any_name_list_ drop_behavior_?
+    / DROP object_type_any_name any_name_list_ drop_behavior_?
+    / DROP drop_type_name IF_P EXISTS name_list drop_behavior_?
+    / DROP drop_type_name name_list drop_behavior_?
+    / DROP object_type_name_on_any_name name ON any_name drop_behavior_?
+    / DROP object_type_name_on_any_name IF_P EXISTS name ON any_name drop_behavior_?
+    / DROP TYPE_P type_name_list drop_behavior_?
+    / DROP TYPE_P IF_P EXISTS type_name_list drop_behavior_?
+    / DROP DOMAIN_P type_name_list drop_behavior_?
+    / DROP DOMAIN_P IF_P EXISTS type_name_list drop_behavior_?
+    / DROP INDEX CONCURRENTLY any_name_list_ drop_behavior_?
+    / DROP INDEX CONCURRENTLY IF_P EXISTS any_name_list_ drop_behavior_?
+
+object_type_any_name
+    = TABLE
+    / SEQUENCE
+    / VIEW
+    / MATERIALIZED VIEW
+    / INDEX
+    / FOREIGN TABLE
+    / COLLATION
+    / CONVERSION_P
+    / STATISTICS
+    / TEXT_P SEARCH PARSER
+    / TEXT_P SEARCH DICTIONARY
+    / TEXT_P SEARCH TEMPLATE
+    / TEXT_P SEARCH CONFIGURATION
+
+object_type_name
+    = drop_type_name
+    / DATABASE
+    / ROLE
+    / SUBSCRIPTION
+    / TABLESPACE
+
+drop_type_name
+    = ACCESS METHOD
+    / EVENT TRIGGER
+    / EXTENSION
+    / FOREIGN DATA_P WRAPPER
+    / procedural_? LANGUAGE
+    / PUBLICATION
+    / SCHEMA
+    / SERVER
+
+object_type_name_on_any_name
+    = POLICY
+    / RULE
+    / TRIGGER
+
+any_name_list_ = any_name (COMMA any_name)*
+
+any_name = colid attrs?
+
+attrs = (DOT attr_name)+
+
+type_name_list = typename (COMMA typename)*
+
+truncatestmt = TRUNCATE table_? relation_expr_list restart_seqs_? drop_behavior_?
+
+restart_seqs_ = CONTINUE_P IDENTITY_P / RESTART IDENTITY_P
+
+commentstmt
+    = COMMENT ON object_type_any_name any_name IS comment_text
+    / COMMENT ON COLUMN any_name IS comment_text
+    / COMMENT ON object_type_name name IS comment_text
+    / COMMENT ON TYPE_P typename IS comment_text
+    / COMMENT ON DOMAIN_P typename IS comment_text
+    / COMMENT ON AGGREGATE aggregate_with_argtypes IS comment_text
+    / COMMENT ON FUNCTION function_with_argtypes IS comment_text
+    / COMMENT ON OPERATOR operator_with_argtypes IS comment_text
+    / COMMENT ON CONSTRAINT name ON any_name IS comment_text
+    / COMMENT ON CONSTRAINT name ON DOMAIN_P any_name IS comment_text
+    / COMMENT ON object_type_name_on_any_name name ON any_name IS comment_text
+    / COMMENT ON PROCEDURE function_with_argtypes IS comment_text
+    / COMMENT ON ROUTINE function_with_argtypes IS comment_text
+    / COMMENT ON TRANSFORM FOR typename LANGUAGE name IS comment_text
+    / COMMENT ON OPERATOR CLASS any_name USING name IS comment_text
+    / COMMENT ON OPERATOR FAMILY any_name USING name IS comment_text
+    / COMMENT ON LARGE_P OBJECT_P numericonly IS comment_text
+    / COMMENT ON CAST OPEN_PAREN typename AS typename CLOSE_PAREN IS comment_text
+
+comment_text = sconst / NULL_P
+
+seclabelstmt
+    = SECURITY LABEL provider_? ON object_type_any_name any_name IS security_label
+    / SECURITY LABEL provider_? ON COLUMN any_name IS security_label
+    / SECURITY LABEL provider_? ON object_type_name name IS security_label
+    / SECURITY LABEL provider_? ON TYPE_P typename IS security_label
+    / SECURITY LABEL provider_? ON DOMAIN_P typename IS security_label
+    / SECURITY LABEL provider_? ON AGGREGATE aggregate_with_argtypes IS security_label
+    / SECURITY LABEL provider_? ON FUNCTION function_with_argtypes IS security_label
+    / SECURITY LABEL provider_? ON LARGE_P OBJECT_P numericonly IS security_label
+    / SECURITY LABEL provider_? ON PROCEDURE function_with_argtypes IS security_label
+    / SECURITY LABEL provider_? ON ROUTINE function_with_argtypes IS security_label
+
+provider_ = FOR nonreservedword_or_sconst
+
+security_label = sconst / NULL_P
+
+fetchstmt = FETCH fetch_args  / MOVE fetch_args
+
+fetch_args
+    = cursor_name
+    / from_in cursor_name
+    / NEXT from_in_? cursor_name
+    / PRIOR from_in_? cursor_name
+    / FIRST_P from_in_? cursor_name
+    / LAST_P from_in_? cursor_name
+    / ABSOLUTE_P signediconst from_in_? cursor_name
+    / RELATIVE_P signediconst from_in_? cursor_name
+    / signediconst from_in_? cursor_name
+    / ALL from_in_? cursor_name
+    / FORWARD from_in_? cursor_name
+    / FORWARD signediconst from_in_? cursor_name
+    / FORWARD ALL from_in_? cursor_name
+    / BACKWARD from_in_? cursor_name
+    / BACKWARD signediconst from_in_? cursor_name
+    / BACKWARD ALL from_in_? cursor_name
+
+from_in = FROM / IN_P
+
+from_in_ = from_in
+
+grantstmt = GRANT privileges ON privilege_target TO grantee_list grant_grant_option_?
+
+revokestmt
+    = REVOKE privileges ON privilege_target FROM grantee_list drop_behavior_?
+    / REVOKE GRANT OPTION FOR privileges ON privilege_target FROM grantee_list drop_behavior_?
+
+privileges
+    = privilege_list
+    / ALL
+    / ALL PRIVILEGES
+    / ALL OPEN_PAREN columnlist CLOSE_PAREN
+    / ALL PRIVILEGES OPEN_PAREN columnlist CLOSE_PAREN
+
+privilege_list = privilege (COMMA privilege)*
+
+privilege
+    = SELECT column_list_?
+    / REFERENCES column_list_?
+    / CREATE column_list_?
+    / colid column_list_?
+
+privilege_target
+    = qualified_name_list
+    / TABLE qualified_name_list
+    / SEQUENCE qualified_name_list
+    / FOREIGN DATA_P WRAPPER name_list
+    / FOREIGN SERVER name_list
+    / FUNCTION function_with_argtypes_list
+    / PROCEDURE function_with_argtypes_list
+    / ROUTINE function_with_argtypes_list
+    / DATABASE name_list
+    / DOMAIN_P any_name_list_
+    / LANGUAGE name_list
+    / LARGE_P OBJECT_P numericonly_list
+    / SCHEMA name_list
+    / TABLESPACE name_list
+    / TYPE_P any_name_list_
+    / ALL TABLES IN_P SCHEMA name_list
+    / ALL SEQUENCES IN_P SCHEMA name_list
+    / ALL FUNCTIONS IN_P SCHEMA name_list
+    / ALL PROCEDURES IN_P SCHEMA name_list
+    / ALL ROUTINES IN_P SCHEMA name_list
+
+grantee_list = grantee (COMMA grantee)*
+
+grantee = rolespec / GROUP_P rolespec
+
+grant_grant_option_ = WITH GRANT OPTION
+
+grantrolestmt = GRANT privilege_list TO role_list grant_admin_option_? granted_by_?
+
+revokerolestmt
+    = REVOKE privilege_list FROM role_list granted_by_? drop_behavior_?
+    / REVOKE ADMIN OPTION FOR privilege_list FROM role_list granted_by_? drop_behavior_?
+
+grant_admin_option_ = WITH ADMIN OPTION
+
+granted_by_ = GRANTED BY rolespec
+
+alterdefaultprivilegesstmt = ALTER DEFAULT PRIVILEGES defacloptionlist defaclaction
+
+defacloptionlist = defacloption*
+
+defacloption
+    = IN_P SCHEMA name_list
+    / FOR ROLE role_list
+    / FOR USER role_list
+
+defaclaction
+    = GRANT privileges ON defacl_privilege_target TO grantee_list grant_grant_option_?
+    / REVOKE privileges ON defacl_privilege_target FROM grantee_list drop_behavior_?
+    / REVOKE GRANT OPTION FOR privileges ON defacl_privilege_target FROM grantee_list drop_behavior_?
+
+defacl_privilege_target
+    = TABLES
+    / FUNCTIONS
+    / ROUTINES
+    / SEQUENCES
+    / TYPES_P
+    / SCHEMAS
+
+//create index
+indexstmt
+    = CREATE unique_? INDEX concurrently_? index_name_? ON relation_expr access_method_clause? OPEN_PAREN index_params CLOSE_PAREN include_? reloptions_? opttablespace? where_clause?
+    / CREATE unique_? INDEX concurrently_? IF_P NOT EXISTS name ON relation_expr access_method_clause? OPEN_PAREN index_params CLOSE_PAREN include_? reloptions_? opttablespace? where_clause?
+
+unique_ = UNIQUE
+
+single_name_ = colid
+
+concurrently_ = CONCURRENTLY
+
+index_name_ = name
+
+access_method_clause = USING name
+
+index_params = index_elem (COMMA index_elem)*
+
+index_elem_options
+    = collate_? class_? asc_desc_? nulls_order_?
+    / collate_? any_name reloptions asc_desc_? nulls_order_?
+
+index_elem
+    = colid index_elem_options
+    / func_expr_windowless index_elem_options
+    / OPEN_PAREN a_expr CLOSE_PAREN index_elem_options
+
+include_ = INCLUDE OPEN_PAREN index_including_params CLOSE_PAREN
+
+index_including_params = index_elem (COMMA index_elem)*
+
+collate_ = COLLATE any_name
+
+class_= any_name
+
+asc_desc_ = ASC / DESC
+
+//TOD NULLS_LA was used
+nulls_order_
+    = NULLS_P FIRST_P
+    / NULLS_P LAST_P
+
+createfunctionstmt
+    = CREATE or_replace_? (FUNCTION | PROCEDURE) func_name func_args_with_defaults (
+        RETURNS (func_return | TABLE OPEN_PAREN table_func_column_list CLOSE_PAREN)
+    )? createfunc_opt_list
+
+or_replace_ = OR REPLACE
+
+func_args = OPEN_PAREN func_args_list? CLOSE_PAREN
+
+func_args_list = func_arg (COMMA func_arg)*
+
+function_with_argtypes_list = function_with_argtypes (COMMA function_with_argtypes)*
+
+function_with_argtypes = func_name func_args / type_func_name_keyword / colid indirection?
+
+func_args_with_defaults = OPEN_PAREN func_args_with_defaults_list? CLOSE_PAREN
+
+func_args_with_defaults_list = func_arg_with_default (COMMA func_arg_with_default)*
+
+func_arg
+    = arg_class param_name? func_type
+    / param_name arg_class? func_type
+    / func_type
+
+arg_class
+    = IN_P OUT_P?
+    / OUT_P
+    / INOUT
+    / VARIADIC
+
+param_name = type_function_name
+
+func_return = func_type
+
+func_type = typename / SETOF? type_function_name attrs PERCENT TYPE_P
+
+func_arg_with_default = func_arg ((DEFAULT / EQUAL) a_expr)?
+
+aggr_arg = func_arg
+
+aggr_args
+    = OPEN_PAREN (
+        STAR
+        / aggr_args_list
+        / ORDER BY aggr_args_list
+        / aggr_args_list ORDER BY aggr_args_list
+    ) CLOSE_PAREN
+
+aggr_args_list = aggr_arg (COMMA aggr_arg)*
+
+aggregate_with_argtypes = func_name aggr_args
+
+aggregate_with_argtypes_list = aggregate_with_argtypes (COMMA aggregate_with_argtypes)*
+
+createfunc_opt_list = createfunc_opt_item+
+
+common_func_opt_item
+    = CALLED ON NULL_P INPUT_P
+    / RETURNS NULL_P ON NULL_P INPUT_P
+    / STRICT_P
+    / IMMUTABLE
+    / STABLE
+    / VOLATILE
+    / EXTERNAL SECURITY DEFINER
+    / EXTERNAL SECURITY INVOKER
+    / SECURITY DEFINER
+    / SECURITY INVOKER
+    / LEAKPROOF
+    / NOT LEAKPROOF
+    / COST numericonly
+    / ROWS numericonly
+    / SUPPORT any_name
+    / functionsetresetclause
+    / PARALLEL colid
+
+createfunc_opt_item
+    = AS func_as
+    / LANGUAGE nonreservedword_or_sconst
+    / TRANSFORM transform_type_list
+    / WINDOW
+    / common_func_opt_item
 
 
+//https://www.postgresql.org/docs/9.1/sql-createfunction.html
+//    | AS 'definition'
+//    | AS 'obj_file', 'link_symbol'
 
+func_as = sconst COMMA sconst /* |AS 'definition'*/ def = sconst / AS 'obj_file', 'link_symbol'*/
 
+transform_type_list = FOR TYPE_P typename (COMMA FOR TYPE_P typename)*
 
+definition_ = WITH definition
 
+table_func_column = param_name func_type
 
+table_func_column_list = table_func_column (COMMA table_func_column)*
 
+alterfunctionstmt = ALTER (FUNCTION / PROCEDURE / ROUTINE) function_with_argtypes alterfunc_opt_list restrict_?
 
+alterfunc_opt_list = common_func_opt_item+
 
+restrict_ = RESTRICT
 
+removefuncstmt
+    = DROP FUNCTION function_with_argtypes_list drop_behavior_?
+    / DROP FUNCTION IF_P EXISTS function_with_argtypes_list drop_behavior_?
+    / DROP PROCEDURE function_with_argtypes_list drop_behavior_?
+    / DROP PROCEDURE IF_P EXISTS function_with_argtypes_list drop_behavior_?
+    / DROP ROUTINE function_with_argtypes_list drop_behavior_?
+    / DROP ROUTINE IF_P EXISTS function_with_argtypes_list drop_behavior_?
 
+removeaggrstmt
+    = DROP AGGREGATE aggregate_with_argtypes_list drop_behavior_?
+    / DROP AGGREGATE IF_P EXISTS aggregate_with_argtypes_list drop_behavior_?
 
+removeoperstmt
+    = DROP OPERATOR operator_with_argtypes_list drop_behavior_?
+    / DROP OPERATOR IF_P EXISTS operator_with_argtypes_list drop_behavior_?
 
+oper_argtypes
+    = OPEN_PAREN typename CLOSE_PAREN
+    / OPEN_PAREN typename COMMA typename CLOSE_PAREN
+    / OPEN_PAREN NONE COMMA typename CLOSE_PAREN
+    / OPEN_PAREN typename COMMA NONE CLOSE_PAREN
 
+any_operator = (colid DOT)* all_op
+
+operator_with_argtypes_list = operator_with_argtypes (COMMA operator_with_argtypes)*
+
+operator_with_argtypes = any_operator oper_argtypes
+
+dostmt = DO dostmt_opt_list
+
+dostmt_opt_list = dostmt_opt_item+
+
+dostmt_opt_item = sconst / LANGUAGE nonreservedword_or_sconst
+
+createcaststmt
+    = CREATE CAST OPEN_PAREN typename AS typename CLOSE_PAREN WITH FUNCTION function_with_argtypes cast_context?
+    / CREATE CAST OPEN_PAREN typename AS typename CLOSE_PAREN WITHOUT FUNCTION cast_context?
+    / CREATE CAST OPEN_PAREN typename AS typename CLOSE_PAREN WITH INOUT cast_context?
+
+cast_context = AS IMPLICIT_P / AS ASSIGNMENT
+
+dropcaststmt = DROP CAST if_exists_? OPEN_PAREN typename AS typename CLOSE_PAREN drop_behavior_?
+
+if_exists_ = IF_P EXISTS
+
+createtransformstmt = CREATE or_replace_? TRANSFORM FOR typename LANGUAGE name OPEN_PAREN transform_element_list CLOSE_PAREN
+
+transform_element_list
+    = FROM SQL_P WITH FUNCTION function_with_argtypes COMMA TO SQL_P WITH FUNCTION function_with_argtypes
+    / TO SQL_P WITH FUNCTION function_with_argtypes COMMA FROM SQL_P WITH FUNCTION function_with_argtypes
+    / FROM SQL_P WITH FUNCTION function_with_argtypes
+    / TO SQL_P WITH FUNCTION function_with_argtypes
+
+droptransformstmt = DROP TRANSFORM if_exists_? FOR typename LANGUAGE name drop_behavior_?
+
+reindexstmt
+    = REINDEX reindex_option_list? reindex_target_relation concurrently_? qualified_name
+    / REINDEX reindex_option_list? SCHEMA concurrently_? name
+    / REINDEX reindex_option_list? reindex_target_all concurrently_? single_name_?
+
+reindex_target_relation = INDEX / TABLE
+
+reindex_target_all = SYSTEM_P / DATABASE
+
+reindex_option_list = OPEN_PAREN utility_option_list CLOSE_PAREN
+
+altertblspcstmt
+    = ALTER TABLESPACE name SET reloptions
+    / ALTER TABLESPACE name RESET reloptions
+
+renamestmt
+    = ALTER AGGREGATE aggregate_with_argtypes RENAME TO name
+    / ALTER COLLATION any_name RENAME TO name
+    / ALTER CONVERSION_P any_name RENAME TO name
+    / ALTER DATABASE name RENAME TO name
+    / ALTER DOMAIN_P any_name RENAME TO name
+    / ALTER DOMAIN_P any_name RENAME CONSTRAINT name TO name
+    / ALTER FOREIGN DATA_P WRAPPER name RENAME TO name
+    / ALTER FUNCTION function_with_argtypes RENAME TO name
+    / ALTER GROUP_P roleid RENAME TO roleid
+    / ALTER procedural_? LANGUAGE name RENAME TO name
+    / ALTER OPERATOR CLASS any_name USING name RENAME TO name
+    / ALTER OPERATOR FAMILY any_name USING name RENAME TO name
+    / ALTER POLICY name ON qualified_name RENAME TO name
+    / ALTER POLICY IF_P EXISTS name ON qualified_name RENAME TO name
+    / ALTER PROCEDURE function_with_argtypes RENAME TO name
+    / ALTER PUBLICATION name RENAME TO name
+    / ALTER ROUTINE function_with_argtypes RENAME TO name
+    / ALTER SCHEMA name RENAME TO name
+    / ALTER SERVER name RENAME TO name
+    / ALTER SUBSCRIPTION name RENAME TO name
+    / ALTER TABLE relation_expr RENAME TO name
+    / ALTER TABLE IF_P EXISTS relation_expr RENAME TO name
+    / ALTER SEQUENCE qualified_name RENAME TO name
+    / ALTER SEQUENCE IF_P EXISTS qualified_name RENAME TO name
+    / ALTER VIEW qualified_name RENAME TO name
+    / ALTER VIEW IF_P EXISTS qualified_name RENAME TO name
+    / ALTER MATERIALIZED VIEW qualified_name RENAME TO name
+    / ALTER MATERIALIZED VIEW IF_P EXISTS qualified_name RENAME TO name
+    / ALTER INDEX qualified_name RENAME TO name
+    / ALTER INDEX IF_P EXISTS qualified_name RENAME TO name
+    / ALTER FOREIGN TABLE relation_expr RENAME TO name
+    / ALTER FOREIGN TABLE IF_P EXISTS relation_expr RENAME TO name
+    / ALTER TABLE relation_expr RENAME column_? name TO name
+    / ALTER TABLE IF_P EXISTS relation_expr RENAME column_? name TO name
+    / ALTER VIEW qualified_name RENAME column_? name TO name
+    / ALTER VIEW IF_P EXISTS qualified_name RENAME column_? name TO name
+    / ALTER MATERIALIZED VIEW qualified_name RENAME column_? name TO name
+    / ALTER MATERIALIZED VIEW IF_P EXISTS qualified_name RENAME column_? name TO name
+    / ALTER TABLE relation_expr RENAME CONSTRAINT name TO name
+    / ALTER TABLE IF_P EXISTS relation_expr RENAME CONSTRAINT name TO name
+    / ALTER FOREIGN TABLE relation_expr RENAME column_? name TO name
+    / ALTER FOREIGN TABLE IF_P EXISTS relation_expr RENAME column_? name TO name
+    / ALTER RULE name ON qualified_name RENAME TO name
+    / ALTER TRIGGER name ON qualified_name RENAME TO name
+    / ALTER EVENT TRIGGER name RENAME TO name
+    / ALTER ROLE roleid RENAME TO roleid
+    / ALTER USER roleid RENAME TO roleid
+    / ALTER TABLESPACE name RENAME TO name
+    / ALTER STATISTICS any_name RENAME TO name
+    / ALTER TEXT_P SEARCH PARSER any_name RENAME TO name
+    / ALTER TEXT_P SEARCH DICTIONARY any_name RENAME TO name
+    / ALTER TEXT_P SEARCH TEMPLATE any_name RENAME TO name
+    / ALTER TEXT_P SEARCH CONFIGURATION any_name RENAME TO name
+    / ALTER TYPE_P any_name RENAME TO name
+    / ALTER TYPE_P any_name RENAME ATTRIBUTE name TO name drop_behavior_?
+
+column_ = COLUMN
+
+set_data_ = SET DATA_P
+
+alterobjectdependsstmt
+    = ALTER FUNCTION function_with_argtypes no_? DEPENDS ON EXTENSION name
+    / ALTER PROCEDURE function_with_argtypes no_? DEPENDS ON EXTENSION name
+    / ALTER ROUTINE function_with_argtypes no_? DEPENDS ON EXTENSION name
+    / ALTER TRIGGER name ON qualified_name no_? DEPENDS ON EXTENSION name
+    / ALTER MATERIALIZED VIEW qualified_name no_? DEPENDS ON EXTENSION name
+    / ALTER INDEX qualified_name no_? DEPENDS ON EXTENSION name
+
+no_ = NO
+
+alterobjectschemastmt
+    = ALTER AGGREGATE aggregate_with_argtypes SET SCHEMA name
+    / ALTER COLLATION any_name SET SCHEMA name
+    / ALTER CONVERSION_P any_name SET SCHEMA name
+    / ALTER DOMAIN_P any_name SET SCHEMA name
+    / ALTER EXTENSION name SET SCHEMA name
+    / ALTER FUNCTION function_with_argtypes SET SCHEMA name
+    / ALTER OPERATOR operator_with_argtypes SET SCHEMA name
+    / ALTER OPERATOR CLASS any_name USING name SET SCHEMA name
+    / ALTER OPERATOR FAMILY any_name USING name SET SCHEMA name
+    / ALTER PROCEDURE function_with_argtypes SET SCHEMA name
+    / ALTER ROUTINE function_with_argtypes SET SCHEMA name
+    / ALTER TABLE relation_expr SET SCHEMA name
+    / ALTER TABLE IF_P EXISTS relation_expr SET SCHEMA name
+    / ALTER STATISTICS any_name SET SCHEMA name
+    / ALTER TEXT_P SEARCH PARSER any_name SET SCHEMA name
+    / ALTER TEXT_P SEARCH DICTIONARY any_name SET SCHEMA name
+    / ALTER TEXT_P SEARCH TEMPLATE any_name SET SCHEMA name
+    / ALTER TEXT_P SEARCH CONFIGURATION any_name SET SCHEMA name
+    / ALTER SEQUENCE qualified_name SET SCHEMA name
+    / ALTER SEQUENCE IF_P EXISTS qualified_name SET SCHEMA name
+    / ALTER VIEW qualified_name SET SCHEMA name
+    / ALTER VIEW IF_P EXISTS qualified_name SET SCHEMA name
+    / ALTER MATERIALIZED VIEW qualified_name SET SCHEMA name
+    / ALTER MATERIALIZED VIEW IF_P EXISTS qualified_name SET SCHEMA name
+    / ALTER FOREIGN TABLE relation_expr SET SCHEMA name
+    / ALTER FOREIGN TABLE IF_P EXISTS relation_expr SET SCHEMA name
+    / ALTER TYPE_P any_name SET SCHEMA name
+
+alteroperatorstmt = ALTER OPERATOR operator_with_argtypes SET OPEN_PAREN operator_def_list CLOSE_PAREN
+
+operator_def_list = operator_def_elem (COMMA operator_def_elem)*
+
+operator_def_elem = colLabel EQUAL NONE / colLabel EQUAL operator_def_arg
+
+operator_def_arg
+    = func_type
+    / reserved_keyword
+    / qual_all_op
+    / numericonly
+    / sconst
+
+altertypestmt = ALTER TYPE_P any_name SET OPEN_PAREN operator_def_list CLOSE_PAREN
+
+alterownerstmt
+    = ALTER AGGREGATE aggregate_with_argtypes OWNER TO rolespec
+    / ALTER COLLATION any_name OWNER TO rolespec
+    / ALTER CONVERSION_P any_name OWNER TO rolespec
+    / ALTER DATABASE name OWNER TO rolespec
+    / ALTER DOMAIN_P any_name OWNER TO rolespec
+    / ALTER FUNCTION function_with_argtypes OWNER TO rolespec
+    / ALTER procedural_? LANGUAGE name OWNER TO rolespec
+    / ALTER LARGE_P OBJECT_P numericonly OWNER TO rolespec
+    / ALTER OPERATOR operator_with_argtypes OWNER TO rolespec
+    / ALTER OPERATOR CLASS any_name USING name OWNER TO rolespec
+    / ALTER OPERATOR FAMILY any_name USING name OWNER TO rolespec
+    / ALTER PROCEDURE function_with_argtypes OWNER TO rolespec
+    / ALTER ROUTINE function_with_argtypes OWNER TO rolespec
+    / ALTER SCHEMA name OWNER TO rolespec
+    / ALTER TYPE_P any_name OWNER TO rolespec
+    / ALTER TABLESPACE name OWNER TO rolespec
+    / ALTER STATISTICS any_name OWNER TO rolespec
+    / ALTER TEXT_P SEARCH DICTIONARY any_name OWNER TO rolespec
+    / ALTER TEXT_P SEARCH CONFIGURATION any_name OWNER TO rolespec
+    / ALTER FOREIGN DATA_P WRAPPER name OWNER TO rolespec
+    / ALTER SERVER name OWNER TO rolespec
+    / ALTER EVENT TRIGGER name OWNER TO rolespec
+    / ALTER PUBLICATION name OWNER TO rolespec
+    / ALTER SUBSCRIPTION name OWNER TO rolespec
+
+createpublicationstmt = CREATE PUBLICATION name publication_for_tables_? definition_?
+
+publication_for_tables_ = publication_for_tables
+
+publication_for_tables
+    = FOR TABLE relation_expr_list
+    / FOR ALL TABLES
+
+alterpublicationstmt
+    = ALTER PUBLICATION name SET definition
+    / ALTER PUBLICATION name ADD_P TABLE relation_expr_list
+    / ALTER PUBLICATION name SET TABLE relation_expr_list
+    / ALTER PUBLICATION name DROP TABLE relation_expr_list
+
+createsubscriptionstmt = CREATE SUBSCRIPTION name CONNECTION sconst PUBLICATION publication_name_list definition_?
+
+publication_name_list = publication_name_item (COMMA publication_name_item)*
+
+publication_name_item = colLabel
+
+altersubscriptionstmt
+    = ALTER SUBSCRIPTION name SET definition
+    / ALTER SUBSCRIPTION name CONNECTION sconst
+    / ALTER SUBSCRIPTION name REFRESH PUBLICATION definition_?
+    / ALTER SUBSCRIPTION name SET PUBLICATION publication_name_list definition_?
+    / ALTER SUBSCRIPTION name ENABLE_P
+    / ALTER SUBSCRIPTION name DISABLE_P
+
+dropsubscriptionstmt
+    = DROP SUBSCRIPTION name drop_behavior_?
+    / DROP SUBSCRIPTION IF_P EXISTS name drop_behavior_?
+
+rulestmt = CREATE or_replace_? RULE name AS ON event TO qualified_name where_clause? DO instead_? ruleactionlist
+
+ruleactionlist
+    = NOTHING
+    / ruleactionstmt
+    / OPEN_PAREN ruleactionmulti CLOSE_PAREN
+
+ruleactionmulti = ruleactionstmtOrEmpty? (SEMI ruleactionstmtOrEmpty?)*
+
+ruleactionstmt
+    = selectstmt
+    / insertstmt
+    / updatestmt
+    / deletestmt
+    / notifystmt
+
+ruleactionstmtOrEmpty = ruleactionstmt
+
+event
+    = SELECT
+    / UPDATE
+    / DELETE_P
+    / INSERT
+
+instead_
+    = INSTEAD
+    / ALSO
+
+notifystmt = NOTIFY colid notify_payload?
+
+notify_payload = COMMA sconst
+
+listenstmt = LISTEN colid
+
+unlistenstmt
+    = UNLISTEN colid
+    / UNLISTEN STAR
+
+transactionstmt
+    = ABORT_P transaction_? transaction_chain_?
+    / BEGIN_P transaction_? transaction_mode_list_or_empty?
+    / START TRANSACTION transaction_mode_list_or_empty?
+    / COMMIT transaction_? transaction_chain_?
+    / END_P transaction_? transaction_chain_?
+    / ROLLBACK transaction_? transaction_chain_?
+    / SAVEPOINT colid
+    / RELEASE SAVEPOINT colid
+    / RELEASE colid
+    / ROLLBACK transaction_? TO SAVEPOINT colid
+    / ROLLBACK transaction_? TO colid
+    / PREPARE TRANSACTION sconst
+    / COMMIT PREPARED sconst
+    / ROLLBACK PREPARED sconst
+
+transaction_
+    = WORK
+    / TRANSACTION
+
+transaction_mode_item
+    = ISOLATION LEVEL iso_level
+    / READ ONLY
+    / READ WRITE
+    / DEFERRABLE
+    / NOT DEFERRABLE
+
+transaction_mode_list = transaction_mode_item (COMMA? transaction_mode_item)*
+
+transaction_mode_list_or_empty = transaction_mode_list
+
+transaction_chain_ = AND NO? CHAIN
+
+viewstmt
+    = CREATE (OR REPLACE)? opttemp? (
+        VIEW qualified_name column_list_? reloptions_?
+        / RECURSIVE VIEW qualified_name OPEN_PAREN columnlist CLOSE_PAREN reloptions_?
+    ) AS selectstmt check_option_?
+
+check_option_ = WITH (CASCADED / LOCAL)? CHECK OPTION
+
+loadstmt = LOAD file_name
+
+createdbstmt = CREATE DATABASE name with_? createdb_opt_list?
+
+createdb_opt_list = createdb_opt_items
+
+createdb_opt_items = createdb_opt_item+
+
+createdb_opt_item = createdb_opt_name equal_? (signediconst / boolean_or_string_ / DEFAULT)
+
+createdb_opt_name
+    = identifier
+    / CONNECTION LIMIT
+    / ENCODING
+    / LOCATION
+    / OWNER
+    / TABLESPACE
+    / TEMPLATE
+
+equal_ = EQUAL
+
+alterdatabasestmt = ALTER DATABASE name (WITH createdb_opt_list? / createdb_opt_list? / SET TABLESPACE name)
+
+alterdatabasesetstmt = ALTER DATABASE name setresetclause
+
+dropdbstmt = DROP DATABASE (IF_P EXISTS)? name (with_? OPEN_PAREN drop_option_list CLOSE_PAREN)?
+
+drop_option_list = drop_option (COMMA drop_option)*
+
+drop_option = FORCE
+
+altersystemstmt = ALTER SYSTEM_P (SET / RESET) generic_set
+
+createdomainstmt = CREATE DOMAIN_P any_name as_? typename colquallist
+
+alterdomainstmt
+    = ALTER DOMAIN_P any_name (
+        alter_column_default
+        / DROP NOT NULL_P
+        / SET NOT NULL_P
+        / ADD_P tableconstraint
+        / DROP CONSTRAINT (IF_P EXISTS)? name drop_behavior_?
+        / VALIDATE CONSTRAINT name
+    )
+
+as_ = AS
+
+altertsdictionarystmt = ALTER TEXT_P SEARCH DICTIONARY any_name definition
+
+altertsconfigurationstmt
+    = ALTER TEXT_P SEARCH CONFIGURATION any_name ADD_P MAPPING FOR name_list any_with any_name_list_
+    / ALTER TEXT_P SEARCH CONFIGURATION any_name ALTER MAPPING FOR name_list any_with any_name_list_
+    / ALTER TEXT_P SEARCH CONFIGURATION any_name ALTER MAPPING REPLACE any_name any_with any_name
+    / ALTER TEXT_P SEARCH CONFIGURATION any_name ALTER MAPPING FOR name_list REPLACE any_name any_with any_name
+    / ALTER TEXT_P SEARCH CONFIGURATION any_name DROP MAPPING FOR name_list
+    / ALTER TEXT_P SEARCH CONFIGURATION any_name DROP MAPPING IF_P EXISTS FOR name_list
+
+any_with = WITH
+
+createconversionstmt =  CREATE default_? CONVERSION_P any_name FOR sconst TO sconst FROM any_name
+
+clusterstmt
+    = CLUSTER verbose_? qualified_name cluster_index_specification?
+    / CLUSTER verbose_?
+    / CLUSTER verbose_? name ON qualified_name
+
+cluster_index_specification = USING name
+
+vacuumstmt
+    = VACUUM full_? freeze_? verbose_? analyze_? vacuum_relation_list_?
+    / VACUUM OPEN_PAREN vac_analyze_option_list CLOSE_PAREN vacuum_relation_list_?
+
+analyzestmt
+    = analyze_keyword verbose_? vacuum_relation_list_?
+    / analyze_keyword OPEN_PAREN vac_analyze_option_list CLOSE_PAREN vacuum_relation_list_?
+
+utility_option_list = utility_option_elem ( ',' utility_option_elem)*
+
+vac_analyze_option_list = vac_analyze_option_elem (COMMA vac_analyze_option_elem)*
+
+analyze_keyword = ANALYZE / ANALYSE
+
+utility_option_elem  = utility_option_name utility_option_arg?
+
+utility_option_name
+    = nonreservedword
+    / analyze_keyword
+    / FORMAT_LA
+
+utility_option_arg
+    = boolean_or_string_
+    / numericonly
+
+vac_analyze_option_elem = vac_analyze_option_name vac_analyze_option_arg?
+
+vac_analyze_option_name = nonreservedword / analyze_keyword
+
+vac_analyze_option_arg = boolean_or_string_ / numericonly
+
+analyze_ = analyze_keyword
+
+verbose_ = VERBOSE
+
+full_ = FULL
+
+freeze_ = FREEZE
+
+name_list_ = OPEN_PAREN name_list CLOSE_PAREN
+
+vacuum_relation = qualified_name name_list_?
+
+vacuum_relation_list = vacuum_relation (COMMA vacuum_relation)*
+
+vacuum_relation_list_ = vacuum_relation_list
+
+explainstmt
+    = EXPLAIN explainablestmt
+    / EXPLAIN analyze_keyword verbose_? explainablestmt
+    / EXPLAIN VERBOSE explainablestmt
+    / EXPLAIN OPEN_PAREN explain_option_list CLOSE_PAREN explainablestmt
+
+explainablestmt
+    = selectstmt
+    / insertstmt
+    / updatestmt
+    / deletestmt
+    / declarecursorstmt
+    / createasstmt
+    / creatematviewstmt
+    / refreshmatviewstmt
+    / executestmt
+
+explain_option_list = explain_option_elem (COMMA explain_option_elem)*
 
 
 
@@ -1029,16 +2028,16 @@ HexadecimalIntegral = "0x" digits:Digits { return parseInt(digits.join(""), 16);
 NumericFail = digits:Digits ".." { handleNumericFail(); }
 
 Numeric = digits1:Digits "." digits2:Digits? (
-      "E" sign:[+-]? digits3:Digits { 
+      "E" sign:[+-]? digits3:Digits {
         // Handle scientific notation
       }
     )?
   / "." digits:Digits (
-      "E" sign:[+-]? digits2:Digits { 
+      "E" sign:[+-]? digits2:Digits {
         // Handle scientific notation
       }
     )?
-  / digits:Digits "E" sign:[+-]? digits2:Digits { 
+  / digits:Digits "E" sign:[+-]? digits2:Digits {
       // Handle scientific notation
     }
 
@@ -1132,13 +2131,13 @@ InvalidEscapeStringText = (
     / [^'\\]
     )*
 
-  
+
 // AfterEscapeStringConstantMode
 AfterEscapeStringConstant = (
       Whitespace { return { type: "Whitespace" }; }
-    / Newline { 
+    / Newline {
         // Switch to AfterEscapeStringConstantWithNewlineMode
-        return { type: "Newline" }; 
+        return { type: "Newline" };
       }
     / "" { /* skip and pop mode */ }
     )
@@ -1158,7 +2157,7 @@ AfterEscapeStringConstantWithNewline = (
 
 
 // Maybe there is a problem to string cotaining $ inside. Need to check
-// = (!"$" . / "$" [^0-9])* 
+// = (!"$" . / "$" [^0-9])*
 DollarText = (!"$" . / "$" (!"$" .))*
 
 EndDollarStringConstant = "$" tag:Tag? "$" &{ return isTag(); } { popTag(); return "DOLLAR_STRING_CONSTANT_END"; }

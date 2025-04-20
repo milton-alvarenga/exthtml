@@ -32,7 +32,7 @@ fs.readdir(directoryPath, function(err, files) {
                 final_status.total_not_tested++;
                 if (err.code === 'ENOENT') {
                     // Handle file not found error
-                    console.log(filename +':', '\x1b[31m','JSON result File not found','\x1b[0m');
+                    console.log(filename +':', '\x1b[33m','JSON result File not found','\x1b[0m');
                     return;
                 } else {
                     // Handle other possible errors
@@ -43,7 +43,7 @@ fs.readdir(directoryPath, function(err, files) {
 
             if (!parser_expected_result || parser_expected_result.length === 0){
                 final_status.total_not_tested++;
-                console.log(filename +':', '\x1b[31m','JSON result File is empty','\x1b[0m');
+                console.log(filename +':', '\x1b[33m','JSON result File is empty','\x1b[0m');
                 return
             }
 

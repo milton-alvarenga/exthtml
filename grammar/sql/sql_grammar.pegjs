@@ -1870,6 +1870,457 @@ explainablestmt
 
 explain_option_list = explain_option_elem (COMMA explain_option_elem)*
 
+explain_option_elem = explain_option_name explain_option_arg?
+
+explain_option_name = nonreservedword / analyze_keyword
+
+explain_option_arg = boolean_or_string_ / numericonly
+
+preparestmt = PREPARE name prep_type_clause? AS preparablestmt
+
+prep_type_clause = OPEN_PAREN type_list CLOSE_PAREN
+
+preparablestmt
+    = selectstmt
+    / insertstmt
+    / updatestmt
+    / deletestmt
+
+
+executestmt
+    = EXECUTE name execute_param_clause?
+    / CREATE opttemp? TABLE create_as_target AS EXECUTE name execute_param_clause? with_data_?
+    / CREATE opttemp? TABLE IF_P NOT EXISTS create_as_target AS EXECUTE name execute_param_clause? with_data_?
+
+execute_param_clause = OPEN_PAREN expr_list CLOSE_PAREN
+
+deallocatestmt
+    = DEALLOCATE name
+    / DEALLOCATE PREPARE name
+    / DEALLOCATE ALL
+    / DEALLOCATE PREPARE ALL
+
+insertstmt = with_clause_? INSERT INTO insert_target insert_rest on_conflict_? returning_clause?
+
+insert_target = qualified_name (AS colid)?
+
+insert_rest
+    = selectstmt
+    / OVERRIDING override_kind VALUE_P selectstmt
+    / OPEN_PAREN insert_column_list CLOSE_PAREN (OVERRIDING override_kind VALUE_P)? selectstmt
+    / DEFAULT VALUES
+
+override_kind = USER / SYSTEM_P
+
+insert_column_list = insert_column_item (COMMA insert_column_item)*
+
+insert_column_item = colid opt_indirection
+
+on_conflict_ = ON CONFLICT conf_expr_? DO (UPDATE SET set_clause_list where_clause? / NOTHING)
+
+conf_expr_
+    = OPEN_PAREN index_params CLOSE_PAREN where_clause?
+    / ON CONSTRAINT name
+
+returning_clause = RETURNING target_list
+
+// https://www.postgresql.org/docs/current/sql-merge.html
+mergestmt
+    = MERGE INTO? qualified_name alias_clause? USING (select_with_parens / qualified_name) alias_clause? ON a_expr (
+        merge_insert_clause merge_update_clause?
+        / merge_update_clause merge_insert_clause?
+    ) merge_delete_clause?
+
+merge_insert_clause = WHEN NOT MATCHED (AND a_expr)? THEN? INSERT (OPEN_PAREN insert_column_list CLOSE_PAREN)? values_clause
+
+merge_update_clause = WHEN MATCHED (AND a_expr)? THEN? UPDATE SET set_clause_list
+
+merge_delete_clause = WHEN MATCHED THEN? DELETE_P
+
+deletestmt = with_clause_? DELETE_P FROM relation_expr_opt_alias using_clause? where_or_current_clause? returning_clause?
+
+using_clause = USING from_list
+
+lockstmt = LOCK_P table_? relation_expr_list lock_? nowait_?
+
+lock_ = IN_P lock_type MODE
+
+lock_type
+    = ACCESS (SHARE / EXCLUSIVE)
+    / ROW (SHARE / EXCLUSIVE)
+    / SHARE (UPDATE EXCLUSIVE / ROW EXCLUSIVE)?
+    / EXCLUSIVE
+
+nowait_ = NOWAIT
+
+nowait_or_skip_ = NOWAIT / SKIP_P LOCKED
+
+updatestmt = with_clause_? UPDATE relation_expr_opt_alias SET set_clause_list from_clause? where_or_current_clause? returning_clause?
+
+set_clause_list = set_clause (COMMA set_clause)*
+
+set_clause
+    = set_target EQUAL a_expr
+    / OPEN_PAREN set_target_list CLOSE_PAREN EQUAL a_expr
+
+set_target = colid opt_indirection
+
+set_target_list = set_target (COMMA set_target)*
+
+declarecursorstmt = DECLARE cursor_name cursor_options CURSOR hold_? FOR selectstmt
+
+cursor_name = name
+
+cursor_options = (NO SCROLL / SCROLL / BINARY / INSENSITIVE)*
+
+hold_ = WITH HOLD / WITHOUT HOLD
+
+/*
+TODO: why select_with_parens alternative is needed at all?
+i guess it because original byson grammar can choose selectstmt(2)->select_with_parens on only OPEN_PARENT/SELECT kewords at the begining of statement;
+(select * from tab);
+parse can go through selectstmt( )->select_no_parens(1)->select_clause(2)->select_with_parens(1)->select_no_parens(1)->select_clause(1)->simple_select
+instead of           selectstmt(1)->select_no_parens(1)->select_clause(2)->select_with_parens(1)->select_no_parens(1)->select_clause(1)->simple_select
+all standard tests passed on both variants
+*/
+selectstmt = select_no_parens / select_with_parens
+
+select_with_parens
+    = OPEN_PAREN select_no_parens CLOSE_PAREN
+    / OPEN_PAREN select_with_parens CLOSE_PAREN
+
+select_no_parens
+    = select_clause sort_clause_? (
+        for_locking_clause select_limit_?
+        / select_limit for_locking_clause_?
+    )?
+    / with_clause select_clause sort_clause_? (
+        for_locking_clause select_limit_?
+        / select_limit for_locking_clause_?
+    )?
+
+select_clause = simple_select_intersect ((UNION / EXCEPT) all_or_distinct? simple_select_intersect)*
+
+simple_select_intersect = simple_select_pramary (INTERSECT all_or_distinct? simple_select_pramary)*
+
+simple_select_pramary
+    = (
+        SELECT
+	( all_clause_? target_list_?
+		into_clause? from_clause? where_clause?
+		group_clause? having_clause? window_clause?
+	/ distinct_clause target_list
+		into_clause? from_clause? where_clause?
+		group_clause? having_clause? window_clause?
+        )
+    )
+    / values_clause
+    / TABLE relation_expr
+    / select_with_parens
+
+with_clause = WITH RECURSIVE? cte_list
+
+cte_list = common_table_expr (COMMA common_table_expr)*
+
+common_table_expr = name name_list_? AS materialized_? OPEN_PAREN preparablestmt CLOSE_PAREN
+
+materialized_ = MATERIALIZED / NOT MATERIALIZED
+
+with_clause_ = with_clause
+
+into_clause = INTO opttempTableName
+
+strict_ = STRICT_P
+
+opttempTableName
+    = (LOCAL / GLOBAL)? (TEMPORARY / TEMP) table_? qualified_name
+    / UNLOGGED table_? qualified_name
+    / TABLE qualified_name
+    / qualified_name
+
+table_ = TABLE
+
+all_or_distinct = ALL / DISTINCT
+
+distinct_clause = DISTINCT (ON OPEN_PAREN expr_list CLOSE_PAREN)?
+
+all_clause_ = ALL
+
+sort_clause_ = sort_clause
+
+sort_clause = ORDER BY sortby_list
+
+sortby_list = sortby (COMMA sortby)*
+
+sortby = a_expr (USING qual_all_op / asc_desc_?) nulls_order_?
+
+ select_limit
+    = limit_clause offset_clause?
+    / offset_clause limit_clause?
+
+select_limit_ = select_limit
+
+limit_clause
+    = LIMIT select_limit_value (COMMA select_offset_value)?
+    / FETCH first_or_next (
+        select_fetch_first_value row_or_rows (ONLY / WITH TIES)
+        / row_or_rows (ONLY / WITH TIES)
+    )
+
+offset_clause = OFFSET (select_offset_value / select_fetch_first_value row_or_rows)
+
+select_limit_value = a_expr / ALL
+
+select_offset_value = a_expr
+
+select_fetch_first_value
+    = c_expr
+    / PLUS i_or_f_const
+    / MINUS i_or_f_const
+
+i_or_f_const = iconst / fconst
+
+row_or_rows = ROW / ROWS
+
+first_or_next = FIRST_P / NEXT
+
+group_clause = GROUP_P BY group_by_list
+
+group_by_list = group_by_item (COMMA group_by_item)*
+
+group_by_item
+    = empty_grouping_set
+    / cube_clause
+    / rollup_clause
+    / grouping_sets_clause
+    / a_expr
+
+empty_grouping_set = OPEN_PAREN CLOSE_PAREN
+
+rollup_clause = ROLLUP OPEN_PAREN expr_list CLOSE_PAREN
+
+cube_clause = CUBE OPEN_PAREN expr_list CLOSE_PAREN
+
+grouping_sets_clause = GROUPING SETS OPEN_PAREN group_by_list CLOSE_PAREN
+
+having_clause = HAVING a_expr
+
+for_locking_clause = for_locking_items / FOR READ ONLY
+
+for_locking_clause_ = for_locking_clause
+
+for_locking_items = for_locking_item+
+
+for_locking_item = for_locking_strength locked_rels_list? nowait_or_skip_?
+
+for_locking_strength = FOR ((NO KEY)? UPDATE / KEY? SHARE)
+
+locked_rels_list = OF qualified_name_list
+
+values_clause = VALUES OPEN_PAREN expr_list CLOSE_PAREN (COMMA OPEN_PAREN expr_list CLOSE_PAREN)*
+
+from_clause = FROM from_list
+
+from_list = table_ref (COMMA table_ref)*
+
+table_ref
+    : (
+        relation_expr alias_clause? tablesample_clause?
+        / func_table func_alias_clause?
+        / xmltable alias_clause?
+        / select_with_parens alias_clause?
+        / LATERAL_P (
+            xmltable alias_clause?
+            / func_table func_alias_clause?
+            / select_with_parens alias_clause?
+        )
+        / OPEN_PAREN table_ref (
+            CROSS JOIN table_ref
+            / NATURAL join_type? JOIN table_ref
+            / join_type? JOIN table_ref join_qual
+        )? CLOSE_PAREN alias_clause?
+    ) (
+        CROSS JOIN table_ref
+        / NATURAL join_type? JOIN table_ref
+        / join_type? JOIN table_ref join_qual
+    )*
+
+alias_clause = AS? colid (OPEN_PAREN name_list CLOSE_PAREN)?
+
+func_alias_clause
+    = alias_clause
+    / (AS colid? / colid) OPEN_PAREN tablefuncelementlist CLOSE_PAREN
+
+join_type = (FULL / LEFT / RIGHT / INNER_P) OUTER_P?
+
+join_qual = USING OPEN_PAREN name_list CLOSE_PAREN / ON a_expr
+
+relation_expr = qualified_name STAR? / ONLY (qualified_name / OPEN_PAREN qualified_name CLOSE_PAREN)
+
+relation_expr_list = relation_expr (COMMA relation_expr)*
+
+relation_expr_opt_alias = relation_expr (AS? colid)?
+
+tablesample_clause = TABLESAMPLE func_name OPEN_PAREN expr_list CLOSE_PAREN repeatable_clause_?
+
+repeatable_clause_ = REPEATABLE OPEN_PAREN a_expr CLOSE_PAREN
+
+func_table
+    = func_expr_windowless ordinality_?
+    / ROWS FROM OPEN_PAREN rowsfrom_list CLOSE_PAREN ordinality_?
+
+rowsfrom_item = func_expr_windowless col_def_list_?
+
+rowsfrom_list = rowsfrom_item (COMMA rowsfrom_item)*
+
+col_def_list_ = AS OPEN_PAREN tablefuncelementlist CLOSE_PAREN
+
+//TODO WITH_LA was used
+
+ordinality_ = WITH ORDINALITY
+
+where_clause = WHERE a_expr
+
+where_or_current_clause = WHERE (CURRENT_P OF cursor_name / a_expr)
+
+opttablefuncelementlist = tablefuncelementlist
+
+tablefuncelementlist = tablefuncelement (COMMA tablefuncelement)*
+
+tablefuncelement = colid typename collate_clause_?
+
+xmltable
+    = XMLTABLE OPEN_PAREN (
+        c_expr xmlexists_argument COLUMNS xmltable_column_list
+        / XMLNAMESPACES OPEN_PAREN xml_namespace_list CLOSE_PAREN COMMA c_expr xmlexists_argument COLUMNS xmltable_column_list
+    ) CLOSE_PAREN
+
+xmltable_column_list
+    = xmltable_column_el (COMMA xmltable_column_el)*
+
+xmltable_column_el = colid (typename xmltable_column_option_list? / FOR ORDINALITY)
+
+xmltable_column_option_list = xmltable_column_option_el+
+
+xmltable_column_option_el
+    = DEFAULT a_expr
+    / identifier a_expr
+    / NOT NULL_P
+    / NULL_P
+
+xml_namespace_list = xml_namespace_el (COMMA xml_namespace_el)*
+
+xml_namespace_el
+    = b_expr AS colLabel
+    / DEFAULT b_expr
+
+typename
+    = SETOF? simpletypename
+	( 
+        opt_array_bounds
+	    / ARRAY (OPEN_BRACKET iconst CLOSE_BRACKET)?
+	)
+
+opt_array_bounds = (OPEN_BRACKET iconst? CLOSE_BRACKET)*
+
+simpletypename
+    = generictype
+    / numeric
+    / bit
+    / character
+    / constdatetime
+    / constinterval (interval_? / OPEN_PAREN iconst CLOSE_PAREN)
+    / jsonType
+
+consttypename
+    = numeric
+    / constbit
+    / constcharacter
+    / constdatetime
+    / jsonType
+
+generictype = type_function_name attrs? type_modifiers_?
+
+type_modifiers_ = OPEN_PAREN expr_list CLOSE_PAREN
+
+numeric
+    = INT_P
+    / INTEGER
+    / SMALLINT
+    / BIGINT
+    / REAL
+    / FLOAT_P float_?
+    / DOUBLE_P PRECISION
+    / DECIMAL_P type_modifiers_?
+    / DEC type_modifiers_?
+    / NUMERIC type_modifiers_?
+    / BOOLEAN_P
+
+float_ = OPEN_PAREN iconst CLOSE_PAREN
+
+//todo: merge alts
+
+bit = bitwithlength / bitwithoutlength
+
+constbit = bitwithlength / bitwithoutlength
+
+bitwithlength = BIT varying_? OPEN_PAREN expr_list CLOSE_PAREN
+
+bitwithoutlength = BIT varying_?
+
+character = character_c (OPEN_PAREN iconst CLOSE_PAREN)?
+
+constcharacter = character_c (OPEN_PAREN iconst CLOSE_PAREN)?
+
+character_c
+    = (CHARACTER / CHAR_P / NCHAR) varying_?
+    / VARCHAR
+    / NATIONAL (CHARACTER / CHAR_P) varying_?
+
+varying_ = VARYING
+
+constdatetime = (TIMESTAMP / TIME) (OPEN_PAREN iconst CLOSE_PAREN)? timezone_?
+
+constinterval = INTERVAL
+
+//TODO with_la was used
+
+timezone_
+    = WITH TIME ZONE
+    / WITHOUT TIME ZONE
+
+interval_
+    = YEAR_P
+    / MONTH_P
+    / DAY_P
+    / HOUR_P
+    / MINUTE_P
+    / interval_second
+    / YEAR_P TO MONTH_P
+    / DAY_P TO (HOUR_P / MINUTE_P / interval_second)
+    / HOUR_P TO (MINUTE_P / interval_second)
+    / MINUTE_P TO interval_second
+
+interval_second = SECOND_P (OPEN_PAREN iconst CLOSE_PAREN)?
+
+jsonType = JSON
+
+escape_ = ESCAPE a_expr
+
+
+//precendence accroding to Table 4.2. Operator Precedence (highest to lowest)
+//https://www.postgresql.org/docs/12/sql-syntax-lexical.html#SQL-PRECEDENCE
+
+a_expr = a_expr_qual
+
+
+
+//AQUI
+
+
+
+
+
 
 
 

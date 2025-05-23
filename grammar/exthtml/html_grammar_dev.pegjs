@@ -123,7 +123,7 @@ EventAttribute "event attribute" = ( '@'name:HTMLAttrName event_modifiers:('.'Ev
 
 HTMLDomReferenceDirectiveAttribute = '#'name:HTMLDomVarName __ { return { name: name, value: null, type:"dyn_attr", category: "html_dom_ref_directive"}}
 
-PrimitiveLanguageReservedDirectives = 'if' / 'for' / 'model'
+PrimitiveLanguageReservedDirectives = 'if' / 'for' / 'model' / 'in' / 'out'
 
 NoArgumentsLanguageReservedDirectives = 'forelse'
 

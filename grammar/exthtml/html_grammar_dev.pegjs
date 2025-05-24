@@ -182,7 +182,6 @@ MouseClick = 'left' / 'right' / 'middle'
 EventModifiers = 'stop' / 'prevent' / 'capture' / 'self' / 'once' / 'passive' / 'debounce' / 'throttle'
 
 
-
 /**
  * String - single, double, w/o quotes
  */
@@ -206,9 +205,9 @@ SelfCloseTagName =  'area'i / 'base'i / 'br'i / 'col'i / 'embed'i / 'hr'i / 'img
 
 SelfCloseTagNameHtml5 = 'meta'i / 'param'i / 'source'i / 'track'i / 'wbr'i
 
-HTMLTagName = Html4ExclusivesTagName / Html5TagName
+HTMLTagName = Html4ExclusivesTagName / Html5TagName / SvgElementName
 
-Html4ExclusivesTagName = 'acronym'i / 'applet'i / 'big'i / 'center'i / 'dir'i / 'font'i / 'frameset'i / 'frame'i
+Html4ExclusivesTagName = 'acronym'i / 'applet'i / 'basefont'i / 'big'i / 'center'i / 'dir'i / 'font'i / 'frameset'i / 'frame'i
 	/ 'noframes'i / 'strike'i / 'tt'i
 
 Html5TagName = 'abbr'i / 'address'i / 'area'i / 'article'i / 'aside'i / 'audio'i / 'a'i / 'base'i
@@ -223,6 +222,36 @@ Html5TagName = 'abbr'i / 'address'i / 'area'i / 'article'i / 'aside'i / 'audio'i
     / 'small'i / 'span'i / 'strong'i / 'sub'i / 'summary'i / 'sup'i / 'svg'i / 's'i
     / 'table'i / 'tbody'i / 'td'i / 'template'i / 'tfoot'i / 'th'i / 'thead'i / 'time'i
     / 'tr'i  / 'ul'i / 'u'i / 'var'i / 'video'i
+
+SvgElementName = SvgElementNameShapeElements
+                / SvgElementNameContainerElement
+                / SvgElementNameFilterPrimitives
+                / SvgElementNameAnimationElements
+                / SvgElementNameTextRelatedElements
+                / SvgElementNameFontAndGlyphElements
+                / SvgElementNameOtherSpecializedElements
+
+SvgElementNameShapeElements = 'circle'i / 'ellipse'i / 'line'i / 'path'i / 'polygon'i / 'polyline'i / 'rect'i
+                              / 'image'i
+
+SvgElementNameContainerElement = 'svg'i / 'g'i / 'symbol'i / 'defs'i / 'metadata'i / 'switch'i / 'use'i / 'view'i
+
+SvgElementNameFilterPrimitives = 'feBlend'i / 'feColorMatrix'i / 'feComposite'i
+                                  / 'feComponentTransfer'i / 'feConvolveMatrix'i / 'feDiffuseLighting'i / 'feDisplacementMap'i /  'feDistantLight'i
+                                  / 'feDropShadow'i / 'feFlood'i / 'feFuncA'i / 'feFuncB'i / 'feFuncG'i / 'feFuncR'i / 'feGaussianBlur'i
+                                  / 'feImage'i / 'feMerge'i / 'feMergeNode'i / 'feMorphology'i / 'feOffset'i / 'fePointLight'i / 'feSpecularLighting'i
+                                  / 'feSpotLight'i / 'feTile'i / 'feTurbulence'i
+
+SvgElementNameAnimationElements = 'animate'i / 'animateMotion'i / 'animateTransform'i / 'mpath'i / 'set'i
+
+SvgElementNameTextRelatedElements = 'text'i / 'tspan'i / 'textPath'i / 'tref'i / 'desc'i / 'title'i
+
+SvgElementNameFontAndGlyphElements = 'font'i / 'font-face'i / 'glyph'i / 'missing-glyph'i / 'hkern'i / 'vkern'i
+
+SvgElementNameOtherSpecializedElements = 'clipPath'i / 'mask'i / 'pattern'i / 'marker'i / 'filter'i / 'foreignObject'i / 'mesh'i / 'color-profile'i / 'cursor'i / 'discard'i
+                                        / 'hatch'i / 'hatchpath'i / 'linearGradient'i / 'meshgradient'i / 'meshpatch'i / 'meshrow'i
+                                        / 'radialGradient'i / 'script'i / 'solidcolor'i / 'stop'i / 'style'i
+                                        / 'unknown'i
 
 TagName = $([a-zA-Z_\-] [a-zA-Z0-9:_\-]*)
 

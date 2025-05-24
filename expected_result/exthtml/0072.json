@@ -1,0 +1,106 @@
+[
+    {
+        "section": "ExtHTMLDocument",
+        "type": "SELF_CLOSE_TAG",
+        "value": "INPUT",
+        "attrs": [
+            {
+            "name": "type",
+            "value": "text",
+            "category": "html_attribute",
+            "pos": 0
+            }
+        ],
+        "dynamic_attrs": [
+            {
+            "name": "model",
+            "value": "Description",
+            "category": "lang_directive",
+            "pos": 1
+            },
+            {
+            "name": "val",
+            "value": "required",
+            "category": "drall_directive",
+            "pos": 2
+            }
+        ],
+        "event_attrs": [
+            {
+            "name": "keydown",
+            "value": "Add",
+            "category": "html_attribute",
+            "modifiers": [],
+            "keyboard_keys": [
+                "enter"
+            ],
+            "pos": 3
+            }
+        ],
+        "children": [],
+        "location": {
+            "start": {
+            "offset": 0,
+            "line": 1,
+            "column": 1
+            },
+            "end": {
+            "offset": 79,
+            "line": 1,
+            "column": 80
+            }
+        }
+        },
+        {
+        "section": "ExtHTMLDocument",
+        "type": "HTML_NESTED_TAG",
+        "value": "BUTTON",
+        "attrs": [],
+        "dynamic_attrs": [],
+        "event_attrs": [
+            {
+            "name": "click",
+            "value": "Add",
+            "category": "html_attribute",
+            "modifiers": [],
+            "mouse_keys": "",
+            "keyboard_modifiers_keys": [],
+            "pos": 0
+            }
+        ],
+        "children": [
+            {
+            "section": "ExtHTMLDocument",
+            "type": "TEXT_NODE",
+            "value": "Add",
+            "attrs": [],
+            "event_attrs": [],
+            "children": [],
+            "location": {
+                "start": {
+                "offset": 100,
+                "line": 1,
+                "column": 101
+                },
+                "end": {
+                "offset": 103,
+                "line": 1,
+                "column": 104
+                }
+            }
+            }
+        ],
+        "location": {
+            "start": {
+            "offset": 79,
+            "line": 1,
+            "column": 80
+            },
+            "end": {
+            "offset": 112,
+            "line": 1,
+            "column": 113
+            }
+        }
+    }
+]

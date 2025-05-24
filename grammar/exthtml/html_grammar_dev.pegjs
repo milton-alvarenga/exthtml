@@ -104,7 +104,7 @@ DynamicAttribute "dynamic attribute" = ( name:GlobalBooleanAttribute text:(__ '=
 
 GlobalBooleanAttribute "global_boolean_arg_attribute" = 'disabled'i / 'hidden'i / 'readonly'i
 
-BooleanAttribute "boolean_arg_attribute" = 'allowfullscreen'i / 'async'i / 'autofocus'i / 'autoplay'i / 'checked'i / 'controls'i / 'default'i / 'defer'i / 'formnovalidate'i / 'inert'i / 'ismap'i / 'itemscope'i / 'loop'i / 'multiple'i / 'muted'i / 'nomodule'i / 'novalidate'i / 'open'i / 'playsinline'i / 'required'i / 'reversed'i / 'selected'i / 'shadowrootclonable'i / 'shadowrootdelegatesfocus'i / 'shadowrootserializable'i
+BooleanAttribute "boolean_arg_attribute" = 'allowfullscreen'i / 'allowpaymentrequest'i / 'async'i / 'autofocus'i / 'autoplay'i / 'checked'i / 'controls'i / 'default'i / 'defer'i / 'formnovalidate'i / 'inert'i / 'ismap'i / 'itemscope'i / 'loop'i / 'multiple'i / 'muted'i / 'nomodule'i / 'novalidate'i / 'open'i / 'playsinline'i / 'required'i / 'reversed'i / 'selected'i / 'shadowrootclonable'i / 'shadowrootdelegatesfocus'i / 'shadowrootserializable'i
 
 HTMLDataAttr "data-*" = 'data-' [a-zA-Z_]+([-][a-zA-Z0-9:_])*
 

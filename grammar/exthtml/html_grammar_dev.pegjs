@@ -202,7 +202,9 @@ VariableQuoteString = '{' ch:([^}]*) '}' { return ch.join(""); }
 
 
 SelfCloseTagName =  'area'i / 'base'i / 'br'i / 'col'i / 'embed'i / 'hr'i / 'img'i / 'input'i / 'link'i
-	/ 'meta'i / 'param'i / 'source'i / 'track'i / 'wbr'i / 'command'i / 'keygen'i /'menuitem'i
+	/ 'wbr'i / 'command'i / 'keygen'i /'menuitem'i / SelfCloseTagNameHtml5
+
+SelfCloseTagNameHtml5 = 'meta'i / 'param'i / 'source'i / 'track'i / 'wbr'i
 
 HTMLTagName = Html4ExclusivesTagName / Html5TagName
 
@@ -215,12 +217,12 @@ Html5TagName = 'abbr'i / 'address'i / 'area'i / 'article'i / 'aside'i / 'audio'i
     / 'dfn'i / 'dialog'i / 'div'i / 'dl'i / 'dt'i / 'em'i / 'embed'i / 'fieldset'i / 'figcaption'i
     / 'figure'i / 'footer'i / 'form'i / 'h1'i / 'h2'i / 'h3'i / 'h4'i / 'h5'i / 'h6'i / 'head'i / 'header'i
     / 'hr'i / 'html'i / 'iframe'i / 'img'i / 'input'i / 'ins'i / 'i'i / 'kbd'i / 'label'i / 'legend'i
-    / 'link'i / 'li'i / 'main'i / 'map'i / 'mark'i / 'meta'i / 'meter'i / 'nav'i / 'noscript'i
-    / 'object'i / 'ol'i / 'optgroup'i / 'option'i / 'output'i / 'p'i / 'param'i / 'picture'i / 'pre'i
+    / 'link'i / 'li'i / 'main'i / 'map'i / 'mark'i / 'meter'i / 'nav'i / 'noscript'i
+    / 'object'i / 'ol'i / 'optgroup'i / 'option'i / 'output'i / 'p'i / 'picture'i / 'pre'i
     / 'progress'i / 'q'i / 'rp'i / 'rt'i / 'ruby'i / 'samp'i / 'script'i / 'section'i / 'select'i
-    / 'small'i / 'source'i / 'span'i / 'strong'i / 'sub'i / 'summary'i / 'sup'i / 'svg'i / 's'i
+    / 'small'i / 'span'i / 'strong'i / 'sub'i / 'summary'i / 'sup'i / 'svg'i / 's'i
     / 'table'i / 'tbody'i / 'td'i / 'template'i / 'tfoot'i / 'th'i / 'thead'i / 'time'i
-    / 'track'i / 'tr'i  / 'ul'i / 'u'i / 'var'i / 'video'i / 'wbr'i
+    / 'tr'i  / 'ul'i / 'u'i / 'var'i / 'video'i
 
 TagName = $([a-zA-Z_\-] [a-zA-Z0-9:_\-]*)
 

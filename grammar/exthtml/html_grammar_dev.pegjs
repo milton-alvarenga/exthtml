@@ -83,7 +83,9 @@ Attributes = whitespace attrs:( HTMLDomReferenceDirectiveAttribute / DynamicAttr
 StaticAttribute "attribute" = ( name:GlobalBooleanAttribute text:(__ '=' __ s:DoubleQuoteString)  __ { return { name: name, value: (text && text[3]) ? text[3] : "", type:"attr", category: "html_global_boolean_attribute"}} )
                               / ( name:BooleanAttribute text:(__ '=' __ s:DoubleQuoteString)  __ { return { name: name, value: (text && text[3]) ? text[3] : "", type:"attr", category: "html_boolean_attribute"}} )
                               / ( name:HTMLDataAttr text:(__ '=' __ s:DoubleQuoteString)  __ { return { name: name, value: (text && text[3]) ? text[3] : "", type:"attr", category: "html_data_attribute"}} )
-                              / ( name:GlobalNonBooleanAttribute text:(__ '=' __ s:DoubleQuoteString)  __ { return { name: name, value: (text && text[3]) ? text[3] : "", type:"attr", category: "html_global_non_boolean_attribute"}} )
+                              / ( name:GlobalNonBooleanAttribute text:(__ '=' __ s:DoubleQuoteString) __ { return { name: name, value: (text && text[3]) ? text[3] : "", type:"attr", category: "html_global_non_boolean_attribute"}} )
+                              / ( name: ReadonlyMediaAttr text:( __ '=' __ s:DoubleQuoteString)  __  { return { name: name, value: (text && text[3]) ? text[3] : "", type:"attr", category: "html_media_readonly"}} )
+                              / ( name: ReadonlyVideoAttr text:( __ '=' __ s:DoubleQuoteString)  __  { return { name: name, value: (text && text[3]) ? text[3] : "", type:"attr", category: "html_video_readonly"}} )
                               / ( name:HTMLAttrName text:(__ '=' __ s:DoubleQuoteString)  __ { return { name: name, value: (text && text[3]) ? text[3] : "", type:"attr", category: "html_attribute"}} )
 							                / ( name:AttrName text:(__ '=' __ s:DoubleQuoteString)  __ { return { name: name, value: (text && text[3]) ? text[3] : "", type:"attr", category: "custom_attribute"}} )
                               / ( '*'name:SpecificDrallDirectives text:(__ '=' __ s:DoubleQuoteString) __ { return { name: name, value: (text && text[3]) ? text[3] : "", type:"attr", category: "drall_directive"}} )
@@ -93,6 +95,8 @@ DynamicAttribute "dynamic attribute" = ( name:GlobalBooleanAttribute text:(__ '=
                                        / ( name:BooleanAttribute text:(__ '=' __ s:VariableQuoteString) __ { return { name: name, value: (text && text[3]) ? text[3] : "", type:"dyn_attr", category: "html_boolean_attribute"}} )
                                        / ( name:HTMLDataAttr text:(__ '=' __ s:VariableQuoteString) __ { return { name: name, value: (text && text[3]) ? text[3] : "", type:"dyn_attr", category: "html_data_attribute"}} )
                                        / ( name:GlobalNonBooleanAttribute text:(__ '=' __ s:VariableQuoteString) __ { return { name: name, value: (text && text[3]) ? text[3] : "", type:"dyn_attr", category: "html_global_non_boolean_attribute"}} )
+                                       / ( name: ReadonlyMediaAttr text:( __ '=' __ s:VariableQuoteString)  __  { return { name: name, value: (text && text[3]) ? text[3] : "", type:"dyn_attr", category: "html_media_readonly"}} )
+                                       / ( name: ReadonlyVideoAttr text:( __ '=' __ s:VariableQuoteString)  __  { return { name: name, value: (text && text[3]) ? text[3] : "", type:"dyn_attr", category: "html_video_readonly"}} )
                                        / ( name:HTMLAttrName text:(__ '=' __ s:VariableQuoteString) __ { return { name: name, value: (text && text[3]) ? text[3] : "", type:"dyn_attr", category: "html_attribute"}} )
 									                     / ( '*'name:PrimitiveLanguageReservedDirectives text:(__ '=' __ s:VariableQuoteString) __ { return { name: name, value: (text && text[3]) ? text[3] : "", type:"dyn_attr", category: "lang_directive"}} )
                                        / ( '*'name:SpecificDrallDirectives text:(__ '=' __ s:VariableQuoteString) __ { return { name: name, value: (text && text[3]) ? text[3] : "", type:"dyn_attr", category: "drall_directive"}} )
@@ -105,6 +109,10 @@ DynamicAttribute "dynamic attribute" = ( name:GlobalBooleanAttribute text:(__ '=
 GlobalBooleanAttribute "global_boolean_arg_attribute" = 'disabled'i / 'hidden'i / 'readonly'i
 
 BooleanAttribute "boolean_arg_attribute" = 'allowfullscreen'i / 'allowpaymentrequest'i / 'async'i / 'autofocus'i / 'autoplay'i / 'checked'i / 'controls'i / 'default'i / 'defer'i / 'formnovalidate'i / 'inert'i / 'ismap'i / 'itemscope'i / 'loop'i / 'multiple'i / 'muted'i / 'nomodule'i / 'novalidate'i / 'open'i / 'playsinline'i / 'required'i / 'reversed'i / 'selected'i / 'shadowrootclonable'i / 'shadowrootdelegatesfocus'i / 'shadowrootserializable'i
+
+ReadonlyMediaAttr "read_only_media_attributes" = 'duration'i / 'buffered'i / 'seekable'i / 'played'i / 'seeking'i / 'ended'i / 'readyState'i
+
+ReadonlyVideoAttr "read_only_video_attributes" = 'videoHeight'i / 'videoWidth'i / 'naturalWidth'i / 'naturalHeight'i
 
 HTMLDataAttr "data-*" = 'data-' [a-zA-Z_]+([-][a-zA-Z0-9:_])*
 
@@ -205,6 +213,7 @@ SelfCloseTagName =  'area'i / 'base'i / 'br'i / 'col'i / 'embed'i / 'hr'i / 'img
 
 SelfCloseTagNameHtml5 = 'meta'i / 'param'i / 'source'i / 'track'i / 'wbr'i
 
+/* Check if need to classified by is_void, is_html or is_svg on output */
 HTMLTagName = Html4ExclusivesTagName / Html5TagName / SvgElementName
 
 Html4ExclusivesTagName = 'acronym'i / 'applet'i / 'basefont'i / 'big'i / 'center'i / 'dir'i / 'font'i / 'frameset'i / 'frame'i

@@ -57,6 +57,10 @@ type
         Octal
         Hexadecimal
     enum
+        Example:
+        RED = 1, 'red', 'r'
+        GREEN = 2, 'green', 'g'
+        BLUE = 3, 'blue', 'b
     scope???
     Numeric(precision)
     File

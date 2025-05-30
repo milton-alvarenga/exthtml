@@ -1,0 +1,15 @@
+Create a two-way binding on a form element or a component.
+
+Limited to:
+    <input>
+    <select>
+    <textarea>
+    components
+
+Modifiers:
+    .event
+        :change
+        :input
+        
+
+*model={variable}

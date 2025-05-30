@@ -1,0 +1,12 @@
+<perm-redirect perm="" target="" />
+or
+<perm-redirect *perm={} target="" />
+or
+<perm-redirect perm="" *target={} />
+
+should be
+*perm=""
+or
+perm=""
+or always should be
+*perm={}

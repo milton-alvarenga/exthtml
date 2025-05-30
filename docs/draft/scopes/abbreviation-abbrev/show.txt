@@ -1,3 +1,11 @@
+<div *show={variable} >
+or 
+<div (show)={variable} >
+
+Turn to
+
+<div hidden={variable} >
+
 Show is not a necessary directive. So, it did not exists.
 
 You should use hidden. It is a standard HTML attribute.

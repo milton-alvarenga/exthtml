@@ -1,0 +1,3 @@
+@match = DB.match(match_id = $id);
+@team1 = DB.team(team_id = @match.team1_id);
+@team2 = DB.team(team_id = @match.team2_id);

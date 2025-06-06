@@ -1,4 +1,4 @@
-variable = DB.user[
+@variable = DB::user[
     name = first | ' ' | last
 ](
     deleted = false

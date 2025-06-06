@@ -1,3 +1,0 @@
-match = DB.match($id);
-team1 = DB.team(match.team1_id);
-team2 = DB.team(match.team2_id);

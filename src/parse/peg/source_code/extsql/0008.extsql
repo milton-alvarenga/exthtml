@@ -1,7 +1,7 @@
-datasource = DB.account[
+@datasource = DB::account[
     COUNT(*) AS total,
     country.state
-]($id).order(entity.name ASC)
+](account_id = $id).order(entity.name ASC)
 .groupby(field_identitication,...)
 .limit(#)
 .offset(#)

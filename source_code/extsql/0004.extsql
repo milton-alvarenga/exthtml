@@ -1,1 +1,0 @@
-match = DB.match[COUNT(*) AS total](deleted = false);

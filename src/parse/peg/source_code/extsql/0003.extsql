@@ -1,0 +1,1 @@
+@match = DB::match(match_id = $id AND deleted = false);

@@ -1,1 +1,0 @@
-students = DB:marks[SUM(score) AS total](total > 70).GROUPBY(student);

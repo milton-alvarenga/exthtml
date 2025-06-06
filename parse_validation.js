@@ -1,12 +1,12 @@
 const fs = require("fs");
 const peg = require("peggy");
 
-const grammar_content = fs.readFileSync("./grammar/validation/validation.pegjs", "utf8");
+const grammar_content = fs.readFileSync("./src/parse/peg/grammar/validation/validation.pegjs", "utf8");
 
 const parser = peg.generate(grammar_content);
 
-const directoryPath = "./source_code/validation/";
-const directoryPathResults = "./expected_result/validation/";
+const directoryPath = "./src/parse/peg/source_code/validation/";
+const directoryPathResults = "./src/parse/peg/expected_result/validation/";
 
 fs.readdir(directoryPath, function(err, files) {
     if (err) {

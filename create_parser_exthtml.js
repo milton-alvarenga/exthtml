@@ -1,12 +1,10 @@
 const fs = require("fs");
 const peg = require("peggy");
-const jsonDiff = require('json-diff');
 
 
+const grammar_content = fs.readFileSync("./src/parse/peg/grammar/exthtml/current.pegjs", "utf8");
 
-const grammar_content = fs.readFileSync("./grammar/exthtml/current.pegjs", "utf8");
-
-const parserSource = peg.generate(grammar_content,{output:"source"});
+const parserSource = peg.generate(grammar_content,{output:"source", format: "es"});
 
 // Ensure the output directory exists
 const outputDir = "./dist/exthtml";

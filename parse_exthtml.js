@@ -4,12 +4,12 @@ const jsonDiff = require('json-diff');
 
 
 
-const grammar_content = fs.readFileSync("./grammar/exthtml/current.pegjs", "utf8");
+const grammar_content = fs.readFileSync("./src/parse/peg/grammar/exthtml/current.pegjs", "utf8");
 
 const parser = peg.generate(grammar_content);
 
-const directoryPath = "./source_code/exthtml/";
-const directoryPathResults = "./expected_result/exthtml/";
+const directoryPath = "./src/parse/peg/source_code/exthtml/";
+const directoryPathResults = "./src/parse/peg/expected_result/exthtml/";
 
 let final_status = {
     total_files:0,

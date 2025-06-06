@@ -1,13 +1,13 @@
 {
   "name": "exthtml",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Parser project for an extended version of HTML with native support to basic programming logics",
   "main": "parse_exthtml.js",
   "scripts": {
-    "build": "node create_parser_exthtml.js",
-    "test": "node parse_exthtml.js",
-    "testjs": "node parse_extjs.js",
-    "testval": "node parse_validation.js"
+    "build": "node bin/create_parser_exthtml.js",
+    "test": "node bin/parse_exthtml.js",
+    "testjs": "node bin/parse_extjs.js",
+    "testval": "node bin/parse_validation.js"
   },
   "repository": {
     "type": "git",

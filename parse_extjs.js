@@ -10,10 +10,10 @@ const jsonDiff = require('json-diff');
 
 
 
-const grammar_content = fs.readFileSync("./grammar/exthtml/current.pegjs", "utf8");
+const grammar_content = fs.readFileSync("./src/parse/peg/grammar/exthtml/current.pegjs", "utf8");
 
-const directoryPath = "./source_code/extjs/";
-const directoryPathResults = "./expected_result/extjs/";
+const directoryPath = "./src/parse/peg/source_code/extjs/";
+const directoryPathResults = "./src/parse/peg/expected_result/extjs/";
 
 let final_status = {
     total_files:0,

@@ -1,12 +1,13 @@
-const fs = require("fs");
-const acorn = require("acorn");
-//Use to easily modify the ast
-//const { walk } = require('estree-walker');
-//Use to easily analiyze variable context
-//const { periscopic } = require('periscopic');
-//Use to regenerate source code from AST
-//const { escodegen }= require('escodegen')
-const jsonDiff = require('json-diff');
+import fs from 'fs';
+import acorn from 'acorn';
+// Use to easily modify the AST
+// import { walk } from 'estree-walker';
+// Use to easily analyze variable context
+// import { periscopic } from 'periscopic';
+// Use to regenerate source code from AST
+// import { escodegen } from 'escodegen';
+import jsonDiff from 'json-diff';
+
 
 
 

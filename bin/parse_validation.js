@@ -1,7 +1,8 @@
-const fs = require("fs");
-const peg = require("peggy");
+import fs from 'fs';
+import peg from 'peggy';
 
-const grammar_content = fs.readFileSync("./src/parse/peg/grammar/validation/validation.pegjs", "utf8");
+
+const grammar_content = fs.readFileSync("./src/parse/peg/grammar/validation/validation.peg", "utf8");
 
 const parser = peg.generate(grammar_content);
 

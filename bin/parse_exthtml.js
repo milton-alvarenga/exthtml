@@ -1,7 +1,6 @@
-const fs = require("fs");
-const peg = require("peggy");
-const jsonDiff = require('json-diff');
-
+import fs from 'fs';
+import peg from 'peggy';
+import jsonDiff from 'json-diff';
 
 
 const grammar_content = fs.readFileSync("./src/parse/peg/grammar/exthtml/current.pegjs", "utf8");

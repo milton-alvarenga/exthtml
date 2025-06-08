@@ -1,5 +1,5 @@
-const fs = require("fs");
-const peg = require("peggy");
+import fs from 'fs';
+import peg from 'peggy';
 
 
 const grammar_content = fs.readFileSync("./src/parse/peg/grammar/exthtml/current.pegjs", "utf8");

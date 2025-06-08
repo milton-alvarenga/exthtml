@@ -1,0 +1,10 @@
+<script>
+    let count = 0
+</script>
+<button @click={count++}>Increment</button>
+<p class:red={count<0} class:blue={count>0}>{count}</p>
+<button @click={count--}>Decrement</button>
+<style>
+    .red{color:red}
+    .blue{color:blue}
+</style>

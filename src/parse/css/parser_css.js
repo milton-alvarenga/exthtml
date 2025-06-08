@@ -1,22 +1,16 @@
 import * as csstree from 'css-tree';
 
-export function parseStyle(styles_ast){
-    let output = []
-    for (let i = 0; i < styles_ast.length; i++) {
-        let node = scripts_ast[i]
-        if(
-            node.section != 'ExtHTMLDocument'
-            ||
-            node.type == 'STYLE_TAG'
-        ){
-            throw new Error("Unexpected node on parserStyle.");
-        }
-        const code = node.value
-        let ast = {
-            style: csstree.parse(code)
-        }
+export function parseStyle(style_ast){
+    let node = style_ast
+    if(
+        node.section != 'ExtHTMLDocument'
+        ||
+        node.type != 'STYLE_TAG'
+    ){
+        throw new Error("Unexpected node on parserStyle.");
     }
-    return output
+    const code = node.value
+    return csstree.parse(code).children
 }
 
 // generate CSS from AST

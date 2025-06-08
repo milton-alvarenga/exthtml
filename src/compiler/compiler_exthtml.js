@@ -1,11 +1,20 @@
-import { parse  } from "../parse/exthtml/parser_exthtml"
-import { parseStyle } from "../parse/css/parser_css"
-import { parseScript } from "../parse/js/parser_js"
+import { parse } from "../parse/exthtml/parser_exthtml.js"
+import { parseStyle } from "../parse/css/parser_css.js"
+import { parseScript } from "../parse/js/parser_js.js"
+//import { style } from "../analyse/exthtml/directives/style";
 
 
 export function exthtmlCompile(source_code_content){
     const ast = parse(source_code_content);
-    const {scripts,exthtml,styles} = extract_sfc_contents_parts(ast)
+    let {scripts = [],exthtml = [],styles = []} = extract_sfc_contents_parts(ast)
+    
+
+    let parsedOutput = parseScriptsAndStylesTags(scripts,styles)
+    scripts = parsedOutput[0]
+    styles = parsedOutput[1]
+
+    return [scripts,exthtml,styles]
+
     const analysis = analyse(ast)
     return generate4Web(ast,analysis)
     return {ast:JSON.stringify(ast, null, 4)}
@@ -18,9 +27,22 @@ function extract_sfc_contents_parts(ast){
 
     extractor_sfc_walker(ast, scripts, exthtml, styles)
 
-    console.log("extract_sfc_contents_parts")
     return {scripts, exthtml, styles}
 }
+
+function parseScriptsAndStylesTags(scripts,styles){
+
+    for(let x = 0; x < scripts.length; x++){
+        scripts[x].children = parseScript(scripts[x])
+    }
+    for(let x = 0; x < styles.length; x++){
+        styles[x].children = parseStyle(styles[x])
+
+    }
+    
+    return [scripts,styles]
+}
+
 
 function analyse(ast){
     

@@ -10,6 +10,11 @@ Modifiers:
     .event
         :change
         :input
-        
+
 
 *model={variable}
+
+
+questions
+    can some element have more than one model?
+        NO

@@ -1,3 +1,6 @@
+positional directive
+positional argument
+
 class={css_class:bool}
 class={css_class:bool,css_class2:bool}
     class="css_class css_class2"
@@ -10,3 +13,6 @@ class:css-class={bool}
 or
 class:css-class={bool} class:css-class2={bool}
     class="css-class css-class2"
+
+Object or boolean format. We do not accept dynamic string as it is not able to be checked by static parse
+to alert any non used css rule and remove on final compiled version

@@ -1,3 +1,5 @@
+Unposicional directive
+
 //How to set a variable to have the validation result and a group of variable validated
 <input type="text" *val={required;cpf} />
 

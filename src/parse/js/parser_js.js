@@ -13,7 +13,7 @@ export function parseScript(script_ast){
     }
 
     const code = node.value
-    return acorn.parse(code, { ecmaVersion: 2022 }).body
+    return acorn.parse(code, { ecmaVersion: 2022 })
 }
 
 /*

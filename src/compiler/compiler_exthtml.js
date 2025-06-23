@@ -96,7 +96,7 @@ function analyse(ast) {
         console.log(inspect(map, { depth: null, colors: true, showHidden: true }));
         console.log(inspect(globals, { depth: null, colors: true, showHidden: true }));
 */
-console.log(result)
+console.log(inspect(result, { depth: null, colors: true, showHidden: true }));
     }
 
 }

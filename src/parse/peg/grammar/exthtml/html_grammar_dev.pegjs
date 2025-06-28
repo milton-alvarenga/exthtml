@@ -114,7 +114,7 @@ ReadonlyMediaAttr "read_only_media_attributes" = 'duration'i / 'buffered'i / 'se
 
 ReadonlyVideoAttr "read_only_video_attributes" = 'videoHeight'i / 'videoWidth'i / 'naturalWidth'i / 'naturalHeight'i
 
-HTMLDataAttr "data-*" = 'data-' [a-zA-Z_]+([-][a-zA-Z0-9:_])*
+HTMLDataAttr "data-*" = $('data-' [a-zA-Z_]+([-][a-zA-Z0-9:_])*)
 
 GlobalNonBooleanAttribute "global_non_boolean_attribute" = 'accesskey'i / 'class'i / 'contenteditable'i / 'contextmenu'i / HTMLDataAttr / 'dir'i / 'draggable'i / 'dropzone'i / 'id'i / 'inputmode'i / 'lang'i / 'spellcheck'i / 'style'i / 'tabindex'i / 'title'i / 'translate'i
 

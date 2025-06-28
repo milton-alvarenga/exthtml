@@ -1,0 +1,30 @@
+[
+  {
+    "section": "ExtHTMLDocument",
+    "type": "COMPONENT",
+    "value": "DIV",
+    "attrs": [],
+    "dynamic_attrs": [
+      {
+        "name": "data-example",
+        "value": "how",
+        "category": "html_data_attribute",
+        "pos": 0
+      }
+    ],
+    "event_attrs": [],
+    "children": [],
+    "location": {
+      "start": {
+        "offset": 0,
+        "line": 1,
+        "column": 1
+      },
+      "end": {
+        "offset": 26,
+        "line": 1,
+        "column": 27
+      }
+    }
+  }
+]

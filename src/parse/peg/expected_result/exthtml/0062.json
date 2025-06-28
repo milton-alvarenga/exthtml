@@ -19,6 +19,7 @@
         "type": "TEXT_NODE",
         "value": "Test",
         "attrs": [],
+        "dynamic_attrs": [],
         "event_attrs": [],
         "children": [],
         "location": {

@@ -86,6 +86,7 @@
         "type": "TEXT_NODE",
         "value": "Add",
         "attrs": [],
+        "dynamic_attrs": [],
         "event_attrs": [],
         "children": [],
         "location": {

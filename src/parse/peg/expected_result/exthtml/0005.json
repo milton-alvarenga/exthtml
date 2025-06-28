@@ -4,6 +4,7 @@
       "type": "TEXT_NODE",
       "value": "Está tudo certo com ",
       "attrs": [],
+      "dynamic_attrs": [],
       "event_attrs": [],
       "children": [],
       "location": {
@@ -24,6 +25,7 @@
       "type": "DYNAMIC_TEXT_NODE",
       "value": "texto dynamico aqui",
       "attrs": [],
+      "dynamic_attrs": [],
       "event_attrs": [],
       "children": [],
       "location": {
@@ -44,6 +46,7 @@
       "type": "TEXT_NODE",
       "value": " funcionando?",
       "attrs": [],
+      "dynamic_attrs": [],
       "event_attrs": [],
       "children": [],
       "location": {

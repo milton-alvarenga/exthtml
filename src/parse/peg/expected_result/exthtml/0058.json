@@ -42,6 +42,7 @@
         "type": "TEXT_NODE",
         "value": "\t",
         "attrs": [],
+        "dynamic_attrs": [],
         "event_attrs": [],
         "children": [],
         "location": {
@@ -126,6 +127,7 @@
         "type": "TEXT_NODE",
         "value": "\t",
         "attrs": [],
+        "dynamic_attrs": [],
         "event_attrs": [],
         "children": [],
         "location": {

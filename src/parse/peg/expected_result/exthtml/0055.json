@@ -51,6 +51,7 @@
              "attrs":[
                 
              ],
+             "dynamic_attrs": [],
              "event_attrs":[
                 
              ],
@@ -122,6 +123,7 @@
                    "attrs":[
                       
                    ],
+                   "dynamic_attrs": [],
                    "event_attrs":[
                       
                    ],
@@ -193,6 +195,7 @@
              "attrs":[
                 
              ],
+             "dynamic_attrs": [],
              "event_attrs":[
                 
              ],
@@ -264,6 +267,7 @@
                    "attrs":[
                       
                    ],
+                   "dynamic_attrs": [],
                    "event_attrs":[
                       
                    ],
@@ -304,6 +308,7 @@
                          "attrs":[
                             
                          ],
+                         "dynamic_attrs": [],
                          "event_attrs":[
                             
                          ],
@@ -375,6 +380,7 @@
                    "attrs":[
                       
                    ],
+                   "dynamic_attrs": [],
                    "event_attrs":[
                       
                    ],
@@ -477,6 +483,7 @@
                    "attrs":[
                       
                    ],
+                   "dynamic_attrs": [],
                    "event_attrs":[
                       
                    ],

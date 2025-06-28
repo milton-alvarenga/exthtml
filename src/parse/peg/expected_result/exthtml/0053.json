@@ -12,6 +12,7 @@
             "type": "TEXT_NODE",
             "value": "Your name is ",
             "attrs": [],
+            "dynamic_attrs": [],
             "event_attrs": [],
             "children": [],
             "location": {
@@ -32,6 +33,7 @@
             "type": "DYNAMIC_TEXT_NODE",
             "value": "name",
             "attrs": [],
+            "dynamic_attrs": [],
             "event_attrs": [],
             "children": [],
             "location": {
@@ -89,6 +91,7 @@
       "type": "TEXT_NODE",
       "value": "<input type=\"text\" @click:ctrl.right.alt.stop.prevent=",
       "attrs": [],
+      "dynamic_attrs": [],
       "event_attrs": [],
       "children": [],
       "location": {
@@ -109,6 +112,7 @@
       "type": "DYNAMIC_TEXT_NODE",
       "value": "postForm",
       "attrs": [],
+      "dynamic_attrs": [],
       "event_attrs": [],
       "children": [],
       "location": {
@@ -129,6 +133,7 @@
       "type": "TEXT_NODE",
       "value": " />//right and alt on invalid order. They are inverted\n",
       "attrs": [],
+      "dynamic_attrs": [],
       "event_attrs": [],
       "children": [],
       "location": {

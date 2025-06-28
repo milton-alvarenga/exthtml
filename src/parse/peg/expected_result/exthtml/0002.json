@@ -4,6 +4,7 @@
       "type": "TEXT_NODE",
       "value": "Sou um ",
       "attrs": [],
+      "dynamic_attrs": [],
       "event_attrs": [],
       "children": [],
       "location": {
@@ -24,6 +25,7 @@
       "type": "DYNAMIC_TEXT_NODE",
       "value": "dynamic",
       "attrs": [],
+      "dynamic_attrs": [],
       "event_attrs": [],
       "children": [],
       "location": {
@@ -44,6 +46,7 @@
       "type": "TEXT_NODE",
       "value": " text node",
       "attrs": [],
+      "dynamic_attrs": [],
       "event_attrs": [],
       "children": [],
       "location": {

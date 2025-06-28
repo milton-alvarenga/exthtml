@@ -12,6 +12,7 @@
             "type": "TEXT_NODE",
             "value": "Inner Text",
             "attrs": [],
+            "dynamic_attrs": [],
             "event_attrs": [],
             "children": [],
             "location": {

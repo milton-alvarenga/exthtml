@@ -27,6 +27,7 @@
                   "type": "TEXT_NODE",
                   "value": "Val1",
                   "attrs": [],
+                  "dynamic_attrs": [],
                   "event_attrs": [],
                   "children": [],
                   "location": {

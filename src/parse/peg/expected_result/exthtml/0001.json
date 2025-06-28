@@ -4,6 +4,7 @@
       "type": "TEXT_NODE",
       "value": "Sou um text node",
       "attrs": [],
+      "dynamic_attrs": [],
       "event_attrs": [],
       "children": [],
       "location": {

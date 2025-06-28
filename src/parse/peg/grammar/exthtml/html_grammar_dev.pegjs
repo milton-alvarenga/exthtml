@@ -65,9 +65,9 @@ SelfCloseTag = __ '/>' __
 CloseTag = __ '>' __
 
 
-TextNode "text node" = v:Text { return { section: 'ExtHTMLDocument', type: 'TEXT_NODE', value: v.join(""), attrs:[], event_attrs:[], children:[], location: location() }; }
+TextNode "text node" = v:Text { return { section: 'ExtHTMLDocument', type: 'TEXT_NODE', value: v.join(""), attrs:[], dynamic_attrs:[], event_attrs:[], children:[], location: location() }; }
 
-DynamicTextNode "dynamic text node" =  v:DynamicText { return { section: 'ExtHTMLDocument', type: 'DYNAMIC_TEXT_NODE', value: v, attrs:[], event_attrs:[], children:[], location: location() }; }
+DynamicTextNode "dynamic text node" =  v:DynamicText { return { section: 'ExtHTMLDocument', type: 'DYNAMIC_TEXT_NODE', value: v, attrs:[], dynamic_attrs:[], event_attrs:[], children:[], location: location() }; }
 
 DynamicText "dynamic text" = v:VariableQuoteString { return v; }
 

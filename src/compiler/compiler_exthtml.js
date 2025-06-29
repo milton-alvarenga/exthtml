@@ -1,3 +1,4 @@
+import fs from 'fs/promises';
 import { parse } from "../parse/exthtml/parser_exthtml.js"
 import { parseStyle } from "../parse/css/parser_css.js"
 import { parseScript } from "../parse/js/parser_js.js"
@@ -9,6 +10,16 @@ import { inspect } from 'util';
 //import { style } from "../analyse/exthtml/directives/style";
 
 
+export async function exthtmlCompileFile(filePath){
+    const source_code_content = await fs.readFile(filePath, 'utf8');
+    try {
+        return exthtmlCompile(source_code_content);
+    } catch (err){
+        throw Error(`Error on file ${filePath}`)
+    }
+}
+
+
 export function exthtmlCompile(source_code_content) {
     const ast = parse(source_code_content);
     let { scripts = [], exthtml = [], styles = [] } = extract_sfc_contents_parts(ast)
@@ -17,8 +28,11 @@ console.log(inspect(exthtml, { depth: null, colors: true, showHidden: true }));
     let parsedOutput = parseScriptsAndStylesTags(scripts, styles)
     scripts = parsedOutput[0]
     styles = parsedOutput[1]
-
-    const analysis = analyse(exthtml,scripts)
+    try {
+        const analysis = analyse(exthtml,scripts,styles)
+    } catch (err) {
+        throw Error("")
+    }
     return [scripts, exthtml, styles]
 
 
@@ -49,23 +63,28 @@ function parseScriptsAndStylesTags(scripts, styles) {
 }
 
 
-function analyse(exthtml,scripts) {
-    let ast = scripts
+function analyse(exthtml,scripts,styles) {
     const result = {
         variables: new Set(),
         willChange: new Set(),
         willUseInTemplate: new Set(),
-        reactiveDeclarations: {}
+        reactiveDeclarations: {},
+        code: {
+            vars: [],
+            create: [],
+            update: [],
+            destroy: []
+        }
     }
 
     const reactiveDeclarations = []
     const toRemove = new Set()
 
-    for (let x = 0; x < ast.length; x++) {
-        const { scope, map, globals } = periscopic.analyze(ast[x].children)
+    for (let x = 0; x < scripts.length; x++) {
+        const { scope, map, globals } = periscopic.analyze(scripts[x].children)
         result.variables = new Set(scope.declarations.keys())
 
-        ast[x].children.body.forEach((node, index) => {
+        scripts[x].children.body.forEach((node, index) => {
             if (node.type === 'LabeledStatement' && node.label.name === '$') {
                 toRemove.add(node);
                 const body = node.body;
@@ -90,11 +109,11 @@ function analyse(exthtml,scripts) {
                 reactiveDeclarations.push(reactiveDeclaration);
             }
         });
-        ast[x].children.body = ast[x].children.body.filter((node) => !toRemove.has(node))
+        scripts[x].children.body = scripts[x].children.body.filter((node) => !toRemove.has(node))
         result.reactiveDeclarations = reactiveDeclarations
 
         let currentScope = scope
-        estreewalker.walk(ast[x].children, {
+        estreewalker.walk(scripts[x].children, {
             enter(node) {
                 if (map.has(node)) currentScope = map.get(node);
                 if (
@@ -121,7 +140,7 @@ function analyse(exthtml,scripts) {
             },
         });
 
-        exthtml.forEach(node => traverseExthtml(node))
+        exthtml.forEach(node => traverseExthtml(node, result))
 
         /*
                 console.log(inspect(scope, { depth: null, colors: true, showHidden: true }));
@@ -133,23 +152,28 @@ function analyse(exthtml,scripts) {
 
 }
 
-function traverseExthtml(exthtml){
-    switch(exthtml.type){
-        case 'NEW_LINE':
-        case 'SINGLE_LINE_COMMENT':
-        case 'MULTIPLE_LINE_COMMENT':
-        case 'COMMENT_TEXT':
-        case 'SCRIPT_TAG':
-        case 'STYLE_TAG':
-        case 'TEXT_NODE':
-            return
-        case 'DYNAMIC_TEXT_NODE':
-            exthtml.value
-            return
+function traverseExthtml(exthtml, result){
+    try {
+        switch(exthtml.type){
+            case 'NEW_LINE':
+            case 'SINGLE_LINE_COMMENT':
+            case 'MULTIPLE_LINE_COMMENT':
+            case 'COMMENT_TEXT':
+            case 'SCRIPT_TAG':
+            case 'STYLE_TAG':
+            case 'TEXT_NODE':
+                return
+            case 'DYNAMIC_TEXT_NODE':
+                exthtml.value
+                return
+        }
+        exthtml.children.forEach( node => traverseExthtml(node))
+        exthtml.dynamic_attrs.forEach( dynamicAttr => traverseExthtmlAttr(dynamicAttr))
+        exthtml.event_attrs.forEach( eventAttr => traverseExthtmlEventAttr(eventAttr))
+    } catch ( err ){
+        let errors = [ err, new Error(`${traverseExthtml.name} Error on ${exthtml.type}.${exthtml.value} at line ${exthtml.location.line}`)]
+        throw new AggregateError(errors)
     }
-    exthtml.children.forEach( node => traverseExthtml(node))
-    exthtml.dynamic_attrs.forEach( dynamicAttr => traverseExthtmlAttr(dynamicAttr))
-    exthtml.event_attrs.forEach( eventAttr => traverseExthtmlEventAttr(eventAttr))
 }
 
 function traverseExthtmlAttr(dynamicAttr){
@@ -157,21 +181,29 @@ function traverseExthtmlAttr(dynamicAttr){
         case "html_global_boolean_attribute":
         case "html_boolean_attribute":
             htmlBooleanAttr(dynamicAttr)
-        break;
+        break
         case "html_data_attribute":
             htmlDataAttr(dynamicAttr)
+        break
         case "html_global_non_boolean_attribute":
         case "html_attribute":
             htmlRegularAttr(dynamicAttr)
+        break
         case "html_media_readonly":
         case "html_video_readonly":
             htmlReadOnlyAttr(dynamicAttr)
+        break
         case "custom_attribute":
             htmlMacroAttr(dynamicAttr)
+        break
         case "drall_directive":
             htmlDrallDirective(dynamicAttr)
+        break
         case "macro_directive":
             htmlMacroDirective(dynamicAttr)
+        break
+        default:
+            throw Error(`${traverseExthtmlAttr.name} function: Invalid dynamic attribute on ${dynamicAttr.name} as it is of category ${dynamicAttr.category} not recognized`)
     }
 }
 
@@ -193,8 +225,8 @@ function htmlRegularAttr(dynamicAttr){
     //style
 }
 
-function htmlReadOnlyAttr(dynamic_attrs){
-
+function htmlReadOnlyAttr(dynamicAttr){
+    throw Error(`${htmlReadOnlyAttr.name} function: Invalid dynamic attribute on ${dynamicAttr.name} as it is readonly attribute`)
 }
 
 function htmlMacroAttr(dynamicAttr){
@@ -211,6 +243,13 @@ function htmlMacroDirective(dynamicAttr){
 
 
 function generate4Web(ast, analysis) {
+    const code = {
+        vars: [],
+        create: [],
+        update: [],
+        destroy: []
+    };
+
 
 }
 

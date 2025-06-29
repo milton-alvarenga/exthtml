@@ -15,7 +15,9 @@ export async function exthtmlCompileFile(filePath){
     try {
         return exthtmlCompile(source_code_content);
     } catch (err){
-        throw Error(`Error on file ${filePath}`)
+        err.errors.unshift(new Error(`Error on file ${filePath}`))
+
+        throw new AggregateError(err.errors)
     }
 }
 
@@ -28,11 +30,8 @@ console.log(inspect(exthtml, { depth: null, colors: true, showHidden: true }));
     let parsedOutput = parseScriptsAndStylesTags(scripts, styles)
     scripts = parsedOutput[0]
     styles = parsedOutput[1]
-    try {
-        const analysis = analyse(exthtml,scripts,styles)
-    } catch (err) {
-        throw Error("")
-    }
+
+    const analysis = analyse(exthtml,scripts,styles)
     return [scripts, exthtml, styles]
 
 
@@ -112,8 +111,9 @@ function analyse(exthtml,scripts,styles) {
         scripts[x].children.body = scripts[x].children.body.filter((node) => !toRemove.has(node))
         result.reactiveDeclarations = reactiveDeclarations
 
+
         let currentScope = scope
-        estreewalker.walk(scripts[x].children, {
+        estreewalker.walk(scripts[x].children.body, {
             enter(node) {
                 if (map.has(node)) currentScope = map.get(node);
                 if (
@@ -243,14 +243,6 @@ function htmlMacroDirective(dynamicAttr){
 
 
 function generate4Web(ast, analysis) {
-    const code = {
-        vars: [],
-        create: [],
-        update: [],
-        destroy: []
-    };
-
-
 }
 
 function extractor_sfc_walker(ast, scripts, exthtml, styles, level) {

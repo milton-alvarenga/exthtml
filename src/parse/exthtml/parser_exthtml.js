@@ -1092,8 +1092,8 @@ function peg$parse(input, options) {
   function peg$f19(c) {    return { section: 'ExtHTMLDocument', type: 'SINGLE_LINE_COMMENT', value: c.map(aV =>{ return aV[1]}).join(""), location: location() }  }
   function peg$f20(text) {    return { section: 'ExtHTMLDocument', type: 'MULTIPLE_LINE_COMMENT', value: text.map(aV =>{ return aV[1]}).join(""), location: location() }  }
   function peg$f21(text) {    return text.map(function(v,idx,aOrigin){ return v.join(""); }).join("");  }
-  function peg$f22(v) {    return { section: 'ExtHTMLDocument', type: 'TEXT_NODE', value: v.join(""), attrs:[], event_attrs:[], children:[], location: location() };  }
-  function peg$f23(v) {    return { section: 'ExtHTMLDocument', type: 'DYNAMIC_TEXT_NODE', value: v, attrs:[], event_attrs:[], children:[], location: location() };  }
+  function peg$f22(v) {    return { section: 'ExtHTMLDocument', type: 'TEXT_NODE', value: v.join(""), attrs:[], dynamic_attrs:[], event_attrs:[], children:[], location: location() };  }
+  function peg$f23(v) {    return { section: 'ExtHTMLDocument', type: 'DYNAMIC_TEXT_NODE', value: v, attrs:[], dynamic_attrs:[], event_attrs:[], children:[], location: location() };  }
   function peg$f24(v) {    return v;  }
   function peg$f25(c) {    return c  }
   function peg$f26(c) {    return c  }

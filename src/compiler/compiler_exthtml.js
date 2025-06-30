@@ -9,12 +9,13 @@ import { inspect } from 'util';
 
 //import { style } from "../analyse/exthtml/directives/style";
 
+let __VERSION__ = '0.0.1'
 
-export async function exthtmlCompileFile(filePath){
+export async function exthtmlCompileFile(filePath) {
     const source_code_content = await fs.readFile(filePath, 'utf8');
     try {
         return exthtmlCompile(source_code_content);
-    } catch (err){
+    } catch (err) {
         err.errors.unshift(new Error(`Error on file ${filePath}`))
 
         throw new AggregateError(err.errors)
@@ -26,12 +27,12 @@ export function exthtmlCompile(source_code_content) {
     const ast = parse(source_code_content);
     let { scripts = [], exthtml = [], styles = [] } = extract_sfc_contents_parts(ast)
 
-console.log(inspect(exthtml, { depth: null, colors: true, showHidden: true }));
+    console.log(inspect(exthtml, { depth: null, colors: true, showHidden: true }));
     let parsedOutput = parseScriptsAndStylesTags(scripts, styles)
     scripts = parsedOutput[0]
     styles = parsedOutput[1]
 
-    const analysis = analyse(exthtml,scripts,styles)
+    const analysis = analyse(exthtml, scripts, styles)
     return [scripts, exthtml, styles]
 
 
@@ -62,7 +63,7 @@ function parseScriptsAndStylesTags(scripts, styles) {
 }
 
 
-function analyse(exthtml,scripts,styles) {
+function analyse(exthtml, scripts, styles) {
     const result = {
         variables: new Set(),
         willChange: new Set(),
@@ -71,6 +72,7 @@ function analyse(exthtml,scripts,styles) {
         code: {
             vars: [],
             create: [],
+            mount: [],
             update: [],
             destroy: []
         }
@@ -152,97 +154,121 @@ function analyse(exthtml,scripts,styles) {
 
 }
 
-function traverseExthtml(exthtml, result){
+function traverseExthtml(exthtml, result, parent_nm) {
+    let counter = 1
+    let variableName = ''
     try {
-        switch(exthtml.type){
+        switch (exthtml.type) {
             case 'NEW_LINE':
             case 'SINGLE_LINE_COMMENT':
             case 'MULTIPLE_LINE_COMMENT':
             case 'COMMENT_TEXT':
             case 'SCRIPT_TAG':
             case 'STYLE_TAG':
-            case 'TEXT_NODE':
                 return
             case 'DYNAMIC_TEXT_NODE':
+                variableName = `dyn_txt_${counter++}`
+                result.code.vars.push(variableName)
                 exthtml.value
                 return
+
+            case 'TEXT_NODE':
+                variableName = `txt_${counter++}`
+                result.code.vars.push(variableName)
+                result.code.create.push(`${variableName} = text('${exthtml.value}')`)
+                result.code.mount.push(`append(${parent_nm},${variableName}`)
+                result.code.destroy.push()
+                return
+
+            case 'TEXTAREA_TAG':
+            case 'TITLE_TAG':
+            case 'PLAINTEXT_TAG':
+            case 'HTML_NESTED_TAG':
+            case 'SELF_CLOSE_TAG':
+            case 'COMPONENT':
+
+            break
+            default:
+            throw Error(`${traverseExthtml.name} Error on unexpected type equal ${exthtml.type} and value ${exthtml.value} at line ${exthtml.location.line}`)
         }
-        exthtml.children.forEach( node => traverseExthtml(node))
-        exthtml.dynamic_attrs.forEach( dynamicAttr => traverseExthtmlAttr(dynamicAttr))
-        exthtml.event_attrs.forEach( eventAttr => traverseExthtmlEventAttr(eventAttr))
-    } catch ( err ){
-        let errors = [ err, new Error(`${traverseExthtml.name} Error on ${exthtml.type}.${exthtml.value} at line ${exthtml.location.line}`)]
+        
+        exthtml.children.forEach(node => traverseExthtml(node, result, variableName))
+        exthtml.dynamic_attrs.forEach(dynamicAttr => traverseExthtmlAttr(dynamicAttr))
+        exthtml.event_attrs.forEach(eventAttr => traverseExthtmlEventAttr(eventAttr))
+    } catch (err) {
+        let errors = [err, new Error(`${traverseExthtml.name} Error on ${exthtml.type}.${exthtml.value} at line ${exthtml.location.line}`)]
         throw new AggregateError(errors)
     }
 }
 
-function traverseExthtmlAttr(dynamicAttr){
-    switch(dynamicAttr.category){
+function traverseExthtmlAttr(dynamicAttr) {
+    switch (dynamicAttr.category) {
         case "html_global_boolean_attribute":
         case "html_boolean_attribute":
             htmlBooleanAttr(dynamicAttr)
-        break
+            break
         case "html_data_attribute":
             htmlDataAttr(dynamicAttr)
-        break
+            break
         case "html_global_non_boolean_attribute":
         case "html_attribute":
             htmlRegularAttr(dynamicAttr)
-        break
+            break
         case "html_media_readonly":
         case "html_video_readonly":
             htmlReadOnlyAttr(dynamicAttr)
-        break
+            break
         case "custom_attribute":
             htmlMacroAttr(dynamicAttr)
-        break
+            break
         case "drall_directive":
             htmlDrallDirective(dynamicAttr)
-        break
+            break
         case "macro_directive":
             htmlMacroDirective(dynamicAttr)
-        break
+            break
         default:
             throw Error(`${traverseExthtmlAttr.name} function: Invalid dynamic attribute on ${dynamicAttr.name} as it is of category ${dynamicAttr.category} not recognized`)
     }
 }
 
-function traverseExthtmlEventAttr(eventAttr){
+function traverseExthtmlEventAttr(eventAttr) {
 
 }
 
 
-function htmlBooleanAttr(dynamicAttr){
+function htmlBooleanAttr(dynamicAttr) {
 
 }
 
-function htmlDataAttr(dynamicAttr){
+function htmlDataAttr(dynamicAttr) {
 
 }
 
-function htmlRegularAttr(dynamicAttr){
+function htmlRegularAttr(dynamicAttr) {
     //class
     //style
 }
 
-function htmlReadOnlyAttr(dynamicAttr){
+function htmlReadOnlyAttr(dynamicAttr) {
     throw Error(`${htmlReadOnlyAttr.name} function: Invalid dynamic attribute on ${dynamicAttr.name} as it is readonly attribute`)
 }
 
-function htmlMacroAttr(dynamicAttr){
+function htmlMacroAttr(dynamicAttr) {
 
 }
 
-function htmlDrallDirective(dynamicAttr){
+function htmlDrallDirective(dynamicAttr) {
 
 }
 
-function htmlMacroDirective(dynamicAttr){
+function htmlMacroDirective(dynamicAttr) {
 
 }
 
 
 function generate4Web(ast, analysis) {
+    const banner = `Generated by ExtHTML v${__VERSION__}`
 }
 
 function extractor_sfc_walker(ast, scripts, exthtml, styles, level) {

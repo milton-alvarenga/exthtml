@@ -1,6 +1,5 @@
-import fs from 'fs/promises';
 import path from 'path';
-import { exthtmlCompile } from './src/compiler/compiler_exthtml.js';
+import { exthtmlCompileFile } from './src/compiler/compiler_exthtml.js';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import { inspect } from 'util';
@@ -13,9 +12,7 @@ const filePath = path.join(__dirname, './src/examples/exthtml/increase_decrease/
 
 async function main() {
   try {
-    const source_code_content = await fs.readFile(filePath, 'utf8');
-
-    let [scripts,exthtml,styles] = exthtmlCompile(source_code_content);
+    let [scripts,exthtml,styles] = await exthtmlCompileFile(filePath);
 
     for( let x = 0; x < scripts.length; x++){
         let script = scripts[x]

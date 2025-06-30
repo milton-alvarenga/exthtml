@@ -1,0 +1,151 @@
+//GO Language ORIENTED
+
+package business (vai dar conflito. Precisaria ver como isolar de outros business. No mínimo 1 por página ou 1 por widget (component que é completamente independente))
+
+var Description string
+
+authHeader := r.Header.Get("Authorization")
+//Get user using Authorization header
+
+
+type Task struct {
+    Id int
+    Description string
+    Done bool
+}
+type Tasks []Task
+
+func main(){
+    Tasks := getTasks(user_id)
+}
+
+
+func getTasks(user_id int) Tasks{
+    var tasks Tasks
+    var task Task
+    query := "SELECT id, description, done FROM task WHERE user_id = $1"
+
+    rows,_ = db.Conn.Query(query,user_id)
+    defer rows.Close()
+
+    // Iterate through the rows
+    for rows.Next() {
+        err := rows.Scan(&task.Id, &task.Description, &task.Done)
+        if err != nil {
+            log.Fatal(err)
+        }
+        tasks = append(tasks,task)
+    }
+
+    // Check for errors from iterating over rows
+    if err = rows.Err(); err != nil {
+        log.Fatal(err)
+    }
+    return tasks
+}
+
+func Add(Description string){
+    var id int
+    query := "INSERT INTO task (description) VALUE ($1) RETURNING id"
+
+    db.Conn.QueryRow(query,Description).Scan(&id)
+    /*
+    Description = "" // I did not know how it could be returned to the JS, neither using ws
+    return id //Need to see how js will know where this id should be add
+    */
+    //if Description is global
+    Description = ""
+    Tasks = append(Tasks,Task{Id:id,Description:description, Done: false})
+}
+
+func Update(task Task) bool {
+    query := "UPDATE task SET done = $1 WHERE id = $2"
+    _, err := db.Conn.Exec(query,task.Done,task.Id)
+    return err == nil
+}
+
+func Delete(id int) bool {
+    query = "DELETE FROM task WHERE id = $1"
+    _, err := db.Conn.Exec(query, id)
+
+    return err == nil
+}
+
+
+
+
+Description
+Tasks
+
+Fn
+Add
+Update
+Delete
+
+Tasks = [
+    {
+        Id:
+        Description:
+        Done
+    }
+]
+
+function delete(id){
+    if( confirm("Delete the task?") ){
+        Delete(id)
+    }
+}
+
+
+<html>
+    <head>
+    </head>
+    <body>
+        <input type="text" *model={Description} *val={required} @keydown.enter={Add}><button @click={Add}>Add</button>
+        <ul>
+            <li *for={idx,task in Tasks} class={overwrite:task.Done}>
+                <input type="checkbox" *model={task.Done} @change={Update}/>
+                {task.Description}
+                <button @click={delete(task.Id)}>X</button>
+                <button @click={confirm("Delete the task?") && delete(task.Id)}>X</button>
+            </li>
+            <li *forelse>No task</li>
+    </body>
+</html>
+
+
+
+/Go
+    Business
+        N
+
+
+        Produzir mais, codando menos
+        Menos proud error
+
+Framework
+
+        Front
+            Duplicidade de lógica
+            Monte de código esteril
+                Fetch
+                save/delete/update
+                Sqls
+        Back
+
+
+
+        Front
+            CPF
+                Interação
+                string
+                Formatacao
+                Validacao
+        Back
+            CPF
+                - Formatação e validação
+        DB
+            String
+
+
+

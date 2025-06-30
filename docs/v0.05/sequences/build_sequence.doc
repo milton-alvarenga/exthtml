@@ -1,0 +1,25 @@
+Parse SFC (Single File Component)
+    - Call exthtml generated peggy.js parser
+        - Result: AST
+    Execute over AST:
+        - JS Parser
+            - List of:
+                - Variables
+                    - Shared/exportable used (caps letter. Should check on go language business)
+                    - Pure js
+                - functions
+                    - Shared/exportable used (caps letter. Should check on go language business)
+                    - Pure js
+        - extHTML processor
+            - Is valid extHTML?
+            - List of used css
+                - static
+                - dynamic
+            - List of reactive js variables on template
+            - List of used functions
+                - reactive reading
+                - event
+        - CSS Parser
+            - List of all
+                - classes names
+                - id selectors

@@ -46,10 +46,11 @@ GENERATED CODE:
         }
 
         function rmAttr(elem,name){
-            return elem.parent.removeChild(elem)
         }
 
-        function rmElem(elem)
+        function rmElem(elem){
+            return elem.parent.removeChild(elem)
+        }
 
         function append(parent,elem){
             parent.appendChild(elem)

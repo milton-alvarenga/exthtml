@@ -1,0 +1,102 @@
+//GO Language ORIENTED
+
+package business (vai dar conflito. Precisaria ver como isolar de outros business. No mínimo 1 por página ou 1 por widget (component que é completamente independente))
+
+var Description string
+
+authHeader := r.Header.Get("Authorization")
+//Get user using Authorization header
+
+
+tasks = DB::task(user_id = :user_id:) //extSQL
+
+/*
+Generates
+
+type Task struct {
+    Id int
+    Description string
+    Done bool
+}
+type Tasks []Task
+
+
+Tasks := getTasks(user_id)
+
+
+func getTasks(user_id int) Tasks{
+    var tasks Tasks
+    var task Task
+    query := "SELECT id, description, done FROM task WHERE user_id = $1"
+
+    rows,_ = db.Conn.Query(query,user_id)
+    defer rows.Close()
+
+    // Iterate through the rows
+    for rows.Next() {
+        err := rows.Scan(&task.Id, &task.Description, &task.Done)
+        if err != nil {
+            log.Fatal(err)
+        }
+        tasks = append(tasks,task)
+    }
+
+    // Check for errors from iterating over rows
+    if err = rows.Err(); err != nil {
+        log.Fatal(err)
+    }
+    return tasks
+}
+*/
+
+fn add(){
+    task = DB::Task.new()
+    task.description = description
+    task.save()
+}
+/*
+Generate
+func Add(description string){
+    var id int
+    query := "INSERT INTO task (description) VALUE ($1) RETURNING id"
+
+    db.Conn.QueryRow(query,description).Scan(&id)
+    /*
+    description = "" // I did not know how it could be returned to the JS, neither using ws
+    return id //Need to see how js will know where this id should be add
+    */
+    //if Description is global
+    Description = ""
+    Tasks = append(Tasks,Task{Id:id,Description:description, Done: false})
+}
+*/
+
+task.delete()
+/*
+Generate
+func Delete(id int) bool{
+    query = "DELETE FROM task WHERE id = $1"
+    _, err := db.Conn.Exec(query, id)
+
+    return err == nil
+}
+*/
+
+fn => extHTML
+function => js
+func => go
+
+<html>
+    <head>
+    </head>
+    <body>
+        <input type="text" *model={description} *val={required} @keydown.enter={add}><button @click={add}>Add</button>
+        <ul>
+            <li *for={idx,task in tasks} class={overwrite:task.done}>
+                <input type="checkbox" *model={task.done} @change={task.save()}/>
+                {task.Description}
+                <button @click={confirm("Delete the task?") && task.delete()}>X</button>
+            </li>
+            <li *forelse>No task</li>
+    </body>
+</html>

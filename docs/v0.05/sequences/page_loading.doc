@@ -1,0 +1,35 @@
+- client request the page url
+- main.go
+    - listen the request
+    - check the router system
+    - execute the middleware
+        - call the business in a go routine
+        - call the compiled version of datatml (HTML+JS+CSS)
+        - if the data of business is:
+            - ready, add to ready html and return to the customer
+            - not ready, add a PID to allow the client to request and get the result of the target PID
+- browser
+    - receive the html + js + css
+    - if the data is not loaded, request the api with the PID
+    - when data is load, render the page using JS
+
+
+
+- client request the page url
+    https://dashboard.aquant.com.br/
+    - main.go
+    - listen the request
+    - check the router system
+        Call "/" route
+    - execute the middleware
+        Whick go file and package will be executed by that route
+        - call the business in a go routine
+            //SSR
+            //Load the go routines to be executed
+            - call the compiled version of datatml (HTML+JS+CSS)
+                //Read the static HTML, JS and CSS
+            - if the data of business is:
+
+
+
+PAGE LIFE CYCLE

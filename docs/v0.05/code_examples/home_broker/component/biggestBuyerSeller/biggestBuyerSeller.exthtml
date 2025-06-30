@@ -1,0 +1,19 @@
+export let ticker
+export let class_ //string
+export let top
+export let title
+
+type_op = title == "Comprador" ? "buyer" : "seller"
+
+<div class={class_}>
+    <h3>{top} Maiores {title}</h3>
+    <div *for={i,item in GetTop(type_op,ticker, top)}>
+        <div>{item.name}</div>
+        <div>{item.total}</div>
+        <div>
+            <div class="box">
+                <div class="bar" style={width:item.perc+"%"}>{item.perc}%</div>
+            </div>
+        </div>
+    </div>
+</div>

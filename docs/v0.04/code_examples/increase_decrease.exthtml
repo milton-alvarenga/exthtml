@@ -1,0 +1,165 @@
+SOURCE CODE:
+
+count := 0
+<html>
+    <head>
+    </head>
+    <body>
+        {{count}}
+        <button @click={count++}>Increase</button>
+        <button @click={count--}>Decrease</button>
+    </body>
+</html>
+
+
+<html>
+    <head>
+    </head>
+    <body>
+        {{count}}
+        <button @click={DB::table.nomeDoCampo++}>Increase</button>
+        <button @click={DB::table.nomeDoCampo--}>Decrease</button>
+        <button @click={DB::table.save()}
+        or
+        <button @click={DB.save()}
+    </body>
+</html>
+
+
+
+GENERATED CODE:
+https://github.com/tanhauhau/mini-svelte/tree/master
+<html>
+    <head>
+    </head>
+    <body>
+        <span id="_0">0</span>
+        <button on-click="">Increase</button>
+        <button on-click="">Decrease</button>
+    </body>
+    <script>
+    function page(){
+        let elem_button1;
+        let elem_button2;
+        let elem_button3;
+
+        let elems = [
+            
+        ]
+
+        const code = {
+            variables: [],
+            reactiveDeclarations: [],
+            template: {
+                expressions: [],
+                quasis: [],
+            },
+        };
+
+
+        let vars = {
+            count: {
+                v:[0],
+                ,dependencies:{
+                    variable:[],
+                    components:[],
+                    directives:[]
+                },
+                dependents:{
+                    variable:[],
+                    components:[],
+                    directives:[]
+                }
+            }
+        };
+    }
+        let dirty_queue = {
+            target_var:{
+                generated_by
+            }
+        }
+
+        let changed = [];
+
+
+        import lib/exthtml.js
+
+        function updateVar(operation_fn_of_the_value,['variable_identification_changed'])
+        function updata([var_id1,var_id2,var_id3])
+
+
+        function element(parent,ctx,elem){
+
+        }
+
+        function update_reactive(){
+            if(['var_id1'].some(name=> collectChanges.includes(name))){
+                dependent_var = operation_to_change_using_var_id1
+                update(dependent_var)
+            }
+
+            if(['var_id2'].some(name=> collectChanges.includes(name))){
+                dependent_var2 = operation_to_change_using_var_id2
+
+                dependent_var3 = operation_to_change_using_var_id3
+                update(dependent_var2)
+                update(dependent_var3)
+            }
+
+            Example:
+            if(['foo].some((name)=> collectChanges.includes(name))){
+                bar = foo + 5;
+                update(['bar']);
+            }
+
+            if(['counter','bar'].some((name) => collectChanges.includes(name))) {
+                double = counter * 2 + bar;
+                update(['double'])
+            }
+        }
+
+        function component(parent,ctx,elem){
+            let elem = null;
+            let parent = parent
+            let is_hydratate = false;
+
+            let updatedCalled = false
+
+            return {
+                create:function(parent){
+                    if(elem) return;
+                    if (is_hydratate){
+                        hydratate()
+                        or
+                        elem = parent.childNodes[0];
+                        elem2 = parent.childNodes[1];
+                        elem2.addEventListener???? or inline???
+                        elem3 = parent.childNodes[2];
+                    } else {
+                        elem = append(parent,el('tag_name'))
+                    }
+
+                },
+                mount:???
+                update:function(changed???){
+                    if(updatedCalled) return;
+                    updatedCalled = true;
+
+                    if (typeof lifecycles != 'undefined') lifecycles.update(collectChanges)
+                    update_reactive();
+                    updatedCalled = false;
+                },
+                destroy:function(parent){
+                    parent.removeEventListener('event',fn)
+                    parent.removeChild(elem)
+                    parent.removeChild(elem)
+                    parent.removeChild(elem)
+                },
+                hydratate:function(){
+                    elem = getById("_0")
+                }
+            }
+        }
+        vars[0].dependencies.components.append()
+    </script>
+</html>

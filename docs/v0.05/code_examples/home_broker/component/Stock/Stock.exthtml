@@ -1,0 +1,47 @@
+//Component.datatml
+import {maskMoney} FROM "./util/money"
+
+let change = (Price - OpeningPrice) * 100 / OpeningPrice
+
+export let ticker = ""
+Ticker = ticker
+
+ticker_editable = false
+
+function load () {
+}
+
+*if
+*for
+*model
+    *in
+    *out
+
+<div>
+    <span *if={!ticker_editable}>{Ticker}</span>
+    <input *if(ticker_editable} *model={Ticker} @change={load}/>
+    <span>Ultimo Preço</span>
+    {{Price}}
+    <div><i class={down: Price < OpeningPrice,up: Price > OpeningPrice}></i>{change} - {Change}</div>
+    <div>
+        <span>Melhor Oferta de Compra:</span>
+        <span>R$ {maskMoney(BestOfferBuy)}</span>
+    </div>
+    <div>
+        <span>Melhor Oferta de Venda:</span>
+        <span>R$ {maskMoney(BestOfferSell)}</span>
+    </div>        
+</div>
+
+<style>
+</style>
+
+Vue + Svelte + Go
+
+Memory
+    - Client
+    - Server
+
+Onde é feito o processamento:
+    - JS
+    - Go

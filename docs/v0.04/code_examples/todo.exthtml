@@ -21,7 +21,7 @@ fn add(){
         <input type="text" *model={description} *val={required}><button @click={add}>Add</button>
         <ul>
             <li *for={idx,task in tasks} class={overwrite:task.done}>
-                <input type="checkbox" *model={task.done}>
+                <input type="checkbox" *model={task.done} />
                 {task.v}
                 <button @click={confirm("Delete the task?") && task.delete()}>X</button>
             </li>
@@ -53,7 +53,7 @@ fn add(){
         <input type="text" *model={description} *val={required}><button @click={add}>Add</button>
         <ul>
             <li *for={idx,task in tasks} class={overwrite:task.done}>
-                <input type="checkbox" *model={task.done}>
+                <input type="checkbox" *model={task.done} />
                 {task.v}
                 <button @click={confirm("Delete the task?") && task.delete()}>X</button>
             </li>

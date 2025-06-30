@@ -1,0 +1,4 @@
+- Create page route on main.go using datatml (Data Template Markup Language)
+- On template, indicate the datatml file
+- Code datatml page
+- Code it business logic

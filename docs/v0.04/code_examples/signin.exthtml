@@ -1,0 +1,13 @@
+fn sign_in(){
+    user := DB::user(email = :l: AND password= :k:)
+}
+
+<html>
+    <head>
+    </head>
+    <body>
+        <input type="text" *model={l} />
+        <input type="password" *model={k} />
+        <button @click={sign_in}>Sign in</button>
+    </body>
+</html>

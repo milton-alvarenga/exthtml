@@ -1,0 +1,225 @@
+How the router will works?
+
+    By file
+    set the router on main.go
+    Go router
+        - datatml middleware
+            - call go business logic as goroutine
+            - read the compiled html+js+css page
+            - Is business logic processed?
+                - Yes: Save the result data on html
+                - No: Save the pid of business logic processment on html
+            - Send the html to the customer
+            - if pid on html, connect to the server and wait to the end of processing to get the data
+            - if it has the data, render the page
+
+
+project-root/
+    ├── cmd/                    # Application entry points (main packages)
+    │   └── appname/
+    │         └── main.go
+    ├── internal/               # Private packages, only for this module
+    │      ├── config/
+    │      ├── database/
+    │      └── service/
+    ├── pkg/                    # Public reusable packages (can be imported by others)
+    │    ├── utils/
+    │    └── logger/
+    │
+    ├── api/                    # API handlers, middleware, protobuf, etc.
+    │   ├── handler/
+    │   │   ├── user.go         # HTTP handlers for user-related endpoints
+    │   │   ├── auth.go         # Authentication handlers
+    │   │   └── handler.go      # Common handler utilities
+    │   ├── middleware/
+    │   │   ├── logging.go      # Request logging middleware
+    │   │   ├── auth.go         # Middleware for authentication/authorization
+    │   │   └── middleware.go   # Other middleware functions
+    │   ├── router.go           # Router setup and route registration
+    │   └── api.go              # API initialization, server start logic
+    │
+    ├── web/                    # Frontend assets, templates
+    │   ├── dist/ # built files and exposed by web.go
+    │   │ 
+    │   ├── static/
+    │   │   ├── css/
+    │   │   │   └── style.css   # CSS files
+    │   │   ├── js/
+    │   │   │   └── app.js      # JavaScript files
+    │   │   └── images/
+    │   │       └── logo.png    # Image assets
+    │   ├── layout/
+    │   ├── pages/
+    │   │   ├── contact.datatml # Contact extHTML+go source code
+    │   │   ├── index.datatml   # Homepage extHTML+go source code
+    │   │   └── user.datatml    # User-related extHTML+go source code
+    │   ├── components/
+    │   ├── business/ (Should be per page or per component?)
+    │   │   ├── contact.go      # Contact go pages function
+    │   │   ├── index.go        # Homepage go pages function
+    │   │   └── user.go         # User-related go pages function
+    │   └── web.go              # Code to serve dist files and built pages linked to it business logic
+    ├── scripts/                # Build and deployment scripts
+    ├── configs/                # Configuration files
+    └── go.mod
+
+
+    Validation
+    Formatacao
+
+    Memory é sempre database format
+    CPF
+    CPF=>
+
+    CEP
+    JS
+    php
+    banco
+
+
+
+
+
+
+
+-----------------------
+Draft candidates
+
+
+    By directory
+
+    route: /contact
+    directory: /pages/contact
+
+    route: /contact/{id}
+    route: /contact/{id}/email
+    route: /contact/{id}/email/{id}
+    route: /contact/{id}/address
+    route: /contact/{id}/address/{id}
+    directory: /pages/contact
+
+
+
+
+/
+|
+|── pages (package pages)
+│      ├── 
+│      ├── 
+│      └── 
+│           └── 
+│                └── 
+│                    └── 
+├── business (package business)
+│
+├── api (package api)
+│
+├── 
+│    
+├── 
+├── 
+├── 
+├── 
+└── main.go
+
+
+
+project-root/
+    ├── cmd/                    # Application entry points (main packages)
+    │   └── appname/
+    │         └── main.go
+    ├── internal/               # Private packages, only for this module
+    │      ├── config/
+    │      ├── database/
+    │      └── service/
+    ├── pkg/                    # Public reusable packages (can be imported by others)
+    │    ├── utils/
+    │    └── logger/
+    │
+    ├── api/                    # API handlers, middleware, protobuf, etc.
+    │   ├── handler/
+    │   │   ├── user.go         # HTTP handlers for user-related endpoints
+    │   │   ├── auth.go         # Authentication handlers
+    │   │   └── handler.go      # Common handler utilities
+    │   ├── middleware/
+    │   │   ├── logging.go      # Request logging middleware
+    │   │   ├── auth.go         # Middleware for authentication/authorization
+    │   │   └── middleware.go   # Other middleware functions
+    │   ├── router.go           # Router setup and route registration
+    │   └── api.go              # API initialization, server start logic
+    │
+    ├── web/                    # Frontend assets, templates
+    │   ├── static/
+    │   │   ├── css/
+    │   │   │   └── style.css   # CSS files
+    │   │   ├── js/
+    │   │   │   └── app.js      # JavaScript files
+    │   │   └── images/
+    │   │       └── logo.png    # Image assets
+    │   ├── templates/
+    │   │   ├── base.html       # Base HTML template
+    │   │   ├── index.html      # Homepage template
+    │   │   └── user.html       # User-related templates
+    │   └── web.go              # Code to serve static files and render templates
+    ├── scripts/                # Build and deployment scripts
+    ├── configs/                # Configuration files
+    └── go.mod
+
+
+
+
+├── b
+│   ├── api
+│   │   ├── business_basic_structure.business.php
+│   │   ├── echo.business.php
+│   │   ├── simple_test.business.php
+│   │   ├── v1
+│   │   │   ├── business_basic_structure.business.php
+│   │   │   ├── echo.business.php
+│   │   │   └── simple_test.business.php
+│   │   └── v2
+│   │       └── echo.get.business.php
+│   ├── bin
+│   │   └── readme.md
+│   ├── lib
+│   │   └── readme.md
+│   └── vendor
+│       └── readme.md
+├── base_js -> ../base_js
+├── engine
+│   ├── c.php
+│   ├── exec.php
+│   ├── onview.php
+│   ├── vcss.php
+│   ├── vjs.php
+│   └── v.php
+├── etc
+│   ├── config.base.example
+│   ├── config.ini
+│   └── fingerprint
+│       └── system_name.txt
+├── index.php
+├── intro.php
+├── tmp
+│   └── readme.md
+├── v
+│   ├── css
+│   │   └── custom.css
+│   ├── html
+│   │   └── readme.md
+│   ├── img
+│   │   └── readme.md
+│   ├── js
+│   │   └── readme.md
+│   ├── lib
+│   │   └── readme.md
+│   ├── public
+│   │   └── readme.md
+│   ├── vendor
+│   │   └── readme.md
+│   └── view
+│       └── readme.md
+└── var
+    └── etc
+        ├── config.env
+        └── readme.md

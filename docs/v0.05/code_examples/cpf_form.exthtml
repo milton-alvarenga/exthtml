@@ -1,0 +1,39 @@
+if (id > 0 ){
+    DB::person(person_id = id)
+}
+
+<html>
+    <head>
+    </head>
+    <body>
+        <input type="text" *mask={Filter:onlyNumbers;Validation:cpf;Filter:cpf} *in={DB::person.cpf;Filter:cpf} *out={DB::person.cpf}/>
+        or
+        <input type="text" *mask={Mask:cpf} *in={DB::person.cpf;Filter:cpf} *out={DB::person.cpf}/>
+        or
+        <input type="text" *in={DB::person.cpf;Mask:cpf} *out={Filter:onlyNumbers;DB::person.cpf}/>
+        or
+        <input type="text" value={Filter:onlyNumbers;Validation:cpf;Filter:cpf} *in={DB::person.cpf;Filter:cpf} *out={DB::person.cpf}/>
+        <button @click={DB.save()}>Save</button>
+    </body>
+</html>
+
+
+When the page is loaded, input has value defined by backend
+
+event.input
+
+
+source
+    initial_load_from_server => browser
+
+    jsvar => input
+
+    user => input.value
+            document.getElementById("tal").value = ?????
+         => jsvar
+
+- input jquery mask
+- valor inicial é 0.00
+- usuário digita 1
+- valor do input.value = 0,01
+- valor do js é definido para 0.01 float do banco

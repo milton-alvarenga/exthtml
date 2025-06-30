@@ -1,0 +1,16 @@
+import stock FROM "./component/Stock"
+import biggestBuyerSeller FROM "./component/biggestBuySeller"
+
+<html>
+    <head>
+    <head>
+    <body>
+        <div>Mercado {MarketStatus}</div>
+        <stock ticker="AMBP3">
+        <biggestsBuyerSeller ticker="" class="buyer" top={3} title="Compradores">
+        <biggestsBuyerSeller ticker="" class="seller" top={3} title="Vendedores">
+        <div>VWAP {VWAPPrice}<div>
+        <div>MarketCap {MarketCap}</div>
+        <div>Fechamento anterior {ClosingPrice}<div>
+    </body>
+</html>

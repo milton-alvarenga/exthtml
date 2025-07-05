@@ -318,6 +318,8 @@ function htmlMacroDirective(attr, mode, result, variableName, parent_nm) {
         throw Error(`${htmlMacroDirective.name} function: Invalid ${mode.lowercase()} attribute on ${attr.name} as it is macro directive attribute but the compiler could not found it on directive list`)
     }
 
+    macro.directives[attr.name](attr, mode, result, variableName, parent_nm)
+
 }
 
 

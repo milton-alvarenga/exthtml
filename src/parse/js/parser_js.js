@@ -9,11 +9,28 @@ export function parseScript(script_ast){
         ||
         node.type != 'SCRIPT_TAG'
     ){
-        throw new Error("Unexpected node on parserScript.");
+        throw new Error("Unexpected node on parseScript.");
     }
 
     const code = node.value
     return acorn.parse(code, { ecmaVersion: 2022 })
+}
+
+export function parseCode(source_code){
+    return acorn.parse(source_code, { ecmaVersion: 2022 })
+}
+
+function extract_names(jsNode, result = []) {
+  switch (jsNode.type) {
+    case 'Identifier':
+      result.push(jsNode.name);
+      break;
+    case 'BinaryExpression':
+      extract_names(jsNode.left, result);
+      extract_names(jsNode.right, result);
+      break;
+  }
+  return result;
 }
 
 /*

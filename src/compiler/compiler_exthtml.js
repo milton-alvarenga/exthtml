@@ -2,6 +2,7 @@ import fs from 'fs/promises';
 import { parse } from "../parse/exthtml/parser_exthtml.js"
 import { parseStyle } from "../parse/css/parser_css.js"
 import { parseScript } from "../parse/js/parser_js.js"
+import * as macro from "./directives/macro.js"
 import * as estreewalker from 'estree-walker';
 import * as periscopic from 'periscopic';
 import * as acorn from 'acorn'
@@ -10,6 +11,8 @@ import { inspect } from 'util';
 //import { style } from "../analyse/exthtml/directives/style";
 
 let __VERSION__ = '0.0.1'
+
+let elem_counter = 1
 
 export async function exthtmlCompileFile(filePath) {
     const source_code_content = await fs.readFile(filePath, 'utf8');
@@ -70,7 +73,7 @@ function analyse(exthtml, scripts, styles) {
         willUseInTemplate: new Set(),
         reactiveDeclarations: {},
         code: {
-            vars: [],
+            elems: [],
             create: [],
             mount: [],
             update: [],
@@ -142,7 +145,7 @@ function analyse(exthtml, scripts, styles) {
             },
         });
 
-        exthtml.forEach(node => traverseExthtml(node, result))
+        exthtml.forEach(node => traverseExthtml(node, result, 'ROOT'))
 
         /*
                 console.log(inspect(scope, { depth: null, colors: true, showHidden: true }));
@@ -155,7 +158,6 @@ function analyse(exthtml, scripts, styles) {
 }
 
 function traverseExthtml(exthtml, result, parent_nm) {
-    let counter = 1
     let variableName = ''
     try {
         switch (exthtml.type) {
@@ -167,102 +169,154 @@ function traverseExthtml(exthtml, result, parent_nm) {
             case 'STYLE_TAG':
                 return
             case 'DYNAMIC_TEXT_NODE':
-                variableName = `dyn_txt_${counter++}`
-                result.code.vars.push(variableName)
-                exthtml.value
+                variableName = `dyn_txt_${elem_counter++}`
+                result.code.elems.push(variableName)
+                result.code.create.push(`${variableName} = text(${exthtml.value})`)
+                result.code.update.push(`${variableName}.textContent = ${exthtml.value}`)
+                result.code.mount.push(`append(${parent_nm},${variableName})`)
+                result.code.destroy.push(`detach(${variableName})`)
                 return
 
             case 'TEXT_NODE':
-                variableName = `txt_${counter++}`
-                result.code.vars.push(variableName)
+                variableName = `txt_${elem_counter++}`
+                result.code.elems.push(variableName)
                 result.code.create.push(`${variableName} = text('${exthtml.value}')`)
-                result.code.mount.push(`append(${parent_nm},${variableName}`)
-                result.code.destroy.push()
+                result.code.mount.push(`append(${parent_nm},${variableName})`)
+                result.code.destroy.push(`detach(${variableName})`)
                 return
 
             case 'TEXTAREA_TAG':
+                variableName = `textarea_${elem_counter++}`
+                break
             case 'TITLE_TAG':
+                variableName = `textarea_${elem_counter++}`
+                break
             case 'PLAINTEXT_TAG':
+                variableName = `plaintext_${elem_counter++}`
+                break
             case 'HTML_NESTED_TAG':
+                variableName = `${exthtml.value.toLowerCase()}_${elem_counter++}`
+                break
             case 'SELF_CLOSE_TAG':
+                variableName = `${exthtml.value.toLowerCase()}_${elem_counter++}`
+                result.code.elems.push(variableName)
+                exthtml.dynamic_attrs.forEach(dynamicAttr => traverseExthtmlAttr(dynamicAttr))
+                exthtml.event_attrs.forEach(eventAttr => traverseExthtmlEventAttr(eventAttr))
+                result.code.mount.push(`append(${parent_nm},${variableName})`)
+                result.code.destroy.push(`detach(${variableName})`)
+                return
             case 'COMPONENT':
 
-            break
+                break
             default:
-            throw Error(`${traverseExthtml.name} Error on unexpected type equal ${exthtml.type} and value ${exthtml.value} at line ${exthtml.location.line}`)
+                throw Error(`${traverseExthtml.name} Error on unexpected type equal ${exthtml.type} and value ${exthtml.value} at line ${exthtml.location.line}`)
         }
-        
-        exthtml.children.forEach(node => traverseExthtml(node, result, variableName))
-        exthtml.dynamic_attrs.forEach(dynamicAttr => traverseExthtmlAttr(dynamicAttr))
-        exthtml.event_attrs.forEach(eventAttr => traverseExthtmlEventAttr(eventAttr))
+
+        result.code.elems.push(variableName)
+        result.code.create.push(`${variableName} = el('${exthtml.value.toLowerCase()}')`)
+
+        exthtml.children.forEach(node => traverseExthtml(node, result, variableName, parent_nm))
+        exthtml.attrs.forEach(staticAttr => traverseExthtmlAttr(staticAttr, "STATIC", result, variableName, parent_nm))
+        exthtml.dynamic_attrs.forEach(dynamicAttr => traverseExthtmlAttr(dynamicAttr, "DYNAMIC", result, variableName, parent_nm))
+        exthtml.event_attrs.forEach(eventAttr => traverseExthtmlEventAttr(eventAttr, "DYNAMIC", result, variableName, parent_nm))
+
+        result.code.mount.push(`append(${parent_nm},${variableName})`)
+        result.code.destroy.push(`detach(${variableName})`)
     } catch (err) {
         let errors = [err, new Error(`${traverseExthtml.name} Error on ${exthtml.type}.${exthtml.value} at line ${exthtml.location.line}`)]
         throw new AggregateError(errors)
     }
 }
 
-function traverseExthtmlAttr(dynamicAttr) {
-    switch (dynamicAttr.category) {
+function traverseExthtmlAttr(attr, mode, result, variableName, parent_nm) {
+    let aValidMode = ['DYNAMIC','STATIC']
+
+    if (!aValidMode.includes(mode)) {
+        throw new Error(`Invalid mode: ${mode}. Expected one of: ${aValidMode.join(', ')}`);
+    }
+
+
+    switch (attr.category) {
         case "html_global_boolean_attribute":
         case "html_boolean_attribute":
-            htmlBooleanAttr(dynamicAttr)
+            htmlBooleanAttr(attr, mode, result, variableName, parent_nm)
             break
         case "html_data_attribute":
-            htmlDataAttr(dynamicAttr)
+            htmlDataAttr(attr, mode, result, variableName, parent_nm)
             break
         case "html_global_non_boolean_attribute":
         case "html_attribute":
-            htmlRegularAttr(dynamicAttr)
+            htmlRegularAttr(attr, mode, result, variableName, parent_nm)
             break
         case "html_media_readonly":
         case "html_video_readonly":
-            htmlReadOnlyAttr(dynamicAttr)
+            htmlReadOnlyAttr(attr, mode, result, variableName, parent_nm)
             break
         case "custom_attribute":
-            htmlMacroAttr(dynamicAttr)
+            htmlCustomAttr(attr, mode, result, variableName, parent_nm)
             break
         case "drall_directive":
-            htmlDrallDirective(dynamicAttr)
+            htmlDrallDirective(attr, mode, result, variableName, parent_nm)
             break
         case "macro_directive":
-            htmlMacroDirective(dynamicAttr)
+            htmlMacroDirective(attr, mode, result, variableName, parent_nm)
             break
         default:
-            throw Error(`${traverseExthtmlAttr.name} function: Invalid dynamic attribute on ${dynamicAttr.name} as it is of category ${dynamicAttr.category} not recognized`)
+            throw Error(`${traverseExthtmlAttr.name} function: Invalid ${mode.lowercase()} attribute on ${attr.name} as it is of category ${attr.category} not recognized`)
     }
 }
 
-function traverseExthtmlEventAttr(eventAttr) {
+function checkMode(mode){
+    let aValidMode = ['DYNAMIC','STATIC']
 
+    if (!aValidMode.includes(mode)) {
+        throw new Error(`Invalid mode: ${mode}. Expected one of: ${aValidMode.join(', ')}`);
+    }
+}
+
+function traverseExthtmlEventAttr(eventAttr, mode, result, variableName, parent_nm) {
+    checkMode(mode)
 }
 
 
-function htmlBooleanAttr(dynamicAttr) {
+function htmlBooleanAttr(attr, mode, result, variableName, parent_nm) {
+    checkMode(mode)
 
+    if( mode == "STATIC") {
+        result.code.create.push(`setAttr('${variableName}', '${attr.name}', '${attr.value}')`)
+    } else {
+        result.code.update.push(`setAttr('${variableName}', '${attr.name}', ${attr.value})`)
+    }
 }
 
-function htmlDataAttr(dynamicAttr) {
-
+function htmlDataAttr(attr, mode, result, variableName, parent_nm) {
+    checkMode(mode)
 }
 
-function htmlRegularAttr(dynamicAttr) {
+function htmlRegularAttr(attr, mode, result, variableName, parent_nm) {
+    checkMode(mode)
     //class
     //style
 }
 
-function htmlReadOnlyAttr(dynamicAttr) {
-    throw Error(`${htmlReadOnlyAttr.name} function: Invalid dynamic attribute on ${dynamicAttr.name} as it is readonly attribute`)
+function htmlReadOnlyAttr(attr, mode, result, variableName, parent_nm) {
+    throw Error(`${htmlReadOnlyAttr.name} function: Invalid ${mode.lowercase()} attribute on ${attr.name} as it is readonly attribute`)
 }
 
-function htmlMacroAttr(dynamicAttr) {
-
+function htmlCustomAttr(attr, mode, result, variableName, parent_nm) {
+    checkMode(mode)
 }
 
-function htmlDrallDirective(dynamicAttr) {
-
+function htmlDrallDirective(attr, mode, result, variableName, parent_nm) {
+    checkMode(mode)
 }
 
-function htmlMacroDirective(dynamicAttr) {
+function htmlMacroDirective(attr, mode, result, variableName, parent_nm) {
+    checkMode(mode)
+
+    if ( ! (attr.name in macro.directives) ){
+        throw Error(`${htmlMacroDirective.name} function: Invalid ${mode.lowercase()} attribute on ${attr.name} as it is macro directive attribute but the compiler could not found it on directive list`)
+    }
 
 }
 

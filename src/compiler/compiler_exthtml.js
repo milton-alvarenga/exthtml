@@ -3,6 +3,7 @@ import { parse } from "../parse/exthtml/parser_exthtml.js"
 import { parseStyle } from "../parse/css/parser_css.js"
 import { parseScript } from "../parse/js/parser_js.js"
 import * as macro from "./directives/macro.js"
+import * as drall from "./directives/drall.js"
 import * as estreewalker from 'estree-walker';
 import * as periscopic from 'periscopic';
 import * as acorn from 'acorn'
@@ -309,6 +310,12 @@ function htmlCustomAttr(attr, mode, result, variableName, parent_nm) {
 
 function htmlDrallDirective(attr, mode, result, variableName, parent_nm) {
     checkMode(mode)
+
+    if ( ! (attr.name in drall.directives) ){
+        throw Error(`${htmlMacroDirective.name} function: Invalid ${mode.lowercase()} attribute on ${attr.name} as it is macro directive attribute but the compiler could not found it on directive list`)
+    }
+
+    drall.directives[attr.name](attr, mode, result, variableName, parent_nm)
 }
 
 function htmlMacroDirective(attr, mode, result, variableName, parent_nm) {
@@ -319,7 +326,6 @@ function htmlMacroDirective(attr, mode, result, variableName, parent_nm) {
     }
 
     macro.directives[attr.name](attr, mode, result, variableName, parent_nm)
-
 }
 
 

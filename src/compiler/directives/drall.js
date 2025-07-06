@@ -1,3 +1,9 @@
+import { addDirective } from './../internals/directive.js'
+
+// Re-export addDirective for reuse
+export { addDirective }
+
+
 function perm(attr,mode,result,variableName,parent_nm) {
     if( mode == "STATIC") {
     } else {

@@ -4,6 +4,7 @@ import { parseStyle } from "../parse/css/parser_css.js"
 import { parseScript } from "../parse/js/parser_js.js"
 import * as macro from "./directives/macro.js"
 import * as drall from "./directives/drall.js"
+import * as customAttr from "./attributes/custom.js"
 import * as estreewalker from 'estree-walker';
 import * as periscopic from 'periscopic';
 import * as acorn from 'acorn'
@@ -224,7 +225,7 @@ function traverseExthtml(exthtml, result, parent_nm) {
         result.code.mount.push(`append(${parent_nm},${variableName})`)
         result.code.destroy.push(`detach(${variableName})`)
     } catch (err) {
-        let errors = [err, new Error(`${traverseExthtml.name} Error on ${exthtml.type}.${exthtml.value} at line ${exthtml.location.line}`)]
+        let errors = [err, new Error(`${traverseExthtml.name} Error on ${exthtml.type}.${exthtml.value} at line ${exthtml.location.start.line}`)]
         throw new AggregateError(errors)
     }
 }
@@ -253,6 +254,9 @@ function traverseExthtmlAttr(attr, mode, result, variableName, parent_nm) {
         case "html_video_readonly":
             htmlReadOnlyAttr(attr, mode, result, variableName, parent_nm)
             break
+        case "class_directive":
+            htmlClassDirective(attr, mode, result, variableName, parent_nm)
+            break
         case "custom_attribute":
             htmlCustomAttr(attr, mode, result, variableName, parent_nm)
             break
@@ -263,7 +267,7 @@ function traverseExthtmlAttr(attr, mode, result, variableName, parent_nm) {
             htmlMacroDirective(attr, mode, result, variableName, parent_nm)
             break
         default:
-            throw Error(`${traverseExthtmlAttr.name} function: Invalid ${mode.lowercase()} attribute on ${attr.name} as it is of category ${attr.category} not recognized`)
+            throw Error(`${traverseExthtmlAttr.name} function: Invalid ${mode.toLowerCase()} attribute on ${attr.name} as it is of category ${attr.category} not recognized`)
     }
 }
 
@@ -284,13 +288,17 @@ function htmlBooleanAttr(attr, mode, result, variableName, parent_nm) {
     checkMode(mode)
 
     if( mode == "STATIC") {
-        result.code.create.push(`setAttr('${variableName}', '${attr.name}', '${attr.value}')`)
+        result.code.create.push(`('${attr.value}') ? setAttr('${variableName}', '${attr.name}', '${attr.value}') : rmAttr('${variableName}', '${attr.name}')`)
     } else {
-        result.code.update.push(`setAttr('${variableName}', '${attr.name}', ${attr.value})`)
+        result.code.update.push(`(${attr.value}) ? setAttr('${variableName}', '${attr.name}', ${attr.value}) : rmAttr('${variableName}', '${attr.name}')`)
     }
 }
 
 function htmlDataAttr(attr, mode, result, variableName, parent_nm) {
+    checkMode(mode)
+}
+
+function htmlClassDirective(attr, mode, result, variableName, parent_nm) {
     checkMode(mode)
 }
 
@@ -301,18 +309,27 @@ function htmlRegularAttr(attr, mode, result, variableName, parent_nm) {
 }
 
 function htmlReadOnlyAttr(attr, mode, result, variableName, parent_nm) {
-    throw Error(`${htmlReadOnlyAttr.name} function: Invalid ${mode.lowercase()} attribute on ${attr.name} as it is readonly attribute`)
+    throw Error(`${htmlReadOnlyAttr.name} function: Invalid ${mode.toLowerCase()} attribute on ${attr.name} as it is readonly attribute`)
 }
 
 function htmlCustomAttr(attr, mode, result, variableName, parent_nm) {
     checkMode(mode)
+
+    if ( ! (attr.name in customAttr.customAttributes) ){
+        throw Error(`${htmlCustomAttr.name} function: Invalid ${mode.toLowerCase()} attribute on ${attr.name} as it is html custom attribute but the compiler could not found it on custom attribute list`)
+    }
+
+    //class:xxxxxx
+
+    customAttr.customAttributes[attr.name](attr, mode, result, variableName, parent_nm)
+
 }
 
 function htmlDrallDirective(attr, mode, result, variableName, parent_nm) {
     checkMode(mode)
 
     if ( ! (attr.name in drall.directives) ){
-        throw Error(`${htmlMacroDirective.name} function: Invalid ${mode.lowercase()} attribute on ${attr.name} as it is macro directive attribute but the compiler could not found it on directive list`)
+        throw Error(`${htmlDrallDirective.name} function: Invalid ${mode.toLowerCase()} attribute on ${attr.name} as it is macro directive attribute but the compiler could not found it on directive list`)
     }
 
     drall.directives[attr.name](attr, mode, result, variableName, parent_nm)
@@ -322,7 +339,7 @@ function htmlMacroDirective(attr, mode, result, variableName, parent_nm) {
     checkMode(mode)
 
     if ( ! (attr.name in macro.directives) ){
-        throw Error(`${htmlMacroDirective.name} function: Invalid ${mode.lowercase()} attribute on ${attr.name} as it is macro directive attribute but the compiler could not found it on directive list`)
+        throw Error(`${htmlMacroDirective.name} function: Invalid ${mode.toLowerCase()} attribute on ${attr.name} as it is macro directive attribute but the compiler could not found it on directive list`)
     }
 
     macro.directives[attr.name](attr, mode, result, variableName, parent_nm)

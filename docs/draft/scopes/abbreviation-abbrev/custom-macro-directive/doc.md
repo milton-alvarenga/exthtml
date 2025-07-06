@@ -6,7 +6,7 @@ The current setup exports a `directives` object with all standard extHTML macro 
 
 ## How to do it
 
-### Step 1: Usage in another file
+### Step 1: Create some directive file in your project
 
 ```js
 // newDirective.js
@@ -27,7 +27,7 @@ addDirective('mydirectivename', myNewDirective);
 ```
 
 
-### Step 3: Using directives later in your app
+### Step 2: Using directives later in your app
 
 ```extHTML
 <script>
@@ -37,6 +37,11 @@ function execEvent(){
 </script>
 <input type="text" (mydirectivename) />
 <button (mydirectivename) @click={execEvent}>Click me</button>
+```
+
+### Step 3: On bash, compile your project
+```bash
+node execute_compiler.js
 ```
 
 

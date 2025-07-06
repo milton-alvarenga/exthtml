@@ -95,6 +95,7 @@ DynamicAttribute "dynamic attribute" = ( name:GlobalBooleanAttribute text:(__ '=
                                        / ( name:BooleanAttribute text:(__ '=' __ s:VariableQuoteString) __ { return { name: name, value: (text && text[3]) ? text[3] : "", type:"dyn_attr", category: "html_boolean_attribute"}} )
                                        / ( name:HTMLDataAttr text:(__ '=' __ s:VariableQuoteString) __ { return { name: name, value: (text && text[3]) ? text[3] : "", type:"dyn_attr", category: "html_data_attribute"}} )
                                        / ( name:GlobalNonBooleanAttribute text:(__ '=' __ s:VariableQuoteString) __ { return { name: name, value: (text && text[3]) ? text[3] : "", type:"dyn_attr", category: "html_global_non_boolean_attribute"}} )
+                                       / ( 'class:'name:CssClassName text:(__ '=' __ s:VariableQuoteString) __ { return { name: name, value: (text && text[3]) ? text[3] : "", type:"dyn_attr", category: "class_directive"}} )
                                        / ( name: ReadonlyMediaAttr text:( __ '=' __ s:VariableQuoteString)  __  { return { name: name, value: (text && text[3]) ? text[3] : "", type:"dyn_attr", category: "html_media_readonly"}} )
                                        / ( name: ReadonlyVideoAttr text:( __ '=' __ s:VariableQuoteString)  __  { return { name: name, value: (text && text[3]) ? text[3] : "", type:"dyn_attr", category: "html_video_readonly"}} )
                                        / ( name:HTMLAttrName text:(__ '=' __ s:VariableQuoteString) __ { return { name: name, value: (text && text[3]) ? text[3] : "", type:"dyn_attr", category: "html_attribute"}} )
@@ -265,6 +266,8 @@ SvgElementNameOtherSpecializedElements = 'clipPath'i / 'mask'i / 'pattern'i / 'm
 TagName = $([a-zA-Z_\-] [a-zA-Z0-9:_\-]*)
 
 AttrName = $([a-zA-Z_\-] [a-zA-Z0-9:_\-]*)
+
+CssClassName = $([a-zA-Z_-][a-zA-Z0-9_-]*)
 
 Symbol = $([a-zA-Z0-9_\-] [a-zA-Z0-9:_\-]*)
 

@@ -22,6 +22,18 @@ function permRedirect(attr,mode,result,variableName,parent_nm) {
     }
 }
 
+function val(attr,mode,result,variableName,parent_nm) {
+    if( mode == "STATIC") {
+    } else {
+    }
+}
+
+function mask(attr,mode,result,variableName,parent_nm) {
+    if( mode == "STATIC") {
+    } else {
+    }
+}
+
 
 
 export let directives = {
@@ -29,4 +41,6 @@ export let directives = {
     "perm-group":permGroup,
     "perm-mirror":permMirror,
     "perm-redirect":permRedirect,
+    val,
+    mask
 }

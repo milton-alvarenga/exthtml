@@ -1,3 +1,9 @@
+import { addDirective } from './../internals/directive.js'
+
+// Re-export addDirective for reuse
+export { addDirective }
+
+
 function idname(attr,mode,result,variableName,parent_nm) {
     if( mode == "STATIC") {
         result.code.create.push(`setAttr('${variableName}', 'id', '${attr.value}')`)

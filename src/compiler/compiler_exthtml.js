@@ -296,10 +296,30 @@ function htmlBooleanAttr(attr, mode, result, variableName, parent_nm) {
 
 function htmlDataAttr(attr, mode, result, variableName, parent_nm) {
     checkMode(mode)
+
+    // Data attributes are of the form data-xxx
+    // They should be set or removed on the element's dataset property
+    // For STATIC mode, attr.value is a literal value (string)
+    // For DYNAMIC mode, attr.value is an expression to be evaluated at runtime
+
+    const dataKey = attr.name.slice(5) // remove 'data-' prefix
+
+    if (mode === "STATIC") {
+        // For static, check if the value is truthy to set or remove dataset property
+        result.code.create.push(`('${attr.value}') ? ${variableName}.dataset['${dataKey}'] = '${attr.value}' : delete ${variableName}.dataset['${dataKey}']`)
+    } else {
+        // For dynamic, evaluate expression and set or delete accordingly
+        result.code.update.push(`(${attr.value}) ? ${variableName}.dataset['${dataKey}'] = ${attr.value} : delete ${variableName}.dataset['${dataKey}']`)
+    }
 }
 
 function htmlClassDirective(attr, mode, result, variableName, parent_nm) {
-    checkMode(mode)
+    if( mode != "DYNAMIC") {
+        throw Error(`${htmlClassDirective.name} function: Invalid ${mode.toLowerCase()} attribute on class directive as it is only dynamic attribute`)
+    }
+    //class:xxxxxx
+    result.code.update.push(`(!!(${attr.value})) ? ${variableName}.classList.add('${attr.name}'): ${variableName}.classList.remove('${attr.name}')`)
+
 }
 
 function htmlRegularAttr(attr, mode, result, variableName, parent_nm) {
@@ -318,8 +338,6 @@ function htmlCustomAttr(attr, mode, result, variableName, parent_nm) {
     if ( ! (attr.name in customAttr.customAttributes) ){
         throw Error(`${htmlCustomAttr.name} function: Invalid ${mode.toLowerCase()} attribute on ${attr.name} as it is html custom attribute but the compiler could not found it on custom attribute list`)
     }
-
-    //class:xxxxxx
 
     customAttr.customAttributes[attr.name](attr, mode, result, variableName, parent_nm)
 

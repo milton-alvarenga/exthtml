@@ -319,13 +319,28 @@ function htmlClassDirective(attr, mode, result, variableName, parent_nm) {
     }
     //class:xxxxxx
     result.code.update.push(`(!!(${attr.value})) ? ${variableName}.classList.add('${attr.name}'): ${variableName}.classList.remove('${attr.name}')`)
-
 }
 
 function htmlRegularAttr(attr, mode, result, variableName, parent_nm) {
     checkMode(mode)
-    //class
+    // Handle special cases for 'class'
+    if (attr.name === 'class') {
+        if(mode === "DYNAMIC"){
+            let operations = attr.value.split(",")
+
+            operations.forEach(operation => {
+                let [_class, expression] = operation.split(":");
+                result.code.update.push(`(!!(${expression})) ? ${variableName}.classList.add('${_class}'): ${variableName}.classList.remove('${_class}')`)
+            });
+        } else {
+            // Static class attribute: set once on create
+            result.code.create.push(`${variableName}.classList.add('${attr.value}')`)
+        }
+        return
+    }
     //style
+    if (attr.name === 'style' && mode === "DYNAMIC") {
+    }
 }
 
 function htmlReadOnlyAttr(attr, mode, result, variableName, parent_nm) {

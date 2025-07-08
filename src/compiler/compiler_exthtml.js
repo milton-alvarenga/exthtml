@@ -339,7 +339,15 @@ function htmlRegularAttr(attr, mode, result, variableName, parent_nm) {
         return
     }
     //style
-    if (attr.name === 'style' && mode === "DYNAMIC") {
+    if (attr.name === 'style') {
+        handleStyleAttr(attr, mode, result, variableName);
+        return;
+    }
+
+    if( mode == "STATIC") {
+        result.code.create.push(`('${attr.value}') ? setAttr('${variableName}', '${attr.name}', '${attr.value}') : rmAttr('${variableName}', '${attr.name}')`)
+    } else {
+        result.code.update.push(`(${attr.value}) ? setAttr('${variableName}', '${attr.name}', ${attr.value}) : rmAttr('${variableName}', '${attr.name}')`)
     }
 }
 
@@ -377,6 +385,56 @@ function htmlMacroDirective(attr, mode, result, variableName, parent_nm) {
 
     macro.directives[attr.name](attr, mode, result, variableName, parent_nm)
 }
+
+function handleStyleAttr(attr, mode, result, variableName) {
+    if (mode === "STATIC") {
+        // Static style: attr.value is expected to be a string of CSS declarations
+        // Just set the whole style attribute once
+        result.code.create.push(`${variableName}.setAttribute('style', '${attr.value}')`);
+    } else if (mode === "DYNAMIC") {
+        // Dynamic style: attr.value can be string, object, or array
+        // We'll generate code to update styles individually
+
+        // The dynamic value is expected to be a JS expression (variable or object/array literal)
+        const styleVar = attr.value;
+
+        // Generate code that:
+        // - clears previous inline styles
+        // - iterates over the style declarations and sets/removes styles accordingly
+
+        // We'll generate code that handles three cases:
+        // 1. If styleVar is a string: parse by ';' and split by ':'
+        // 2. If styleVar is an array: iterate and split each item by ':'
+        // 3. If styleVar is an object: iterate keys and values
+
+        // To keep it simple, generate a helper function in update code:
+
+        result.code.update.push(`
+            (function() {
+                const el = ${variableName};
+                // Clear all previous inline styles
+                el.style.cssText = '';
+                const styleVal = ${styleVar};
+                if (typeof styleVal === 'string') {
+                    styleVal.split(';').forEach(decl => {
+                        const [key, val] = decl.split(':').map(s => s && s.trim());
+                        if(key && val) el.style.setProperty(key, val);
+                    });
+                } else if (Array.isArray(styleVal)) {
+                    styleVal.forEach(decl => {
+                        const [key, val] = decl.split(':').map(s => s && s.trim());
+                        if(key && val) el.style.setProperty(key, val);
+                    });
+                } else if (typeof styleVal === 'object' && styleVal !== null) {
+                    Object.entries(styleVal).forEach(([key, val]) => {
+                        if(val != null) el.style.setProperty(key, val);
+                    });
+                }
+            })()
+        `);
+    }
+}
+
 
 
 function generate4Web(ast, analysis) {

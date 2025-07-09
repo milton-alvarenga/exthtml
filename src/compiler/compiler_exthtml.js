@@ -21,6 +21,9 @@ export async function exthtmlCompileFile(filePath) {
     try {
         return exthtmlCompile(source_code_content);
     } catch (err) {
+        if (!Array.isArray(err.errors)) {
+            err.errors = [err];
+        }
         err.errors.unshift(new Error(`Error on file ${filePath}`))
 
         throw new AggregateError(err.errors)
@@ -71,6 +74,7 @@ function parseScriptsAndStylesTags(scripts, styles) {
 function analyse(exthtml, scripts, styles) {
     const result = {
         variables: new Set(),
+        functions: new Set(),
         willChange: new Set(),
         willUseInTemplate: new Set(),
         reactiveDeclarations: {},
@@ -87,8 +91,8 @@ function analyse(exthtml, scripts, styles) {
     const toRemove = new Set()
 
     for (let x = 0; x < scripts.length; x++) {
-        const { scope, map, globals } = periscopic.analyze(scripts[x].children)
-        result.variables = new Set(scope.declarations.keys())
+        const { scope: rootScope, map, globals } = periscopic.analyze(scripts[x].children)
+        result.variables = new Set(rootScope.declarations.keys())
 
         scripts[x].children.body.forEach((node, index) => {
             if (node.type === 'LabeledStatement' && node.label.name === '$') {
@@ -119,13 +123,15 @@ function analyse(exthtml, scripts, styles) {
         result.reactiveDeclarations = reactiveDeclarations
 
 
-        let currentScope = scope
+        let currentScope = rootScope
         estreewalker.walk(scripts[x].children.body, {
             enter(node) {
                 if (map.has(node)) currentScope = map.get(node);
                 if (
+                    //An UpdateExpression (e.g., x++ or --y)
                     node.type === 'UpdateExpression'
                     ||
+                    //An AssignmentExpression (e.g., x = 5 or y += 2)
                     node.type === 'AssignmentExpression'
                 ) {
                     const names = periscopic.extract_names(
@@ -147,7 +153,20 @@ function analyse(exthtml, scripts, styles) {
             },
         });
 
-        exthtml.forEach(node => traverseExthtml(node, result, 'ROOT'))
+        estreewalker.walk(scripts[x].children.body, {
+            enter(node, parent) {
+                if (parent !== null) {
+                    // We are at a child node (first level), so skip its children
+                    this.skip();
+                }
+                // Check if node is a FunctionDeclaration and its parent is Program (global scope)
+                if (node.type === 'FunctionDeclaration') {
+                    result.functions.add(node.id.name)
+                }
+            }
+        });
+
+        exthtml.forEach(node => traverseExthtml(node, result, 'TARGET'))
 
         /*
                 console.log(inspect(scope, { depth: null, colors: true, showHidden: true }));
@@ -231,7 +250,7 @@ function traverseExthtml(exthtml, result, parent_nm) {
 }
 
 function traverseExthtmlAttr(attr, mode, result, variableName, parent_nm) {
-    let aValidMode = ['DYNAMIC','STATIC']
+    let aValidMode = ['DYNAMIC', 'STATIC']
 
     if (!aValidMode.includes(mode)) {
         throw new Error(`Invalid mode: ${mode}. Expected one of: ${aValidMode.join(', ')}`);
@@ -271,8 +290,8 @@ function traverseExthtmlAttr(attr, mode, result, variableName, parent_nm) {
     }
 }
 
-function checkMode(mode){
-    let aValidMode = ['DYNAMIC','STATIC']
+function checkMode(mode) {
+    let aValidMode = ['DYNAMIC', 'STATIC']
 
     if (!aValidMode.includes(mode)) {
         throw new Error(`Invalid mode: ${mode}. Expected one of: ${aValidMode.join(', ')}`);
@@ -281,13 +300,53 @@ function checkMode(mode){
 
 function traverseExthtmlEventAttr(eventAttr, mode, result, variableName, parent_nm) {
     checkMode(mode)
+
+    if (mode != "DYNAMIC") {
+        throw new Error(`Invalid mode: ${mode} for extHTML event Attribute.}`);
+    }
+
+
+
+    let modifierChecks = '';
+    if (eventAttr.keyboard_modifiers_keys && eventAttr.keyboard_modifiers_keys.length > 0) {
+        const mods = eventAttr.keyboard_modifiers_keys.map(key => `event.${key}Key`).join(' && ');
+        modifierChecks = mods ? `if (!(${mods})) return;` : '';
+    }
+
+    // Build mouse key check if applicable
+    let mouseKeyCheck = '';
+    if (eventAttr.mouse_keys) {
+        // For example, left mouse button check: event.button === 0
+        // Map mouse_keys string to event.button number:
+        const mouseButtonMap = {
+            left: 0,
+            middle: 1,
+            right: 2
+        };
+        const btnCode = mouseButtonMap[eventAttr.mouse_keys.toLowerCase()];
+        if (btnCode !== undefined) {
+            mouseKeyCheck = `if (event.button !== ${btnCode}) return;`;
+        }
+    }
+
+    // Compose the full event handler code snippet
+    // DYNAMIC mode: eventAttr.value is an expression to be evaluated at runtime
+    const handlerCode = `
+        function(event) {
+            ${modifierChecks}
+            ${mouseKeyCheck}
+            (${eventAttr.value}) && (${eventAttr.value})(event);
+        }
+    `;
+    result.code.update.push(`${variableName}.addEventListener('${eventAttr.name}', ${handlerCode.trim()})`);
+    result.code.destroy.push(`${variableName}.removeEventListener('${eventAttr.name}', ${handlerCode.trim()})`);
 }
 
 
 function htmlBooleanAttr(attr, mode, result, variableName, parent_nm) {
     checkMode(mode)
 
-    if( mode == "STATIC") {
+    if (mode == "STATIC") {
         result.code.create.push(`('${attr.value}') ? setAttr('${variableName}', '${attr.name}', '${attr.value}') : rmAttr('${variableName}', '${attr.name}')`)
     } else {
         result.code.update.push(`(${attr.value}) ? setAttr('${variableName}', '${attr.name}', ${attr.value}) : rmAttr('${variableName}', '${attr.name}')`)
@@ -314,7 +373,7 @@ function htmlDataAttr(attr, mode, result, variableName, parent_nm) {
 }
 
 function htmlClassDirective(attr, mode, result, variableName, parent_nm) {
-    if( mode != "DYNAMIC") {
+    if (mode != "DYNAMIC") {
         throw Error(`${htmlClassDirective.name} function: Invalid ${mode.toLowerCase()} attribute on class directive as it is only dynamic attribute`)
     }
     //class:xxxxxx
@@ -325,7 +384,7 @@ function htmlRegularAttr(attr, mode, result, variableName, parent_nm) {
     checkMode(mode)
     // Handle special cases for 'class'
     if (attr.name === 'class') {
-        if(mode === "DYNAMIC"){
+        if (mode === "DYNAMIC") {
             let operations = attr.value.split(",")
 
             operations.forEach(operation => {
@@ -344,7 +403,7 @@ function htmlRegularAttr(attr, mode, result, variableName, parent_nm) {
         return;
     }
 
-    if( mode == "STATIC") {
+    if (mode == "STATIC") {
         result.code.create.push(`('${attr.value}') ? setAttr('${variableName}', '${attr.name}', '${attr.value}') : rmAttr('${variableName}', '${attr.name}')`)
     } else {
         result.code.update.push(`(${attr.value}) ? setAttr('${variableName}', '${attr.name}', ${attr.value}) : rmAttr('${variableName}', '${attr.name}')`)
@@ -358,7 +417,7 @@ function htmlReadOnlyAttr(attr, mode, result, variableName, parent_nm) {
 function htmlCustomAttr(attr, mode, result, variableName, parent_nm) {
     checkMode(mode)
 
-    if ( ! (attr.name in customAttr.customAttributes) ){
+    if (!(attr.name in customAttr.customAttributes)) {
         throw Error(`${htmlCustomAttr.name} function: Invalid ${mode.toLowerCase()} attribute on ${attr.name} as it is html custom attribute but the compiler could not found it on custom attribute list`)
     }
 
@@ -369,7 +428,7 @@ function htmlCustomAttr(attr, mode, result, variableName, parent_nm) {
 function htmlDrallDirective(attr, mode, result, variableName, parent_nm) {
     checkMode(mode)
 
-    if ( ! (attr.name in drall.directives) ){
+    if (!(attr.name in drall.directives)) {
         throw Error(`${htmlDrallDirective.name} function: Invalid ${mode.toLowerCase()} attribute on ${attr.name} as it is macro directive attribute but the compiler could not found it on directive list`)
     }
 
@@ -379,7 +438,7 @@ function htmlDrallDirective(attr, mode, result, variableName, parent_nm) {
 function htmlMacroDirective(attr, mode, result, variableName, parent_nm) {
     checkMode(mode)
 
-    if ( ! (attr.name in macro.directives) ){
+    if (!(attr.name in macro.directives)) {
         throw Error(`${htmlMacroDirective.name} function: Invalid ${mode.toLowerCase()} attribute on ${attr.name} as it is macro directive attribute but the compiler could not found it on directive list`)
     }
 
@@ -439,6 +498,8 @@ function handleStyleAttr(attr, mode, result, variableName) {
 
 function generate4Web(ast, analysis) {
     const banner = `Generated by ExtHTML v${__VERSION__}`
+
+
 }
 
 function extractor_sfc_walker(ast, scripts, exthtml, styles, level) {

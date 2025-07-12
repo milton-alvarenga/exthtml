@@ -267,7 +267,6 @@ function traverseExthtmlAttr(attr, mode, result, variableName, parent_nm) {
         throw new Error(`Invalid mode: ${mode}. Expected one of: ${aValidMode.join(', ')}`);
     }
 
-
     switch (attr.category) {
         case "html_global_boolean_attribute":
         case "html_boolean_attribute":
@@ -315,7 +314,6 @@ function traverseExthtmlEventAttr(eventAttr, mode, result, variableName, parent_
     if (mode != "DYNAMIC") {
         throw new Error(`Invalid mode: ${mode} for extHTML event Attribute.}`);
     }
-
 
 
     let modifierChecks = '';
@@ -514,6 +512,7 @@ function generate4Web(ast, analysis) {
     return `${banner}
     import {${Array.from(analysis.code.internal_import).join(",")}} from './lib/dom.js';
     export default function(state){
+        ${Array.from(analysis.variables).map((v) => `let ${v};`).join('\n')}
         var lifecycle = {
             create() {
                 ${analysis.code.create.join('\n')}

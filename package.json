@@ -29,9 +29,10 @@
   "devDependencies": {
     "acorn": "^8.14.1",
     "css-tree": "^3.1.0",
+    "escodegen": "^2.1.0",
+    "estree-walker": "^3.0.3",
     "json-diff": "^1.0.6",
     "peggy": "^5.0.0",
-    "periscopic": "^4.0.2",
-    "estree-walker": "^3.0.3"
+    "periscopic": "^4.0.2"
   }
 }

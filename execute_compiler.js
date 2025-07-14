@@ -37,7 +37,7 @@ const filePath = path.join(__dirname, './src/examples/exthtml/increase_decrease/
 
 async function main() {
   try {
-    let [scripts,exthtml,styles,generate_code] = await exthtmlCompileFile(filePath);
+    let [scripts,exthtml,styles,generate_code, generated_ctx] = await exthtmlCompileFile(filePath);
 
     for( let x = 0; x < scripts.length; x++){
         let script = scripts[x]
@@ -47,6 +47,7 @@ async function main() {
         }
     }
 
+    console.log(generated_ctx)
     console.log(generate_code)
   } catch (err) {
     console.error('Error reading file:', err);

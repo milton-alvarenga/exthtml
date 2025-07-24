@@ -43,12 +43,14 @@ async function main() {
         let script = scripts[x]
 
         for( let i = 0; i < script.children.length; i++ ){
-          console.log(inspect(script.children[i], { depth: null, colors: true }));
+          //console.log(inspect(script.children[i], { depth: null, colors: true }));
         }
     }
 
-    console.log(generated_ctx)
-    console.log(generate_code)
+    //console.log(generated_ctx)
+    //console.log(generate_code)
+    fs.writeFileSync('output_ctx.js', generated_ctx);
+    fs.writeFileSync('output.js', generate_code);
   } catch (err) {
     console.error('Error reading file:', err);
   }

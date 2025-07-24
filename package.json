@@ -32,7 +32,9 @@
     "escodegen": "^2.1.0",
     "estree-walker": "^3.0.3",
     "json-diff": "^1.0.6",
+    "magic-string": "^0.30.17",
     "peggy": "^5.0.0",
-    "periscopic": "^4.0.2"
+    "periscopic": "^4.0.2",
+    "locate-character": "^3.0.0"
   }
 }

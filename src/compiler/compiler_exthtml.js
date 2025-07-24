@@ -8,6 +8,8 @@ import * as customAttr from "./attributes/custom.js"
 import * as estreewalker from 'estree-walker';
 import * as escodegen from 'escodegen';
 import * as periscopic from 'periscopic';
+import { locate } from 'locate-character';
+import MagicString from 'magic-string';
 import * as acorn from 'acorn'
 import { inspect } from 'util';
 
@@ -37,7 +39,7 @@ export function exthtmlCompile(source_code_content) {
     const ast = parse(source_code_content);
     let { scripts = [], exthtml = [], styles = [] } = extract_sfc_contents_parts(ast)
 
-    console.log(inspect(exthtml, { depth: null, colors: true, showHidden: true }));
+    //console.log(inspect(exthtml, { depth: null, colors: true, showHidden: true }));
     let parsedOutput = parseScriptsAndStylesTags(scripts, styles)
     scripts = parsedOutput[0]
     styles = parsedOutput[1]
@@ -126,6 +128,7 @@ function analyse(exthtml, scripts, styles) {
             }
         });
 
+        /*
         estreewalker.walk(scripts[x].children.body, {
             enter(node, parent) {
                 if (node.type === 'LabeledStatement' && node.label.name === '$') {
@@ -133,62 +136,63 @@ function analyse(exthtml, scripts, styles) {
                     if (parent && Array.isArray(parent.body)) {
                         const index = parent.body.indexOf(node);
                         if (index !== -1) {
-                        parent.body.splice(index, 1, node.body);
-                        // Stop walking this replaced node to avoid confusion
-                        this.skip();
+                            parent.body.splice(index, 1, node.body);
+                            // Stop walking this replaced node to avoid confusion
+                            this.skip();
                         }
                     } else if (parent && parent.type === 'Program') {
                         // If parent is Program, replace in its body array
                         const index = parent.body.indexOf(node);
                         if (index !== -1) {
-                        parent.body.splice(index, 1, node.body);
-                        this.skip();
+                            parent.body.splice(index, 1, node.body);
+                            this.skip();
                         }
                     }
                 }
             }
         });
-        /*
-estreewalker.walk(scripts[x].children.body, {
-    enter(node, parent) {
-        if (node.type === 'LabeledStatement' && node.label.name === '$') {
-            if (parent && Array.isArray(parent.body)) {
-                const index = parent.body.indexOf(node);
-                if (index !== -1) {
-                    // Assuming node.body is an ExpressionStatement or similar
-                    // Extract expression from node.body
-                    let initExpression = null;
 
-                    if (node.body.type === 'ExpressionStatement') {
-                        initExpression = node.body.expression;
-                    } else if (node.body.type === 'Literal' || node.body.type.endsWith('Expression')) {
-                        initExpression = node.body;
-                    } else {
-                        // If node.body is a block or other statement, you need to handle differently
-                        // For now, skip or throw error
-                        this.skip();
-                        return;
+        estreewalker.walk(scripts[x].children.body, {
+            enter(node, parent) {
+                if (node.type === 'LabeledStatement' && node.label.name === '$') {
+                    if (parent && Array.isArray(parent)) {
+                        const index = parent.indexOf(node);
+                        if (index !== -1) {
+                            // Assuming node.body is an ExpressionStatement or similar
+                            // Extract expression from node.body
+                            let initExpression = null;
+                            if (node.body.type === 'ExpressionStatement') {
+                                initExpression = node.body.expression;
+                            } else if (node.body.type === 'Literal' || node.body.type.endsWith('Expression')) {
+                                initExpression = node.body;
+                            } else {
+                                // If node.body is a block or other statement, you need to handle differently
+                                // For now, skip or throw error
+                                this.skip();
+                                return;
+                            }
+
+                            // Create a VariableDeclaration node
+                            const varDecl = {
+                                type: 'VariableDeclaration',
+                                kind: 'let',
+                                declarations: [{
+                                    type: 'VariableDeclarator',
+                                    id: { type: 'Identifier', name: 'x' }, // You can change 'x' to any variable name you want
+                                    init: initExpression,
+                                }]
+                            };
+console.log(inspect(parent, { depth: null, colors: true }));
+                            // Replace the labeled statement with the new let declaration
+                            parent.splice(index, 1, varDecl);
+console.log("------------")
+console.log(inspect(parent, { depth: null, colors: true }));
+                            this.skip();
+                        }
                     }
-
-                    // Create a VariableDeclaration node
-                    const varDecl = {
-                        type: 'VariableDeclaration',
-                        kind: 'let',
-                        declarations: [{
-                            type: 'VariableDeclarator',
-                            id: { type: 'Identifier', name: 'x' }, // You can change 'x' to any variable name you want
-                            init: initExpression,
-                        }]
-                    };
-
-                    // Replace the labeled statement with the new let declaration
-                    parent.body.splice(index, 1, varDecl);
-                    this.skip();
                 }
             }
-        }
-    }
-});
+        });
 */
 
 
@@ -227,7 +231,7 @@ estreewalker.walk(scripts[x].children.body, {
                 if (map.has(node)) currentScope = currentScope.parent;
             },
         });
-        
+
         estreewalker.walk(scripts[x].children.body, {
             enter(node, parent) {
                 if (parent !== null) {
@@ -248,7 +252,7 @@ estreewalker.walk(scripts[x].children.body, {
                 console.log(inspect(map, { depth: null, colors: true, showHidden: true }));
                 console.log(inspect(globals, { depth: null, colors: true, showHidden: true }));
         */
-        console.log(inspect(result, { depth: null, colors: true, showHidden: true }))
+        //console.log(inspect(result, { depth: null, colors: true, showHidden: true }))
     }
 
     return result
@@ -269,7 +273,7 @@ function traverseExthtml(exthtml, result, parent_nm) {
                 result.code.internal_import.add("text")
                 result.code.internal_import.add("append")
                 result.code.internal_import.add("detach")
-                variableName = `dyn_txt_${elem_counter++}`
+                variableName = `$$dyn_txt_${elem_counter++}`
                 result.code.elems.push(variableName)
                 result.code.create.push(`${variableName} = text(${exthtml.value})`)
                 result.code.update.push(`${variableName}.textContent = ${exthtml.value}`)
@@ -281,7 +285,7 @@ function traverseExthtml(exthtml, result, parent_nm) {
                 result.code.internal_import.add("text")
                 result.code.internal_import.add("append")
                 result.code.internal_import.add("detach")
-                variableName = `txt_${elem_counter++}`
+                variableName = `$$txt_${elem_counter++}`
                 result.code.elems.push(variableName)
                 result.code.create.push(`${variableName} = text('${exthtml.value}')`)
                 result.code.mount.push(`append(${parent_nm},${variableName})`)
@@ -289,21 +293,21 @@ function traverseExthtml(exthtml, result, parent_nm) {
                 return
 
             case 'TEXTAREA_TAG':
-                variableName = `textarea_${elem_counter++}`
+                variableName = `$$textarea_${elem_counter++}`
                 break
             case 'TITLE_TAG':
-                variableName = `textarea_${elem_counter++}`
+                variableName = `$$textarea_${elem_counter++}`
                 break
             case 'PLAINTEXT_TAG':
-                variableName = `plaintext_${elem_counter++}`
+                variableName = `$$plaintext_${elem_counter++}`
                 break
             case 'HTML_NESTED_TAG':
-                variableName = `${exthtml.value.toLowerCase()}_${elem_counter++}`
+                variableName = `$$${exthtml.value.toLowerCase()}_${elem_counter++}`
                 break
             case 'SELF_CLOSE_TAG':
                 result.code.internal_import.add("append")
                 result.code.internal_import.add("detach")
-                variableName = `${exthtml.value.toLowerCase()}_${elem_counter++}`
+                variableName = `$$${exthtml.value.toLowerCase()}_${elem_counter++}`
                 result.code.elems.push(variableName)
                 exthtml.dynamic_attrs.forEach(dynamicAttr => traverseExthtmlAttr(dynamicAttr))
                 exthtml.event_attrs.forEach(eventAttr => traverseExthtmlEventAttr(eventAttr))
@@ -321,8 +325,8 @@ function traverseExthtml(exthtml, result, parent_nm) {
         result.code.internal_import.add("append")
         result.code.internal_import.add("detach")
         result.code.elems.push(variableName)
+        
         result.code.create.push(`${variableName} = el('${exthtml.value.toLowerCase()}')`)
-
         exthtml.children.forEach(node => traverseExthtml(node, result, variableName, parent_nm))
         exthtml.attrs.forEach(staticAttr => traverseExthtmlAttr(staticAttr, "STATIC", result, variableName, parent_nm))
         exthtml.dynamic_attrs.forEach(dynamicAttr => traverseExthtmlAttr(dynamicAttr, "DYNAMIC", result, variableName, parent_nm))
@@ -423,7 +427,7 @@ function traverseExthtmlEventAttr(eventAttr, mode, result, variableName, parent_
             (${eventAttr.value}) && (${eventAttr.value})(event);
         }
     `;
-    result.code.update.push(`${variableName}.addEventListener('${eventAttr.name}', ${handlerCode.trim()})`);
+    result.code.mount.push(`${variableName}.addEventListener('${eventAttr.name}', ${handlerCode.trim()})`);
     result.code.destroy.push(`${variableName}.removeEventListener('${eventAttr.name}', ${handlerCode.trim()})`);
 }
 
@@ -490,6 +494,9 @@ function htmlRegularAttr(attr, mode, result, variableName, parent_nm) {
         handleStyleAttr(attr, mode, result, variableName);
         return;
     }
+
+    result.code.internal_import.add("setAttr")
+    result.code.internal_import.add("rmAttr")
 
     if (mode == "STATIC") {
         result.code.create.push(`('${attr.value}') ? setAttr('${variableName}', '${attr.name}', '${attr.value}') : rmAttr('${variableName}', '${attr.name}')`)
@@ -583,30 +590,39 @@ function handleStyleAttr(attr, mode, result, variableName) {
 }
 
 
-function generateCtx(scripts, analysis){
+function generateCtx(scripts, analysis) {
     return `function ctx(){
         ${Array.from(analysis.undeclared_variables).map((v) => `let ${v};`).join('\n')}
-        ${scripts.map( script => escodegen.generate(script.children) )}
+        ${scripts.map(script => escodegen.generate(script.children))}
 
-        return [${[...analysis.declared_variables,analysis.undeclared_variables].join(",")}]
+        return [${[...analysis.declared_variables, ...analysis.undeclared_variables].filter(x => x).join(",")}]
     }
     `
 }
 
-
+//context="module"
 function generate4Web(scripts, styles, analysis) {
-    
     return `${BANNER}
     import {${Array.from(analysis.code.internal_import).join(",")}} from './lib/dom.js';
-    export default function(ctx){
 
-        var lifecycle = {
+    // Shared state at the module scope
+    ${scripts.filter(script => script.attrs.some(attr => attr.name === 'context' && attr.value === 'module')).map(script => escodegen.generate(script.children))}
+
+    export default function(){
+        let ${analysis.code.elems.join(',')}
+
+        ${Array.from(analysis.undeclared_variables).map((v) => `let ${v};`).join('\n')}
+        ${scripts.filter(script => !script.attrs.some(attr => attr.name === 'context' && attr.value === 'module')).map(script => escodegen.generate(script.children))}
+
+        let mounted = false
+        let lifecycle = {
             create() {
                 ${analysis.code.create.join('\n')}
             },
             mount(TARGET) {
                 this.create()
                 ${analysis.code.mount.join('\n')}
+                mounted = true
             },
             update(changed) {
                 ${analysis.code.update.join('\n')}
@@ -615,7 +631,7 @@ function generate4Web(scripts, styles, analysis) {
                 ${analysis.code.destroy.join('\n')}
             },
             capture_state(){
-                return { ${[...analysis.declared_variables,analysis.undeclared_variables].join(",")} }
+                return { ${[...analysis.declared_variables, ...analysis.undeclared_variables].join(",")} }
             }
         }
         return lifecycle;

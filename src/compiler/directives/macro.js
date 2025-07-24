@@ -5,6 +5,9 @@ export { addDirective }
 
 
 function idname(attr,mode,result,variableName,parent_nm) {
+
+    result.code.internal_import.add("setAttr")
+    
     if( mode == "STATIC") {
         result.code.create.push(`setAttr('${variableName}', 'id', '${attr.value}')`)
         result.code.create.push(`setAttr('${variableName}', 'name', '${attr.value}')`)

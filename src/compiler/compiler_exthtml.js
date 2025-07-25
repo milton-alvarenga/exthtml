@@ -614,7 +614,7 @@ function generate4Web(scripts, styles, analysis) {
         ${Array.from(analysis.undeclared_variables).map((v) => `let ${v};`).join('\n')}
         ${scripts.filter(script => !script.attrs.some(attr => attr.name === 'context' && attr.value === 'module')).map(script => escodegen.generate(script.children))}
 
-        let mounted = false
+        let $$_mounted = false
         let lifecycle = {
             create() {
                 ${analysis.code.create.join('\n')}
@@ -622,7 +622,7 @@ function generate4Web(scripts, styles, analysis) {
             mount(TARGET) {
                 this.create()
                 ${analysis.code.mount.join('\n')}
-                mounted = true
+                $$_mounted = true
             },
             update(changed) {
                 ${analysis.code.update.join('\n')}
@@ -636,6 +636,14 @@ function generate4Web(scripts, styles, analysis) {
         }
         return lifecycle;
     }`
+}
+
+function generate4React(scripts, styles, analysis) {
+
+}
+
+function generate4Vue(scripts, styles, analysis) {
+    
 }
 
 function extractor_sfc_walker(ast, scripts, exthtml, styles, level) {

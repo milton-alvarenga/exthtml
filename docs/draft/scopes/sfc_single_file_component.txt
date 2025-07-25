@@ -1,0 +1,16 @@
+<script context="module">
+    Code shared for every component instance and it execute only once for the first component
+</script>
+<script>
+    Code execute for each new component instance
+</script>
+
+<extHTML/>
+
+<style>
+    Local css affecting only the current component
+</style>
+
+<style context="global">
+    CSS to be add to the head of the page and with global effect
+</style>

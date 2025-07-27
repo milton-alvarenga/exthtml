@@ -606,7 +606,7 @@ function generateCtx(scripts, analysis) {
 //context="module"
 function generate4Web(scripts, styles, analysis) {
     return `${BANNER}
-    import {${Array.from(analysis.code.internal_import).join(",")}} from './lib/dom.js';
+    import {${Array.from(analysis.code.internal_import).join(",")}} from 'exthtml/lib/dom.js';
 
     // Shared state at the module scope
     ${scripts.filter(script => script.attrs.some(attr => attr.name === 'context' && attr.value === 'module')).map(script => escodegen.generate(script.children))}

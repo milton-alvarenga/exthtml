@@ -27,15 +27,17 @@
     "url": "https://github.com/milton-alvarenga/exthtml/issues"
   },
   "homepage": "https://github.com/milton-alvarenga/exthtml#readme",
-  "devDependencies": {
+  "dependencies": {
     "acorn": "^8.14.1",
     "css-tree": "^3.1.0",
     "escodegen": "^2.1.0",
     "estree-walker": "^3.0.3",
-    "json-diff": "^1.0.6",
     "magic-string": "^0.30.17",
     "peggy": "^5.0.0",
     "periscopic": "^4.0.2",
     "locate-character": "^3.0.0"
+  },
+  "devDependencies": {
+    "json-diff": "^1.0.6"
   }
 }

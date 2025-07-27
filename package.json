@@ -5,10 +5,10 @@
   "type": "module",
   "scripts": {
     "install": "npm run build",
-    "build": "node bin/create_parser_exthtml.js",
-    "test": "node bin/parse_exthtml.js",
-    "testjs": "node bin/parse_extjs.js",
-    "testval": "node bin/parse_validation.js"
+    "build": "node ./bin/create_parser_exthtml.js",
+    "test": "node ./bin/parse_exthtml.js",
+    "testjs": "node ./bin/parse_extjs.js",
+    "testval": "node ./bin/parse_validation.js"
   },
   "repository": {
     "type": "git",

@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/milton-alvarenga/exthtml.git"
+    "url": "https://github.com/milton-alvarenga/exthtml.git"
   },
   "keywords": [
     "peg",
@@ -20,8 +20,8 @@
     "html5",
     "exthtml"
   ],
-  "author": "alvarenga.milton",
-  "license": "ISC",
+  "author": "alvarenga.milton@drall.com.br",
+  "license": "GPL-2.0",
   "bugs": {
     "url": "https://github.com/milton-alvarenga/exthtml/issues"
   },

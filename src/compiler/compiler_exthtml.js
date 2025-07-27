@@ -366,6 +366,9 @@ function traverseExthtmlAttr(attr, mode, result, variableName, parent_nm) {
         case "class_directive":
             htmlClassDirective(attr, mode, result, variableName, parent_nm)
             break
+        case "lang_directive":
+            htmlLangDirective(attr, mode, result, variableName, parent_nm)
+            break
         case "custom_attribute":
             htmlCustomAttr(attr, mode, result, variableName, parent_nm)
             break

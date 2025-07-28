@@ -623,6 +623,20 @@ function generate4Web(scripts, styles, analysis) {
         ${Array.from(analysis.undeclared_variables).map((v) => `let ${v};`).join('\n')}
         ${scripts.filter(script => !script.attrs.some(attr => attr.name === 'context' && attr.value === 'module')).map(script => escodegen.generate(script.children))}
 
+        let $$collectChanges = [];
+        let $$updateCalled = false;
+        function update(changed) {
+            $$changed.forEach(c => $$collectChanges.push(c));
+    
+            if ($$updateCalled) return;
+            $$updateCalled = true;
+    
+            //update_reactive_declarations();
+            if (typeof lifecycle !== 'undefined') lifecycle.update(collectChanges);
+            $$collectChanges = [];
+            $$updateCalled = false;
+      }
+
         let $$_mounted = false
         let lifecycle = {
             create() {

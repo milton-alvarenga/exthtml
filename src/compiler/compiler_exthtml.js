@@ -8,6 +8,7 @@ import * as customAttr from "./attributes/custom.js"
 import * as estreewalker from 'estree-walker';
 import * as escodegen from 'escodegen';
 import * as periscopic from 'periscopic';
+import * as knownGlobals from './tools/knownGlobals.js';
 import { locate } from 'locate-character';
 import MagicString from 'magic-string';
 import * as acorn from 'acorn'
@@ -79,6 +80,11 @@ function analyse(exthtml, scripts, styles) {
     const result = {
         declared_variables: new Set(),
         undeclared_variables: new Set(),
+        /*
+        Function declarations using the function keyword (e.g., function changeOK() { ... })
+        Function expressions (e.g., const fn = function() { ... })
+        Arrow functions (e.g., const fn = () => { ... })
+        */
         functions: new Set(),
         willChange: new Set(),
         willUseInTemplate: new Set(),
@@ -99,7 +105,7 @@ function analyse(exthtml, scripts, styles) {
     for (let x = 0; x < scripts.length; x++) {
         const { scope: rootScope, map, globals } = periscopic.analyze(scripts[x].children)
         result.declared_variables = new Set(rootScope.declarations.keys())
-        result.undeclared_variables = Array.from(globals.keys());
+        result.undeclared_variables = Array.from(globals.keys()).filter(v => !knownGlobals.functions.has(v));
         //console.log(inspect(scripts[x].children.body, { depth: null, colors: true }));
 
         scripts[x].children.body.forEach((node, index) => {

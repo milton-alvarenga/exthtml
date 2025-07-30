@@ -13,7 +13,7 @@ export function parseScript(script_ast){
     }
 
     const code = node.value
-    return acorn.parse(code, { ecmaVersion: 2022 })
+    return parseCode(code)
 }
 
 export function parseCode(source_code){
@@ -32,6 +32,21 @@ function extract_names(jsNode, result = []) {
   }
   return result;
 }
+
+// alert
+// confirm
+// prompt
+// setTimeout
+// clearTimeout
+// setInterval
+// clearInterval
+// console.xxxx
+// fetch
+// localStorage
+// sessionStorage
+// navigator.xxxxx
+// history.xxxxxx
+// window.xxxxx
 
 /*
 Program Structure

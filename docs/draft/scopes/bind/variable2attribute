@@ -1,0 +1,15 @@
+Replace on HTML directive the "" by {} like:
+<img src={imageUrl} />
+
+
+Boolean attributes like disabled can also be bound dynamically:
+<button disabled={isDisabled}>Click me</button>
+When isDisabled is false, the disabled attribute is removed from the DOM
+
+
+<script>
+  let name = '';
+</script>
+
+<input value={name} />
+<p>Hello {name}!</p>

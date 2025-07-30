@@ -1,0 +1,56 @@
+Dual databind
+
+For two-way binding (variable and element stay in sync), extHTML uses the bind ":" directive:
+
+￼<input :value={username} />
+
+
+
+The HTML attributes that make sense to have dual (two-way) data binding are primarily those related to user input and interaction, where the UI element's value/state should stay synchronized with the underlying data model. These include:
+
+value on inputs such as:
+
+<input type="text"> (text inputs)
+
+<input type="number"> (numeric inputs)
+
+<input type="range"> (sliders)
+
+<textarea>
+
+<select> dropdowns (including multiple select)
+
+checked on:
+
+<input type="checkbox">
+
+<input type="radio">
+
+selected on <option> elements inside <select>
+
+files on <input type="file"> (less common, but can be bound for file uploads)
+
+Custom Components that need to sent data to parent
+
+Why these attributes?
+These attributes represent user-editable state that can change both from the UI (user input) and from the programmatic data model.
+
+Two-way binding ensures that when the user changes the input, the data model updates automatically, and when the data model changes (e.g., via code), the UI reflects those changes immediately.
+
+<input type="text" :value={input} />
+<input type="checkbox" :value={email} />
+<select :value={selectedOption}>
+  <option value="1">One</option>
+  <option value="2">Two</option>
+</select>
+This ensures changes in the input or checkbox update the data, and data changes update the UI.
+
+Summary
+HTML Attribute  	Element Types	                    Makes Sense for Two-Way Binding?    	Reason
+value	            <input>, <textarea>, <select>	    Yes	                                    Represents user-editable content
+checked	            `<input type="checkbox	radio">`	Yes
+selected	        <option> inside <select>	        Yes	                                    Represents selected option(s)
+files	            <input type="file">	                Sometimes	                            For file input synchronization
+Attributes like disabled, readonly, or class typically do not require two-way binding because they represent UI state controlled by the program, not user input.
+
+In conclusion, two-way data binding is most meaningful for attributes that represent user input values or selection states, enabling seamless synchronization between the UI and the data model.

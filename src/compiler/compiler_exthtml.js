@@ -1,7 +1,7 @@
 import fs from 'fs/promises';
 import { parse } from "../parse/exthtml/parser_exthtml.js"
 import { parseStyle } from "../parse/css/parser_css.js"
-import { parseScript } from "../parse/js/parser_js.js"
+import { parseScript, parseCode } from "../parse/js/parser_js.js"
 import * as macro from "./directives/macro.js"
 import * as drall from "./directives/drall.js"
 import * as customAttr from "./attributes/custom.js"
@@ -46,7 +46,7 @@ export function exthtmlCompile(source_code_content) {
     styles = parsedOutput[1]
 
     const analysis = analyse(exthtml, scripts, styles)
-
+console.log(analysis);
     const generated_ctx = generateCtx(scripts, analysis)
     const generate_code = generate4Web(scripts, styles, analysis)
     return [scripts, exthtml, styles, generate_code, generated_ctx]
@@ -75,10 +75,34 @@ function parseScriptsAndStylesTags(scripts, styles) {
     return [scripts, styles]
 }
 
-
+//https://www.perplexity.ai/search/program-structure-program-bloc-5ZZ_Sz1qS3K.m2rsWCXETg
 function analyse(exthtml, scripts, styles) {
+
+        let vars = {
+            count: {
+                v:[0],
+                ,dependencies:{
+                    variable:[],
+                    components:[],
+                    directives:[]
+                },
+                dependents:{
+                    variable:[],
+                    components:[],
+                    directives:[]
+                }
+            }
+        };
+
+        let dirty_queue = {
+            target_var:{
+                generated_by
+            }
+        }
+
     const result = {
         declared_variables: new Set(),
+        declared_const: new Set(),
         undeclared_variables: new Set(),
         /*
         Function declarations using the function keyword (e.g., function changeOK() { ... })
@@ -103,11 +127,13 @@ function analyse(exthtml, scripts, styles) {
     const toRemove = new Set()
 
     for (let x = 0; x < scripts.length; x++) {
+        script_pre_analyse(scripts[x].children)
         const { scope: rootScope, map, globals } = periscopic.analyze(scripts[x].children)
         result.declared_variables = new Set(rootScope.declarations.keys())
         result.undeclared_variables = Array.from(globals.keys()).filter(v => !knownGlobals.functions.has(v));
         //console.log(inspect(scripts[x].children.body, { depth: null, colors: true }));
 
+        /*
         scripts[x].children.body.forEach((node, index) => {
             if (node.type === 'LabeledStatement' && node.label.name === '$') {
                 toRemove.add(node);
@@ -134,7 +160,7 @@ function analyse(exthtml, scripts, styles) {
             }
         });
 
-        /*
+
         estreewalker.walk(scripts[x].children.body, {
             enter(node, parent) {
                 if (node.type === 'LabeledStatement' && node.label.name === '$') {
@@ -252,16 +278,24 @@ console.log(inspect(parent, { depth: null, colors: true }));
         });
 
         exthtml.forEach(node => traverseExthtml(node, result, 'TARGET'))
-
         /*
-                console.log(inspect(scope, { depth: null, colors: true, showHidden: true }));
-                console.log(inspect(map, { depth: null, colors: true, showHidden: true }));
-                console.log(inspect(globals, { depth: null, colors: true, showHidden: true }));
+        console.log(inspect(scope, { depth: null, colors: true, showHidden: true }));
+        console.log(inspect(map, { depth: null, colors: true, showHidden: true }));
+        console.log(inspect(globals, { depth: null, colors: true, showHidden: true }));
         */
-        //console.log(inspect(result, { depth: null, colors: true, showHidden: true }))
+       //console.log(inspect(result, { depth: null, colors: true, showHidden: true }))
+       script_pos_analyse(scripts[x].children)
     }
 
     return result
+}
+
+function script_pre_analyse(script){
+
+}
+
+function script_pos_analyse(script){
+
 }
 
 function traverseExthtml(exthtml, result, parent_nm) {
@@ -283,6 +317,8 @@ function traverseExthtml(exthtml, result, parent_nm) {
                 result.code.elems.push(variableName)
                 result.code.create.push(`${variableName} = text(${exthtml.value})`)
                 result.code.update.push(`${variableName}.textContent = ${exthtml.value}`)
+                extract_relevant_parts(exthtml.value, result)
+                //result.willUseInTemplate.add()
                 result.code.mount.push(`append(${parent_nm},${variableName})`)
                 result.code.destroy.push(`detach(${variableName})`)
                 return
@@ -598,6 +634,12 @@ function handleStyleAttr(attr, mode, result, variableName) {
     }
 }
 
+function extract_relevant_parts(code){
+    let ast = parseCode(code)
+
+    console.log(inspect(parseCode(exthtml.value), { depth: null, colors: true }))
+}
+
 
 function generateCtx(scripts, analysis) {
     return `function ctx(){
@@ -625,7 +667,7 @@ function generate4Web(scripts, styles, analysis) {
 
         let $$collectChanges = [];
         let $$updateCalled = false;
-        function update(changed) {
+        function $$update(changed) {
             $$changed.forEach(c => $$collectChanges.push(c));
     
             if ($$updateCalled) return;

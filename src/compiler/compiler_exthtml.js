@@ -77,11 +77,11 @@ function parseScriptsAndStylesTags(scripts, styles) {
 
 //https://www.perplexity.ai/search/program-structure-program-bloc-5ZZ_Sz1qS3K.m2rsWCXETg
 function analyse(exthtml, scripts, styles) {
-
+/*
         let vars = {
             count: {
                 v:[0],
-                ,dependencies:{
+                dependencies:{
                     variable:[],
                     components:[],
                     directives:[]
@@ -94,12 +94,13 @@ function analyse(exthtml, scripts, styles) {
             }
         };
 
-        let dirty_queue = {
-            target_var:{
-                generated_by
+        let dirty_queue = [
+            {
+                target_var:
+                generated_by:
             }
-        }
-
+        ]
+*/
     const result = {
         declared_variables: new Set(),
         declared_const: new Set(),
@@ -471,7 +472,7 @@ function traverseExthtmlEventAttr(eventAttr, mode, result, variableName, parent_
             ${mouseKeyCheck}
             (${eventAttr.value}) && (${eventAttr.value})(event);
         }
-    `;
+    `.replace(/^\s*[\r\n]/gm, '');
     result.code.mount.push(`${variableName}.addEventListener('${eventAttr.name}', ${handlerCode.trim()})`);
     result.code.destroy.push(`${variableName}.removeEventListener('${eventAttr.name}', ${handlerCode.trim()})`);
 }
@@ -714,7 +715,7 @@ function generate4Vue(scripts, styles, analysis) {
 function extractor_sfc_walker(ast, scripts, exthtml, styles, level) {
     level = level || 1
     let output = []
-    for (let i = 0; i < ast.length; i++) {
+    for (let i = 0; i < ast.length-1; i++) {
         let node = ast[i];
         if (node.section != 'ExtHTMLDocument') {
             continue

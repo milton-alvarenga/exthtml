@@ -4,12 +4,38 @@ class DependencyGroup {
     this.components = new Set();
     this.directives = new Set();
     this.functions = new Set();
+    this.texts = new Set();
   }
 }
 
+
+export class DependencyTree {
+  constructor(tree = {}) {
+    this.tree = tree;  // use the passed tree or empty object
+  }
+
+  get(varname) {
+    if (!this.tree[varname]) {
+      this.tree[varname] = new Variable();
+    }
+    return this.tree[varname];
+  }
+}
+
+
+/*
+export function addDependency(dependent, dependsOn) {
+  if (!dependencyGraph[dependent]) {
+    dependencyGraph[dependent] = new Set();
+  }
+  dependencyGraph[dependent].add(dependsOn);
+}
+*/
+
+
 class Variable {
   constructor(initialValue = undefined) {
-    this.v = initialValue === undefined ? [] : [initialValue];
+    this._v = initialValue === undefined ? [] : [initialValue];
     this._declarationType = ""; // var, let, export, etc.
     this.dependsOn = new DependencyGroup();
     this.dependents = new DependencyGroup();
@@ -34,13 +60,13 @@ class Variable {
 
   // Add a new value only if different from the latest
   set v(newValue) {
-    if (newValue !== this.v[this.v.length - 1]) {
+    if (newValue !== this._v[this.v.length - 1]) {
       this.v.push(newValue);
     }
   }
 
   // Get the current/latest value
   get v() {
-    return this.v[this.v.length - 1];
+    return this._v[this._v.length - 1];
   }
 }

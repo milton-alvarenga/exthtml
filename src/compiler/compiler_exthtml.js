@@ -13,6 +13,7 @@ import { locate } from 'locate-character';
 import MagicString from 'magic-string';
 import * as acorn from 'acorn'
 import { inspect } from 'util';
+import { DependencyTree } from './internals/variable.js';
 
 //import { style } from "../analyse/exthtml/directives/style";
 
@@ -105,6 +106,7 @@ function analyse(exthtml, scripts, styles) {
         declared_variables: new Set(),
         declared_const: new Set(),
         undeclared_variables: new Set(),
+        dependencyTree: new DependencyTree(),
         /*
         Function declarations using the function keyword (e.g., function changeOK() { ... })
         Function expressions (e.g., const fn = function() { ... })
@@ -234,6 +236,19 @@ console.log(inspect(parent, { depth: null, colors: true }));
         //scripts[x].children.body = scripts[x].children.body.filter((node) => !toRemove.has(node))
         result.reactiveDeclarations = reactiveDeclarations
 
+        estreewalker.walk(scripts[x].children, {
+            enter(node, parent) {
+                // should now show the Program node for top-level nodes
+                if (node.type === 'VariableDeclaration' && parent.type === 'Program') {
+                    node.declarations.forEach(decl => {
+                        let depVar = result.dependencyTree.get(decl.id.name);
+                        depVar.declarationType = node.kind;
+                        result.dependencyTree[decl.id.name] = depVar;
+                    });
+                }
+            }
+        });
+
 
         let currentScope = rootScope
         estreewalker.walk(scripts[x].children.body, {
@@ -278,7 +293,7 @@ console.log(inspect(parent, { depth: null, colors: true }));
             }
         });
 
-        exthtml.forEach(node => traverseExthtml(node, result, 'TARGET'))
+        // exthtml.forEach(node => traverseExthtml(node, result, 'TARGET'))
         /*
         console.log(inspect(scope, { depth: null, colors: true, showHidden: true }));
         console.log(inspect(map, { depth: null, colors: true, showHidden: true }));

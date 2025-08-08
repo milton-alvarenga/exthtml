@@ -39,8 +39,8 @@ export async function exthtmlCompileFile(filePath) {
 
 export function exthtmlCompile(source_code_content) {
     const ast = parse(source_code_content);
-    let { scripts = [], exthtml = [], styles = [] } = extract_sfc_contents_parts(ast)
 
+    let { scripts = [], exthtml = [], styles = [] } = extract_sfc_contents_parts(ast)
     //console.log(inspect(exthtml, { depth: null, colors: true, showHidden: true }));
     let parsedOutput = parseScriptsAndStylesTags(scripts, styles)
     scripts = parsedOutput[0]
@@ -293,7 +293,7 @@ console.log(inspect(parent, { depth: null, colors: true }));
             }
         });
 
-        // exthtml.forEach(node => traverseExthtml(node, result, 'TARGET'))
+        exthtml.forEach(node => traverseExthtml(node, result, 'TARGET'))
         /*
         console.log(inspect(scope, { depth: null, colors: true, showHidden: true }));
         console.log(inspect(map, { depth: null, colors: true, showHidden: true }));
@@ -333,8 +333,7 @@ function traverseExthtml(exthtml, result, parent_nm) {
                 result.code.elems.push(variableName)
                 result.code.create.push(`${variableName} = text(${exthtml.value})`)
                 result.code.update.push(`${variableName}.textContent = ${exthtml.value}`)
-                extract_relevant_parts(exthtml.value, result)
-                //result.willUseInTemplate.add()
+                extract_relevant_js_parts_evaluated_to_string(exthtml.value, result)
                 result.code.mount.push(`append(${parent_nm},${variableName})`)
                 result.code.destroy.push(`detach(${variableName})`)
                 return
@@ -502,6 +501,7 @@ function htmlBooleanAttr(attr, mode, result, variableName, parent_nm) {
     if (mode == "STATIC") {
         result.code.create.push(`('${attr.value}') ? setAttr('${variableName}', '${attr.name}', '${attr.value}') : rmAttr('${variableName}', '${attr.name}')`)
     } else {
+        //@TODO - Boolean aqui
         result.code.update.push(`(${attr.value}) ? setAttr('${variableName}', '${attr.name}', ${attr.value}) : rmAttr('${variableName}', '${attr.name}')`)
     }
 }
@@ -520,6 +520,7 @@ function htmlDataAttr(attr, mode, result, variableName, parent_nm) {
         // For static, check if the value is truthy to set or remove dataset property
         result.code.create.push(`('${attr.value}') ? ${variableName}.dataset['${dataKey}'] = '${attr.value}' : delete ${variableName}.dataset['${dataKey}']`)
     } else {
+        extract_relevant_js_parts_evaluated_to_string(attr.value, result)
         // For dynamic, evaluate expression and set or delete accordingly
         result.code.update.push(`(${attr.value}) ? ${variableName}.dataset['${dataKey}'] = ${attr.value} : delete ${variableName}.dataset['${dataKey}']`)
     }
@@ -529,6 +530,7 @@ function htmlClassDirective(attr, mode, result, variableName, parent_nm) {
     if (mode != "DYNAMIC") {
         throw Error(`${htmlClassDirective.name} function: Invalid ${mode.toLowerCase()} attribute on class directive as it is only dynamic attribute`)
     }
+    //@TODO - Boolean aqui
     //class:xxxxxx
     result.code.update.push(`(!!(${attr.value})) ? ${variableName}.classList.add('${attr.name}'): ${variableName}.classList.remove('${attr.name}')`)
 }
@@ -542,6 +544,7 @@ function htmlRegularAttr(attr, mode, result, variableName, parent_nm) {
 
             operations.forEach(operation => {
                 let [_class, expression] = operation.split(":");
+                //@TODO - Boolean aqui
                 result.code.update.push(`(!!(${expression})) ? ${variableName}.classList.add('${_class}'): ${variableName}.classList.remove('${_class}')`)
             });
         } else {
@@ -562,6 +565,7 @@ function htmlRegularAttr(attr, mode, result, variableName, parent_nm) {
     if (mode == "STATIC") {
         result.code.create.push(`('${attr.value}') ? setAttr('${variableName}', '${attr.name}', '${attr.value}') : rmAttr('${variableName}', '${attr.name}')`)
     } else {
+        extract_relevant_js_parts_evaluated_to_string(attr.value, result)
         result.code.update.push(`(${attr.value}) ? setAttr('${variableName}', '${attr.name}', ${attr.value}) : rmAttr('${variableName}', '${attr.name}')`)
     }
 }
@@ -587,7 +591,7 @@ function htmlDrallDirective(attr, mode, result, variableName, parent_nm) {
     if (!(attr.name in drall.directives)) {
         throw Error(`${htmlDrallDirective.name} function: Invalid ${mode.toLowerCase()} attribute on ${attr.name} as it is macro directive attribute but the compiler could not found it on directive list`)
     }
-
+    //@TODO - Add parser on dynamic value
     drall.directives[attr.name](attr, mode, result, variableName, parent_nm)
 }
 
@@ -598,6 +602,7 @@ function htmlMacroDirective(attr, mode, result, variableName, parent_nm) {
         throw Error(`${htmlMacroDirective.name} function: Invalid ${mode.toLowerCase()} attribute on ${attr.name} as it is macro directive attribute but the compiler could not found it on directive list`)
     }
 
+    //@TODO - Add parser on dynamic value
     macro.directives[attr.name](attr, mode, result, variableName, parent_nm)
 }
 
@@ -624,6 +629,7 @@ function handleStyleAttr(attr, mode, result, variableName) {
 
         // To keep it simple, generate a helper function in update code:
 
+        //@TODO - See all formats and adapt the code
         result.code.update.push(`
             (function() {
                 const el = ${variableName};
@@ -650,9 +656,23 @@ function handleStyleAttr(attr, mode, result, variableName) {
     }
 }
 
-function extract_relevant_parts(code){
+function extract_relevant_js_parts_evaluated_to_string(code, result){
     let ast = parseCode(code)
 
+    estreewalker.walk(ast.body, {
+        enter(node) {
+            if (node.name ){
+                result.willUseInTemplate.add(node.name)
+            }
+        }
+    })
+    
+    //console.log(inspect(ast, { depth: null, colors: true }))
+}
+
+function extract_relevant_js_parts_evaluated_to_bool(code){
+    let ast = parseCode(code)
+ExpressionStatement
     console.log(inspect(parseCode(exthtml.value), { depth: null, colors: true }))
 }
 
@@ -741,7 +761,7 @@ function extractor_sfc_walker(ast, scripts, exthtml, styles, level) {
         } else if (node.type == 'STYLE_TAG') {
             styles.push(node)
         } else {
-            node.children = extractor_sfc_walker(node.children, scripts, exthtml, styles, level + 1)
+            extractor_sfc_walker(node.children, scripts, exthtml, styles, level + 1)
             if (level == 1) {
                 exthtml.push(node)
             }

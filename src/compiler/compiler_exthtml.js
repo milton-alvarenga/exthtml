@@ -499,10 +499,10 @@ function htmlBooleanAttr(attr, mode, result, variableName, parent_nm) {
     result.code.internal_import.add("rmAttr")
 
     if (mode == "STATIC") {
-        result.code.create.push(`('${attr.value}') ? setAttr('${variableName}', '${attr.name}', '${attr.value}') : rmAttr('${variableName}', '${attr.name}')`)
+        result.code.create.push(`('${attr.value}') ? setAttr(${variableName}, '${attr.name}', '${attr.value}') : rmAttr('${variableName}', '${attr.name}')`)
     } else {
         //@TODO - Boolean aqui
-        result.code.update.push(`(${attr.value}) ? setAttr('${variableName}', '${attr.name}', ${attr.value}) : rmAttr('${variableName}', '${attr.name}')`)
+        result.code.update.push(`(${attr.value}) ? setAttr(${variableName}, '${attr.name}', ${attr.value}) : rmAttr('${variableName}', '${attr.name}')`)
     }
 }
 
@@ -563,10 +563,10 @@ function htmlRegularAttr(attr, mode, result, variableName, parent_nm) {
     result.code.internal_import.add("rmAttr")
 
     if (mode == "STATIC") {
-        result.code.create.push(`('${attr.value}') ? setAttr('${variableName}', '${attr.name}', '${attr.value}') : rmAttr('${variableName}', '${attr.name}')`)
+        result.code.create.push(`('${attr.value}') ? setAttr(${variableName}, '${attr.name}', '${attr.value}') : rmAttr('${variableName}', '${attr.name}')`)
     } else {
         extract_relevant_js_parts_evaluated_to_string(attr.value, result)
-        result.code.update.push(`(${attr.value}) ? setAttr('${variableName}', '${attr.name}', ${attr.value}) : rmAttr('${variableName}', '${attr.name}')`)
+        result.code.update.push(`(${attr.value}) ? setAttr(${variableName}, '${attr.name}', ${attr.value}) : rmAttr('${variableName}', '${attr.name}')`)
     }
 }
 
@@ -591,7 +591,6 @@ function htmlDrallDirective(attr, mode, result, variableName, parent_nm) {
     if (!(attr.name in drall.directives)) {
         throw Error(`${htmlDrallDirective.name} function: Invalid ${mode.toLowerCase()} attribute on ${attr.name} as it is macro directive attribute but the compiler could not found it on directive list`)
     }
-    //@TODO - Add parser on dynamic value
     drall.directives[attr.name](attr, mode, result, variableName, parent_nm)
 }
 
@@ -601,8 +600,6 @@ function htmlMacroDirective(attr, mode, result, variableName, parent_nm) {
     if (!(attr.name in macro.directives)) {
         throw Error(`${htmlMacroDirective.name} function: Invalid ${mode.toLowerCase()} attribute on ${attr.name} as it is macro directive attribute but the compiler could not found it on directive list`)
     }
-
-    //@TODO - Add parser on dynamic value
     macro.directives[attr.name](attr, mode, result, variableName, parent_nm)
 }
 
@@ -656,9 +653,10 @@ function handleStyleAttr(attr, mode, result, variableName) {
     }
 }
 
-function extract_relevant_js_parts_evaluated_to_string(code, result){
+export function extract_relevant_js_parts_evaluated_to_string(code, result){
     let ast = parseCode(code)
 
+    //ExpressionStatement
     estreewalker.walk(ast.body, {
         enter(node) {
             if (node.name ){
@@ -672,7 +670,7 @@ function extract_relevant_js_parts_evaluated_to_string(code, result){
 
 function extract_relevant_js_parts_evaluated_to_bool(code){
     let ast = parseCode(code)
-ExpressionStatement
+
     console.log(inspect(parseCode(exthtml.value), { depth: null, colors: true }))
 }
 

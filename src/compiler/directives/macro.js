@@ -13,9 +13,22 @@ function idname(attr,mode,result,variableName,parent_nm) {
         result.code.create.push(`setAttr(${variableName}, 'id', '${attr.value}')`)
         result.code.create.push(`setAttr(${variableName}, 'name', '${attr.value}')`)
     } else {
-        extract_relevant_js_parts_evaluated_to_string(attr.value, result)
-        result.code.update.push(`setAttr(${variableName}, 'id', ${attr.value})`)
-        result.code.update.push(`setAttr(${variableName}, 'name', ${attr.value})`)
+        reactiveFnName = `${variableName}__idname`
+        let usedVars = extract_relevant_js_parts_evaluated_to_string(attr.value, result)
+        for (const v of usedVars) {
+            let depVar = result.dependencyTree.get(v)
+            depVar.dependents.directives.add(reactiveFnName)
+            result.dependencyTree[v] = depVar;
+        }
+        result.code.reactives.push(`function ${reactiveFnName}(){\n
+            setAttr(${variableName}, 'id', \`${attr.value}\`)\n
+            setAttr(${variableName}, 'name', \`${attr.value}\`)\n
+        }`)
+
+        /*
+        result.code.update.push(`setAttr(${variableName}, 'id', \`${attr.value}\`)`)
+        result.code.update.push(`setAttr(${variableName}, 'name', \`${attr.value}\`)`)
+        */
     }
 }
 

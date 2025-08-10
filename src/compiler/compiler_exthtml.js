@@ -47,7 +47,7 @@ export function exthtmlCompile(source_code_content) {
     styles = parsedOutput[1]
 
     const analysis = analyse(exthtml, scripts, styles)
-console.log(analysis);
+console.log(inspect(analysis, { depth: null, colors: true }))
     const generated_ctx = generateCtx(scripts, analysis)
     const generate_code = generate4Web(scripts, styles, analysis)
     return [scripts, exthtml, styles, generate_code, generated_ctx]
@@ -119,6 +119,7 @@ function analyse(exthtml, scripts, styles) {
         code: {
             internal_import: new Set(),
             elems: [],
+            reactives:[],
             create: [],
             mount: [],
             update: [],
@@ -292,8 +293,6 @@ console.log(inspect(parent, { depth: null, colors: true }));
                 }
             }
         });
-
-        exthtml.forEach(node => traverseExthtml(node, result, 'TARGET'))
         /*
         console.log(inspect(scope, { depth: null, colors: true, showHidden: true }));
         console.log(inspect(map, { depth: null, colors: true, showHidden: true }));
@@ -302,6 +301,8 @@ console.log(inspect(parent, { depth: null, colors: true }));
        //console.log(inspect(result, { depth: null, colors: true, showHidden: true }))
        script_pos_analyse(scripts[x].children)
     }
+
+    exthtml.forEach(node => traverseExthtml(node, result, 'TARGET'))
 
     return result
 }
@@ -316,6 +317,7 @@ function script_pos_analyse(script){
 
 function traverseExthtml(exthtml, result, parent_nm) {
     let variableName = ''
+    let reactiveFnName = ''
     try {
         switch (exthtml.type) {
             case 'NEW_LINE':
@@ -330,10 +332,17 @@ function traverseExthtml(exthtml, result, parent_nm) {
                 result.code.internal_import.add("append")
                 result.code.internal_import.add("detach")
                 variableName = `$$dyn_txt_${elem_counter++}`
+                reactiveFnName = `${variableName}__textContent`
                 result.code.elems.push(variableName)
                 result.code.create.push(`${variableName} = text(${exthtml.value})`)
-                result.code.update.push(`${variableName}.textContent = ${exthtml.value}`)
-                extract_relevant_js_parts_evaluated_to_string(exthtml.value, result)
+                //result.code.update.push(`${variableName}.textContent = \`${exthtml.value}\``)
+                let usedVars = extract_relevant_js_parts_evaluated_to_string(exthtml.value, result)
+                for (const v of usedVars) {
+                    let depVar = result.dependencyTree.get(v)
+                    depVar.dependents.directives.add(reactiveFnName)
+                    result.dependencyTree[v] = depVar;
+                }
+                result.code.reactives.push(`function ${reactiveFnName}(){${variableName}.textContent = \`${exthtml.value}\`}`)
                 result.code.mount.push(`append(${parent_nm},${variableName})`)
                 result.code.destroy.push(`detach(${variableName})`)
                 return
@@ -520,9 +529,19 @@ function htmlDataAttr(attr, mode, result, variableName, parent_nm) {
         // For static, check if the value is truthy to set or remove dataset property
         result.code.create.push(`('${attr.value}') ? ${variableName}.dataset['${dataKey}'] = '${attr.value}' : delete ${variableName}.dataset['${dataKey}']`)
     } else {
-        extract_relevant_js_parts_evaluated_to_string(attr.value, result)
+        let reactiveFnName = `${variableName}__dataset`
+
+        let usedVars = extract_relevant_js_parts_evaluated_to_string(attr.value, result)
+        for (const v of usedVars) {
+            let depVar = result.dependencyTree.get(v)
+            depVar.dependents.directives.add(reactiveFnName)
+            result.dependencyTree[v] = depVar;
+        }
+
+
         // For dynamic, evaluate expression and set or delete accordingly
-        result.code.update.push(`(${attr.value}) ? ${variableName}.dataset['${dataKey}'] = ${attr.value} : delete ${variableName}.dataset['${dataKey}']`)
+        //result.code.update.push(`(${attr.value}) ? ${variableName}.dataset['${dataKey}'] = ${attr.value} : delete ${variableName}.dataset['${dataKey}']`)
+        result.code.reactives.push(`function ${reactiveFnName}(){(${attr.value}) ? ${variableName}.dataset['${dataKey}'] = ${attr.value} : delete ${variableName}.dataset['${dataKey}']}`)
     }
 }
 
@@ -565,7 +584,15 @@ function htmlRegularAttr(attr, mode, result, variableName, parent_nm) {
     if (mode == "STATIC") {
         result.code.create.push(`('${attr.value}') ? setAttr(${variableName}, '${attr.name}', '${attr.value}') : rmAttr('${variableName}', '${attr.name}')`)
     } else {
-        extract_relevant_js_parts_evaluated_to_string(attr.value, result)
+        let reactiveFnName = `${variableName}__${attr.name}`
+
+        let usedVars = extract_relevant_js_parts_evaluated_to_string(attr.value, result)
+        for (const v of usedVars) {
+            let depVar = result.dependencyTree.get(v)
+            depVar.dependents.directives.add(reactiveFnName)
+            result.dependencyTree[v] = depVar;
+        }
+
         result.code.update.push(`(${attr.value}) ? setAttr(${variableName}, '${attr.name}', ${attr.value}) : rmAttr('${variableName}', '${attr.name}')`)
     }
 }
@@ -656,14 +683,20 @@ function handleStyleAttr(attr, mode, result, variableName) {
 export function extract_relevant_js_parts_evaluated_to_string(code, result){
     let ast = parseCode(code)
 
+    let usedVars = new Set()
+
+
     //ExpressionStatement
     estreewalker.walk(ast.body, {
         enter(node) {
             if (node.name ){
                 result.willUseInTemplate.add(node.name)
+                usedVars.add(node.name)
             }
         }
     })
+
+    return usedVars
     
     //console.log(inspect(ast, { depth: null, colors: true }))
 }
@@ -687,6 +720,7 @@ function generateCtx(scripts, analysis) {
 
 //context="module"
 function generate4Web(scripts, styles, analysis) {
+    //${scripts.filter(script => !script.attrs.some(attr => attr.name === 'context' && attr.value === 'module')).map(script => escodegen.generate(script.children))}
     return `${BANNER}
     import {${Array.from(analysis.code.internal_import).join(",")}} from 'exthtml/lib/dom.js';
 
@@ -697,7 +731,8 @@ function generate4Web(scripts, styles, analysis) {
         let ${analysis.code.elems.join(',')}
 
         ${Array.from(analysis.undeclared_variables).map((v) => `let ${v};`).join('\n')}
-        ${scripts.filter(script => !script.attrs.some(attr => attr.name === 'context' && attr.value === 'module')).map(script => escodegen.generate(script.children))}
+        
+        ${analysis.code.reactives.join('\n')}
 
         let $$collectChanges = [];
         let $$updateCalled = false;

@@ -244,7 +244,6 @@ console.log(inspect(parent, { depth: null, colors: true }));
                     node.declarations.forEach(decl => {
                         let depVar = result.dependencyTree.get(decl.id.name);
                         depVar.declarationType = node.kind;
-                        result.dependencyTree[decl.id.name] = depVar;
                     });
                 }
             }
@@ -340,7 +339,7 @@ function traverseExthtml(exthtml, result, parent_nm) {
                 for (const v of usedVars) {
                     let depVar = result.dependencyTree.get(v)
                     depVar.dependents.directives.add(reactiveFnName)
-                    result.dependencyTree[v] = depVar;
+                    
                 }
                 result.code.reactives.push(`function ${reactiveFnName}(){${variableName}.textContent = \`${exthtml.value}\`}`)
                 result.code.mount.push(`append(${parent_nm},${variableName})`)
@@ -535,7 +534,7 @@ function htmlDataAttr(attr, mode, result, variableName, parent_nm) {
         for (const v of usedVars) {
             let depVar = result.dependencyTree.get(v)
             depVar.dependents.directives.add(reactiveFnName)
-            result.dependencyTree[v] = depVar;
+            ;
         }
 
 
@@ -590,7 +589,7 @@ function htmlRegularAttr(attr, mode, result, variableName, parent_nm) {
         for (const v of usedVars) {
             let depVar = result.dependencyTree.get(v)
             depVar.dependents.directives.add(reactiveFnName)
-            result.dependencyTree[v] = depVar;
+            ;
         }
 
         result.code.update.push(`(${attr.value}) ? setAttr(${variableName}, '${attr.name}', ${attr.value}) : rmAttr('${variableName}', '${attr.name}')`)

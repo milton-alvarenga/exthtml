@@ -16,9 +16,19 @@ export class DependencyTree {
 
   get(varname) {
     if (!this.tree[varname]) {
-      this.tree[varname] = new Variable();
+      this.tree[varname] = new Variable()
     }
-    return this.tree[varname];
+
+    /*
+    const variable = this.tree[varname]
+    // The save method updates the tree with the current variable value
+    variable.save = () => {
+      this.tree[varname] = variable
+    }
+    return variable
+    */
+
+    return this.tree[varname]
   }
 }
 

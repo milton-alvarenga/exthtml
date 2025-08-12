@@ -509,8 +509,16 @@ function htmlBooleanAttr(attr, mode, result, variableName, parent_nm) {
     if (mode == "STATIC") {
         result.code.create.push(`('${attr.value}') ? setAttr(${variableName}, '${attr.name}', '${attr.value}') : rmAttr('${variableName}', '${attr.name}')`)
     } else {
-        //@TODO - Boolean aqui
-        result.code.update.push(`(${attr.value}) ? setAttr(${variableName}, '${attr.name}', ${attr.value}) : rmAttr('${variableName}', '${attr.name}')`)
+        reactiveFnName = `${variableName}__${attr.name}`
+        let usedVars = extract_relevant_js_parts_evaluated_to_boolean(attr.value, result)
+        for (const v of usedVars) {
+            let depVar = result.dependencyTree.get(v)
+            depVar.dependents.directives.add(reactiveFnName)
+        }
+        result.code.reactives.push(`function ${reactiveFnName}(){\n
+            (${attr.value}) ? setAttr(${variableName}, '${attr.name}', ${attr.value} ? "" : false) : rmAttr('${variableName}', '${attr.name}')
+        }`)
+        //result.code.update.push(`(${attr.value}) ? setAttr(${variableName}, '${attr.name}', ${attr.value}) : rmAttr('${variableName}', '${attr.name}')`)
     }
 }
 
@@ -700,10 +708,8 @@ export function extract_relevant_js_parts_evaluated_to_string(code, result){
     //console.log(inspect(ast, { depth: null, colors: true }))
 }
 
-function extract_relevant_js_parts_evaluated_to_bool(code){
-    let ast = parseCode(code)
-
-    console.log(inspect(parseCode(exthtml.value), { depth: null, colors: true }))
+function extract_relevant_js_parts_evaluated_to_boolean(code, result){
+    return extract_relevant_js_parts_evaluated_to_string(code, result)
 }
 
 

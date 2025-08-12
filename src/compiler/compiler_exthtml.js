@@ -242,8 +242,21 @@ console.log(inspect(parent, { depth: null, colors: true }));
                 // should now show the Program node for top-level nodes
                 if (node.type === 'VariableDeclaration' && parent.type === 'Program') {
                     node.declarations.forEach(decl => {
+
                         let depVar = result.dependencyTree.get(decl.id.name);
                         depVar.declarationType = node.kind;
+                        if (decl.init) {
+                            estreewalker.walk(decl.init, {
+                                enter(innerNode) {
+                                    if (innerNode.type === 'Identifier') {
+                                        let _depVar = result.dependencyTree.get(innerNode.name);
+                                        _depVar.dependents.variables.add(innerNode.name);
+                                        depVar.dependsOn.variables.add(innerNode.name);
+                                    }
+                                }
+                            });
+                        }
+                        
                     });
                 }
             }
@@ -341,7 +354,7 @@ function traverseExthtml(exthtml, result, parent_nm) {
                     depVar.dependents.directives.add(reactiveFnName)
                     
                 }
-                result.code.reactives.push(`function ${reactiveFnName}(){${variableName}.textContent = \`${exthtml.value}\`}`)
+                result.code.reactives.push(`function ${reactiveFnName}(){${variableName}.textContent = ${exthtml.value}}`)
                 result.code.mount.push(`append(${parent_nm},${variableName})`)
                 result.code.destroy.push(`detach(${variableName})`)
                 return
@@ -486,17 +499,20 @@ function traverseExthtmlEventAttr(eventAttr, mode, result, variableName, parent_
         }
     }
 
+    let reactiveFnName = `${variableName}__handlerCode`
     // Compose the full event handler code snippet
     // DYNAMIC mode: eventAttr.value is an expression to be evaluated at runtime
     const handlerCode = `
-        function(event) {
+        function ${reactiveFnName}(event) {
             ${modifierChecks}
             ${mouseKeyCheck}
-            (${eventAttr.value}) && (${eventAttr.value})(event);
+            (${eventAttr.value}) && (${eventAttr.value})(event)
         }
     `.replace(/^\s*[\r\n]/gm, '');
-    result.code.mount.push(`${variableName}.addEventListener('${eventAttr.name}', ${handlerCode.trim()})`);
-    result.code.destroy.push(`${variableName}.removeEventListener('${eventAttr.name}', ${handlerCode.trim()})`);
+
+    result.code.reactives.push(`${handlerCode.trim()}\n`)
+    result.code.mount.push(`${variableName}.addEventListener('${eventAttr.name}', ${reactiveFnName})`);
+    result.code.destroy.push(`${variableName}.removeEventListener('${eventAttr.name}', ${reactiveFnName})`);
 }
 
 

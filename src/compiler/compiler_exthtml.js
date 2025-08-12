@@ -525,7 +525,7 @@ function htmlBooleanAttr(attr, mode, result, variableName, parent_nm) {
     if (mode == "STATIC") {
         result.code.create.push(`('${attr.value}') ? setAttr(${variableName}, '${attr.name}', '${attr.value}') : rmAttr('${variableName}', '${attr.name}')`)
     } else {
-        reactiveFnName = `${variableName}__${attr.name}`
+        let reactiveFnName = `${variableName}__${attr.name}`
         let usedVars = extract_relevant_js_parts_evaluated_to_boolean(attr.value, result)
         for (const v of usedVars) {
             let depVar = result.dependencyTree.get(v)
@@ -572,9 +572,17 @@ function htmlClassDirective(attr, mode, result, variableName, parent_nm) {
     if (mode != "DYNAMIC") {
         throw Error(`${htmlClassDirective.name} function: Invalid ${mode.toLowerCase()} attribute on class directive as it is only dynamic attribute`)
     }
-    //@TODO - Boolean aqui
+    let reactiveFnName = `${variableName}__${attr.name}`
+    let usedVars = extract_relevant_js_parts_evaluated_to_boolean(attr.value, result)
+    for (const v of usedVars) {
+        let depVar = result.dependencyTree.get(v)
+        depVar.dependents.directives.add(reactiveFnName)
+    }
+    result.code.reactives.push(`function ${reactiveFnName}(){
+        (!!(${attr.value})) ? ${variableName}.classList.add('${attr.name}'): ${variableName}.classList.remove('${attr.name}')
+    }`)
     //class:xxxxxx
-    result.code.update.push(`(!!(${attr.value})) ? ${variableName}.classList.add('${attr.name}'): ${variableName}.classList.remove('${attr.name}')`)
+    //result.code.update.push(`(!!(${attr.value})) ? ${variableName}.classList.add('${attr.name}'): ${variableName}.classList.remove('${attr.name}')`)
 }
 
 function htmlRegularAttr(attr, mode, result, variableName, parent_nm) {

@@ -250,7 +250,7 @@ console.log(inspect(parent, { depth: null, colors: true }));
                                 enter(innerNode) {
                                     if (innerNode.type === 'Identifier') {
                                         let _depVar = result.dependencyTree.get(innerNode.name);
-                                        _depVar.dependents.variables.add(innerNode.name);
+                                        _depVar.dependents.variables.add(decl.id.name);
                                         depVar.dependsOn.variables.add(innerNode.name);
                                     }
                                 }

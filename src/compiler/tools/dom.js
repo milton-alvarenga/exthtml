@@ -6,7 +6,7 @@ function byId(id){
     return document.getElementById(id)
 }
 
-function setAttr(elem, name, value) {
+export function setAttr(elem, name, value) {
     if (!(elem instanceof Element)) {
         throw new Error('First argument must be a DOM Element')
     }
@@ -22,7 +22,7 @@ function setAttr(elem, name, value) {
     }
 }
 
-function rmAttr(elem,name){
+export function rmAttr(elem,name){
     return elem.removeAttribute(name);
 }
 

@@ -594,12 +594,21 @@ function htmlRegularAttr(attr, mode, result, variableName, parent_nm) {
 
             operations.forEach(operation => {
                 let [_class, expression] = operation.split(":");
-                //@TODO - Boolean aqui
-                result.code.update.push(`(!!(${expression})) ? ${variableName}.classList.add('${_class}'): ${variableName}.classList.remove('${_class}')`)
+                let reactiveFnName = `${variableName}__${_class}`
+                let usedVars = extract_relevant_js_parts_evaluated_to_boolean(expression, result)
+                for (const v of usedVars) {
+                    let depVar = result.dependencyTree.get(v)
+                    depVar.dependents.directives.add(reactiveFnName)
+                }
+                result.code.reactives.push(`function ${reactiveFnName}(){
+                    (!!(${expression})) ? ${variableName}.classList.add('${_class}'): ${variableName}.classList.remove('${_class}')
+                }`)
+
+                //result.code.update.push(`(!!(${expression})) ? ${variableName}.classList.add('${_class}'): ${variableName}.classList.remove('${_class}')`)
             });
         } else {
             // Static class attribute: set once on create
-            result.code.create.push(`${variableName}.classList.add('${attr.value}')`)
+            result.code.create.push(`${variableName}.classList.add('${attr.value.split(" ").map(cls => `"${cls}"`).join(", ")}')`)
         }
         return
     }

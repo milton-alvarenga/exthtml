@@ -351,7 +351,7 @@ function traverseExthtml(exthtml, result, parent_nm) {
                 let usedVars = extract_relevant_js_parts_evaluated_to_string(exthtml.value, result)
                 for (const v of usedVars) {
                     let depVar = result.dependencyTree.get(v)
-                    depVar.dependents.directives.add(reactiveFnName)
+                    depVar.dependents.texts.add(reactiveFnName)
                     
                 }
                 result.code.reactives.push(`function ${reactiveFnName}(){${variableName}.textContent = ${exthtml.value}}`)

@@ -118,6 +118,8 @@ function analyse(exthtml, scripts, styles) {
         reactiveDeclarations: {},
         code: {
             internal_import: new Set(),
+            shared_state:[],
+            regular_state:[],
             elems: [],
             reactives:[],
             create: [],
@@ -131,7 +133,7 @@ function analyse(exthtml, scripts, styles) {
     const toRemove = new Set()
 
     for (let x = 0; x < scripts.length; x++) {
-        script_pre_analyse(scripts[x].children)
+        script_pre_analyse(scripts[x], result)
         const { scope: rootScope, map, globals } = periscopic.analyze(scripts[x].children)
         result.declared_variables = new Set(rootScope.declarations.keys())
         result.undeclared_variables = Array.from(globals.keys()).filter(v => !knownGlobals.functions.has(v));
@@ -311,7 +313,8 @@ console.log(inspect(parent, { depth: null, colors: true }));
         console.log(inspect(globals, { depth: null, colors: true, showHidden: true }));
         */
        //console.log(inspect(result, { depth: null, colors: true, showHidden: true }))
-       script_pos_analyse(scripts[x].children)
+       console.log(scripts)
+       script_pos_analyse(scripts[x], result)
     }
 
     exthtml.forEach(node => traverseExthtml(node, result, 'TARGET'))
@@ -319,12 +322,14 @@ console.log(inspect(parent, { depth: null, colors: true }));
     return result
 }
 
-function script_pre_analyse(script){
+function script_pre_analyse(script, result){
 
 }
 
-function script_pos_analyse(script){
-
+function script_pos_analyse(script, result){
+    if ( script.attrs.some(attr => attr.name == 'context' && attr.value === 'module') ) {
+        result.code.shared_state.push(escodegen.generate(script.children))
+    }
 }
 
 function traverseExthtml(exthtml, result, parent_nm) {
@@ -354,7 +359,7 @@ function traverseExthtml(exthtml, result, parent_nm) {
                     depVar.dependents.texts.add(reactiveFnName)
                     
                 }
-                result.code.reactives.push(`function ${reactiveFnName}(){${variableName}.textContent = ${exthtml.value}}`)
+                result.code.reactives.push(`function ${reactiveFnName}(){${variableName}.textContent = ${exthtml.value}}\n`)
                 result.code.mount.push(`append(${parent_nm},${variableName})`)
                 result.code.destroy.push(`detach(${variableName})`)
                 return
@@ -579,7 +584,7 @@ function htmlClassDirective(attr, mode, result, variableName, parent_nm) {
         depVar.dependents.directives.add(reactiveFnName)
     }
     result.code.reactives.push(`function ${reactiveFnName}(){
-        (!!(${attr.value})) ? ${variableName}.classList.add('${attr.name}'): ${variableName}.classList.remove('${attr.name}')
+        (!!(${attr.value})) ? ${variableName}.classList.add('${attr.name.trim()}'): ${variableName}.classList.remove('${attr.name}')
     }`)
     //class:xxxxxx
     //result.code.update.push(`(!!(${attr.value})) ? ${variableName}.classList.add('${attr.name}'): ${variableName}.classList.remove('${attr.name}')`)
@@ -601,14 +606,14 @@ function htmlRegularAttr(attr, mode, result, variableName, parent_nm) {
                     depVar.dependents.directives.add(reactiveFnName)
                 }
                 result.code.reactives.push(`function ${reactiveFnName}(){
-                    (!!(${expression})) ? ${variableName}.classList.add('${_class}'): ${variableName}.classList.remove('${_class}')
+                    (!!(${expression})) ? ${variableName}.classList.add('${_class.trim()}'): ${variableName}.classList.remove('${_class}')
                 }`)
 
                 //result.code.update.push(`(!!(${expression})) ? ${variableName}.classList.add('${_class}'): ${variableName}.classList.remove('${_class}')`)
             });
         } else {
             // Static class attribute: set once on create
-            result.code.create.push(`${variableName}.classList.add('${attr.value.split(" ").map(cls => `"${cls}"`).join(", ")}')`)
+            result.code.create.push(`${variableName}.classList.add('${attr.value.split(" ").map(cls => `"${cls.trim()}"`).join(", ")}')`)
         }
         return
     }
@@ -622,7 +627,7 @@ function htmlRegularAttr(attr, mode, result, variableName, parent_nm) {
     result.code.internal_import.add("rmAttr")
 
     if (mode == "STATIC") {
-        result.code.create.push(`('${attr.value}') ? setAttr(${variableName}, '${attr.name}', '${attr.value}') : rmAttr('${variableName}', '${attr.name}')`)
+        result.code.create.push(`('${attr.value}') ? setAttr(${variableName}, '${attr.name}', '${attr.value}') : rmAttr(${variableName}, '${attr.name}')`)
     } else {
         let reactiveFnName = `${variableName}__${attr.name}`
 
@@ -764,9 +769,10 @@ function generate4Web(scripts, styles, analysis) {
     //${scripts.filter(script => !script.attrs.some(attr => attr.name === 'context' && attr.value === 'module')).map(script => escodegen.generate(script.children))}
     return `${BANNER}
     import {${Array.from(analysis.code.internal_import).join(",")}} from 'exthtml/lib/dom.js';
+    import {getType} from './src/runtime/reactive.js'
 
     // Shared state at the module scope
-    ${scripts.filter(script => script.attrs.some(attr => attr.name === 'context' && attr.value === 'module')).map(script => escodegen.generate(script.children))}
+    ${analysis.code.shared_state.join("\n")}
 
     export default function(){
         let ${analysis.code.elems.join(',')}
@@ -774,20 +780,6 @@ function generate4Web(scripts, styles, analysis) {
         ${Array.from(analysis.undeclared_variables).map((v) => `let ${v};`).join('\n')}
         
         ${analysis.code.reactives.join('\n')}
-
-        let $$collectChanges = [];
-        let $$updateCalled = false;
-        function $$update(changed) {
-            $$changed.forEach(c => $$collectChanges.push(c));
-    
-            if ($$updateCalled) return;
-            $$updateCalled = true;
-    
-            //update_reactive_declarations();
-            if (typeof lifecycle !== 'undefined') lifecycle.update(collectChanges);
-            $$collectChanges = [];
-            $$updateCalled = false;
-      }
 
         let $$_mounted = false
         let lifecycle = {

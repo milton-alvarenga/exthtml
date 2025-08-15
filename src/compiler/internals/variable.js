@@ -45,38 +45,49 @@ export function addDependency(dependent, dependsOn) {
 
 class Variable {
   constructor(initialValue = undefined) {
-    this._v = initialValue === undefined ? [] : [initialValue];
-    this._declarationType = ""; // var, let, export, etc.
-    this.dependsOn = new DependencyGroup();
-    this.dependents = new DependencyGroup();
+    this._v = initialValue === undefined ? [] : [initialValue]
+    this._declarationType = "" // var, let, export, etc.
+    this._dataType = ""
+    this.dependsOn = new DependencyGroup()
+    this.dependents = new DependencyGroup()
   }
 
   get declarationType() {
-    return this._declarationType;
+    return this._declarationType
   }
 
   set declarationType(value) {
     const allowedValues = ["var", "let", "export", "const"];
     if (allowedValues.includes(value)) {
-      this._declarationType = value;
+      this._declarationType = value
     } else {
       throw new Error(
         `Invalid value for declarationType: ${value}. Allowed values are ${allowedValues.join(
           ", "
         )}`
-      );
+      )
     }
   }
 
   // Add a new value only if different from the latest
   set v(newValue) {
     if (newValue !== this._v[this.v.length - 1]) {
-      this.v.push(newValue);
+      this.v.push(newValue)
     }
   }
 
   // Get the current/latest value
   get v() {
-    return this._v[this._v.length - 1];
+    return this._v[this._v.length - 1]
+  }
+
+  set dataType(newValue) {
+    if (this._dataType == "" && newValue !== this._dataType) {
+      this._dataType = newValue
+    }
+  }
+
+  get dataType(){
+    return this._dataType;
   }
 }

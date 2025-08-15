@@ -313,7 +313,6 @@ console.log(inspect(parent, { depth: null, colors: true }));
         console.log(inspect(globals, { depth: null, colors: true, showHidden: true }));
         */
        //console.log(inspect(result, { depth: null, colors: true, showHidden: true }))
-       console.log(scripts)
        script_pos_analyse(scripts[x], result)
     }
 
@@ -329,6 +328,7 @@ function script_pre_analyse(script, result){
 function script_pos_analyse(script, result){
     if ( script.attrs.some(attr => attr.name == 'context' && attr.value === 'module') ) {
         result.code.shared_state.push(escodegen.generate(script.children))
+        return
     }
 }
 
@@ -769,7 +769,7 @@ function generate4Web(scripts, styles, analysis) {
     //${scripts.filter(script => !script.attrs.some(attr => attr.name === 'context' && attr.value === 'module')).map(script => escodegen.generate(script.children))}
     return `${BANNER}
     import {${Array.from(analysis.code.internal_import).join(",")}} from 'exthtml/lib/dom.js';
-    import {getType} from './src/runtime/reactive.js'
+    import {setReactive, checkReactive} from './src/runtime/reactive.js'
 
     // Shared state at the module scope
     ${analysis.code.shared_state.join("\n")}
@@ -780,6 +780,10 @@ function generate4Web(scripts, styles, analysis) {
         ${Array.from(analysis.undeclared_variables).map((v) => `let ${v};`).join('\n')}
         
         ${analysis.code.reactives.join('\n')}
+
+
+        let $$changes = new Set()
+
 
         let $$_mounted = false
         let lifecycle = {

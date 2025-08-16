@@ -30,7 +30,23 @@ function extract_names(jsNode, result = []) {
       extract_names(jsNode.right, result);
       break;
   }
-  return result;
+  return result
+}
+
+export function createSetReactiveNode(varName) {
+    return {
+        type: 'ExpressionStatement',
+        expression: {
+            type: 'CallExpression',
+            callee: { type: 'Identifier', name: 'setReactive' },
+            arguments: [
+                { type: 'Literal', value: varName },
+                { type: 'Identifier', name: varName },
+                { type: 'Identifier', name: 'dependencyTree' },
+                { type: 'Identifier', name: '$$_changes' }
+            ]
+        }
+    }
 }
 
 // alert

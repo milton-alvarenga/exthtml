@@ -1,7 +1,7 @@
 import fs from 'fs/promises';
 import { parse } from "../parse/exthtml/parser_exthtml.js"
 import { parseStyle } from "../parse/css/parser_css.js"
-import { parseScript, parseCode } from "../parse/js/parser_js.js"
+import { parseScript, parseCode, createSetReactiveNode } from "../parse/js/parser_js.js"
 import * as macro from "./directives/macro.js"
 import * as drall from "./directives/drall.js"
 import * as customAttr from "./attributes/custom.js"
@@ -47,7 +47,7 @@ export function exthtmlCompile(source_code_content) {
     styles = parsedOutput[1]
 
     const analysis = analyse(exthtml, scripts, styles)
-console.log(inspect(analysis, { depth: null, colors: true }))
+//console.log(inspect(analysis, { depth: null, colors: true }))
     const generated_ctx = generateCtx(scripts, analysis)
     const generate_code = generate4Web(scripts, styles, analysis)
     return [scripts, exthtml, styles, generate_code, generated_ctx]
@@ -258,7 +258,18 @@ console.log(inspect(parent, { depth: null, colors: true }));
                                 }
                             });
                         }
-                        
+
+
+                        // Insert a new statement after this VariableDeclaration node
+                        const setReactiveNode = createSetReactiveNode(decl.id.name);
+
+                        // Find the index of the current VariableDeclaration node in parent's body
+                        const index = parent.body.indexOf(node);
+
+                        // Insert the setReactive statement right after in the parent's body array
+                        if (index !== -1) {
+                            parent.body.splice(index + 1, 0, setReactiveNode);
+                        }
                     });
                 }
             }
@@ -730,14 +741,14 @@ function handleStyleAttr(attr, mode, result, variableName) {
 
 export function extract_relevant_js_parts_evaluated_to_string(code, result){
     let ast = parseCode(code)
-
+    //console.log(inspect(ast, { depth: null, colors: true }))
     let usedVars = new Set()
 
 
     //ExpressionStatement
     estreewalker.walk(ast.body, {
         enter(node) {
-            if (node.name ){
+            if ( node.name ){
                 result.willUseInTemplate.add(node.name)
                 usedVars.add(node.name)
             }
@@ -779,13 +790,24 @@ function generate4Web(scripts, styles, analysis) {
 
         ${Array.from(analysis.undeclared_variables).map((v) => `let ${v};`).join('\n')}
         
+
+        ${scripts.filter(script => !script.attrs.some(attr => attr.name === 'context' && attr.value === 'module')).map(script => escodegen.generate(script.children))}
+
+
         ${analysis.code.reactives.join('\n')}
 
 
+        let $$_mounted = false
+        let $$_updating = false
         let $$changes = new Set()
 
+        let $$_changes = function(nm){
+            $$changes.add(nm)
+            if(!$$_updating){
+                lifecycle.update();
+            }
+        }
 
-        let $$_mounted = false
         let lifecycle = {
             create() {
                 ${analysis.code.create.join('\n')}
@@ -795,8 +817,17 @@ function generate4Web(scripts, styles, analysis) {
                 ${analysis.code.mount.join('\n')}
                 $$_mounted = true
             },
-            update(changed) {
+            update() {
+                if(!$$_mounted) return
+                $$_updating = true
                 ${analysis.code.update.join('\n')}
+                let firstElement
+                while(firstElement = $$changes.values().next().value){
+                    // Remove the first element
+                    $$changes.delete(firstElement)
+                }
+
+                $$_updating = false
             },
             destroy(TARGET) {
                 ${analysis.code.destroy.join('\n')}

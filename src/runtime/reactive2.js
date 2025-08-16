@@ -40,18 +40,22 @@ function getType(value) {
   return REFERENCE;
 }
 
-function r(value, $$changes){
+function r(nm, value, $$_changes){
   if ( getType(value) ==  PRIMITIVE ) {
     return value
   }
 
-  return buildProxy(value, (change) => track(change,$$changes))
+  return buildProxy(value, (change) => track(change,nm, $$_changes))
 }
 
-function setReactive(nm, value, dependencyTree,$$changes){
+function setReactive(nm, value, dependencyTree,$$_changes){
   let depVar = dependencyTree.get(nm)
   depVar.dataType = getType(value)
-  depVar.v = r(value,$$changes)
+  if( depVar.dataType == PRIMITIVE ){
+    depVar.v = value
+    return
+  }
+  depVar.v = buildProxy(value, (change) => track(change,nm, $$_changes))
 }
 
 function checkReactive(nm,value,dependencyTree,$$changes){
@@ -63,6 +67,8 @@ function checkReactive(nm,value,dependencyTree,$$changes){
   }
 }
 
-function track(change,$$changes){
+function track(change, nm, $$_changes){
+  $$_changes(nm)
 
+  console.log("function track: ",change)
 }

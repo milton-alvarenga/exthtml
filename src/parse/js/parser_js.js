@@ -42,7 +42,23 @@ export function createSetReactiveNode(varName) {
             arguments: [
                 { type: 'Literal', value: varName },
                 { type: 'Identifier', name: varName },
-                { type: 'Identifier', name: 'dependencyTree' },
+                { type: 'Identifier', name: '$$_dependencyTree' },
+                { type: 'Identifier', name: '$$_changes' }
+            ]
+        }
+    }
+}
+
+export function createCheckReactiveNode(varName) {
+    return {
+        type: 'ExpressionStatement',
+        expression: {
+            type: 'CallExpression',
+            callee: { type: 'Identifier', name: 'checkReactive' },
+            arguments: [
+                { type: 'Literal', value: varName },
+                { type: 'Identifier', name: varName },
+                { type: 'Identifier', name: '$$_dependencyTree' },
                 { type: 'Identifier', name: '$$_changes' }
             ]
         }

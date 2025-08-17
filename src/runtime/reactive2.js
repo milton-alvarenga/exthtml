@@ -58,12 +58,12 @@ export function setReactive(nm, value, dependencyTree,$$_changes){
   depVar.v = buildProxy(value, (change) => track(change,nm, $$_changes))
 }
 
-export function checkReactive(nm,value,dependencyTree,$$changes){
+export function checkReactive(nm,value,dependencyTree,$$_changes){
   let depVar = dependencyTree.get(nm)
 
   if( depVar.dataType == PRIMITIVE && depVar.v != value){
     depVar.v = value
-    $$changes.add(nm)
+    $$_changes(nm)
   }
 }
 

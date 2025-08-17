@@ -820,7 +820,7 @@ function generate4Web(scripts, styles, analysis) {
     return `${BANNER}
     import {${Array.from(analysis.code.internal_import).join(",")}} from 'exthtml/lib/dom.js';
     import {setReactive, checkReactive} from 'exthtml/src/runtime/reactive.js'
-    import { DependencyTree } from 'exthtml/src/internals/variable.js'
+    import { DependencyTree } from 'exthtml/src/compiler/internals/variable.js'
 
 
     // Shared state at the module scope

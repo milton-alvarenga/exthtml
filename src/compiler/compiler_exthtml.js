@@ -834,6 +834,12 @@ function generate4Web(scripts, styles, analysis) {
         let $$_dependencyTree = new DependencyTree()
         let $$_depVar = null
 
+        let $$_changes = function(nm){
+            $$changes.add(nm)
+            if(!$$_updating){
+                lifecycle.update();
+            }
+        }
 
         ${scripts.filter(script => !script.attrs.some(attr => attr.name === 'context' && attr.value === 'module')).map(script => escodegen.generate(script.children))}
 
@@ -844,13 +850,6 @@ function generate4Web(scripts, styles, analysis) {
         let $$_mounted = false
         let $$_updating = false
         let $$changes = new Set()
-
-        let $$_changes = function(nm){
-            $$changes.add(nm)
-            if(!$$_updating){
-                lifecycle.update();
-            }
-        }
 
         ${analysis.code.dependencyTree.join('\n')}
 

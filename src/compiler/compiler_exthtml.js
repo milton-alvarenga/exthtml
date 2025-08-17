@@ -830,12 +830,13 @@ function generate4Web(scripts, styles, analysis) {
         let ${analysis.code.elems.join(',')}
 
         ${Array.from(analysis.undeclared_variables).map((v) => `let ${v};`).join('\n')}
-        
-
-        ${scripts.filter(script => !script.attrs.some(attr => attr.name === 'context' && attr.value === 'module')).map(script => escodegen.generate(script.children))}
 
         let $$_dependencyTree = new DependencyTree()
         let $$_depVar = null
+
+
+        ${scripts.filter(script => !script.attrs.some(attr => attr.name === 'context' && attr.value === 'module')).map(script => escodegen.generate(script.children))}
+
 
         ${analysis.code.reactives.join('\n')}
 

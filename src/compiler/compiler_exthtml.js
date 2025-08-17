@@ -872,7 +872,7 @@ function generate4Web(scripts, styles, analysis) {
                 while(firstElement = $$changes.values().next().value){
                     $$_depVar = $$_dependencyTree.get(firstElement)
                     for (let key in $$_depVar.dependents) {
-                        for (let fn of $_depVar.dependents[key]) {
+                        for (let fn of $$_depVar.dependents[key]) {
                             $$_depVar.dependents[key].fn()
                         }
                     }

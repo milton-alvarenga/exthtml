@@ -118,10 +118,11 @@ function analyse(exthtml, scripts, styles) {
         reactiveDeclarations: {},
         code: {
             internal_import: new Set(),
-            shared_state:[],
-            regular_state:[],
+            shared_state: [],
+            regular_state: [],
+            dependencyTree: [],
             elems: [],
-            reactives:[],
+            reactives: [],
             create: [],
             mount: [],
             update: [],
@@ -247,6 +248,8 @@ console.log(inspect(parent, { depth: null, colors: true }));
 
                         let depVar = result.dependencyTree.get(decl.id.name);
                         depVar.declarationType = node.kind;
+                        result.code.dependencyTree.push(`$$_depVar = $$_dependencyTree.get('${decl.id.name}')`)
+                        result.code.dependencyTree.push(`$$_depVar.declarationType = '${node.kind}'`)
                         if (decl.init) {
                             estreewalker.walk(decl.init, {
                                 enter(innerNode) {
@@ -254,6 +257,9 @@ console.log(inspect(parent, { depth: null, colors: true }));
                                         let _depVar = result.dependencyTree.get(innerNode.name);
                                         _depVar.dependents.variables.add(decl.id.name);
                                         depVar.dependsOn.variables.add(innerNode.name);
+                                        result.code.dependencyTree.push(`$$_depVar.dependsOn.variables.add(${innerNode.name})`)
+                                        result.code.dependencyTree.push(`$$_depVar = $$_dependencyTree.get('${innerNode.name}')`)
+                                        result.code.dependencyTree.push(`$$_depVar.dependents.variables.add('${decl.id.name}')`)
                                     }
                                 }
                             });
@@ -391,7 +397,8 @@ function traverseExthtml(exthtml, result, parent_nm) {
                 for (const v of usedVars) {
                     let depVar = result.dependencyTree.get(v)
                     depVar.dependents.texts.add(reactiveFnName)
-                    
+                    result.code.dependencyTree.push(`$$_depVar = $$_dependencyTree.get('${v}')`)
+                    result.code.dependencyTree.push(`$$_depVar.dependents.texts.add(${reactiveFnName})`)
                 }
                 result.code.reactives.push(`function ${reactiveFnName}(){${variableName}.textContent = ${exthtml.value}}\n`)
                 result.code.mount.push(`append(${parent_nm},${variableName})`)
@@ -569,6 +576,8 @@ function htmlBooleanAttr(attr, mode, result, variableName, parent_nm) {
         for (const v of usedVars) {
             let depVar = result.dependencyTree.get(v)
             depVar.dependents.directives.add(reactiveFnName)
+            result.code.dependencyTree.push(`$$_depVar = $$_dependencyTree.get('${v}')`)
+            result.code.dependencyTree.push(`$$_depVar.dependents.directives.add(${reactiveFnName})`)
         }
         result.code.reactives.push(`function ${reactiveFnName}(){\n
             (${attr.value}) ? setAttr(${variableName}, '${attr.name}', ${attr.value} ? "" : false) : rmAttr('${variableName}', '${attr.name}')
@@ -597,7 +606,8 @@ function htmlDataAttr(attr, mode, result, variableName, parent_nm) {
         for (const v of usedVars) {
             let depVar = result.dependencyTree.get(v)
             depVar.dependents.directives.add(reactiveFnName)
-            ;
+            result.code.dependencyTree.push(`$$_depVar = $$_dependencyTree.get('${v}')`)
+            result.code.dependencyTree.push(`$$_depVar.dependents.directives.add(${reactiveFnName})`)
         }
 
 
@@ -616,6 +626,8 @@ function htmlClassDirective(attr, mode, result, variableName, parent_nm) {
     for (const v of usedVars) {
         let depVar = result.dependencyTree.get(v)
         depVar.dependents.directives.add(reactiveFnName)
+        result.code.dependencyTree.push(`$$_depVar = $$_dependencyTree.get('${v}')`)
+        result.code.dependencyTree.push(`$$_depVar.dependents.directives.add(${reactiveFnName})`)
     }
     result.code.reactives.push(`function ${reactiveFnName}(){
         (!!(${attr.value})) ? ${variableName}.classList.add('${attr.name.trim()}'): ${variableName}.classList.remove('${attr.name}')
@@ -638,6 +650,8 @@ function htmlRegularAttr(attr, mode, result, variableName, parent_nm) {
                 for (const v of usedVars) {
                     let depVar = result.dependencyTree.get(v)
                     depVar.dependents.directives.add(reactiveFnName)
+                    result.code.dependencyTree.push(`$$_depVar = $$_dependencyTree.get('${v}')`)
+                    result.code.dependencyTree.push(`$$_depVar.dependents.directives.add(${reactiveFnName})`)
                 }
                 result.code.reactives.push(`function ${reactiveFnName}(){
                     (!!(${expression})) ? ${variableName}.classList.add('${_class.trim()}'): ${variableName}.classList.remove('${_class}')
@@ -669,6 +683,8 @@ function htmlRegularAttr(attr, mode, result, variableName, parent_nm) {
         for (const v of usedVars) {
             let depVar = result.dependencyTree.get(v)
             depVar.dependents.directives.add(reactiveFnName)
+            result.code.dependencyTree.push(`$$_depVar = $$_dependencyTree.get('${v}')`)
+            result.code.dependencyTree.push(`$$_depVar.dependents.directives.add(${reactiveFnName})`)
         }
 
         result.code.reactives.push(`function ${reactiveFnName}(){
@@ -804,6 +820,8 @@ function generate4Web(scripts, styles, analysis) {
     return `${BANNER}
     import {${Array.from(analysis.code.internal_import).join(",")}} from 'exthtml/lib/dom.js';
     import {setReactive, checkReactive} from './src/runtime/reactive.js'
+    import { DependencyTree } from './internals/variable.js'
+
 
     // Shared state at the module scope
     ${analysis.code.shared_state.join("\n")}
@@ -816,6 +834,8 @@ function generate4Web(scripts, styles, analysis) {
 
         ${scripts.filter(script => !script.attrs.some(attr => attr.name === 'context' && attr.value === 'module')).map(script => escodegen.generate(script.children))}
 
+        let $$_dependencyTree = new DependencyTree()
+        let $$_depVar = null
 
         ${analysis.code.reactives.join('\n')}
 
@@ -831,6 +851,8 @@ function generate4Web(scripts, styles, analysis) {
             }
         }
 
+        ${analysis.code.dependencyTree.join('\n')}
+
         let lifecycle = {
             create() {
                 ${analysis.code.create.join('\n')}
@@ -842,6 +864,7 @@ function generate4Web(scripts, styles, analysis) {
             },
             update() {
                 if(!$$_mounted) return
+                if($$_updating) return
                 $$_updating = true
                 ${analysis.code.update.join('\n')}
                 let firstElement

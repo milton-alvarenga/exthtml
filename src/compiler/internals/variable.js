@@ -71,8 +71,8 @@ class Variable {
 
   // Add a new value only if different from the latest
   set v(newValue) {
-    if (newValue !== this._v[this.v.length - 1]) {
-      this.v.push(newValue)
+    if (newValue !== this._v[this._v.length - 1]) {
+      this._v.push(newValue)
     }
   }
 

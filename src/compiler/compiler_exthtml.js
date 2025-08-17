@@ -870,7 +870,7 @@ function generate4Web(scripts, styles, analysis) {
                 ${analysis.code.update.join('\n')}
                 let firstElement
                 while(firstElement = $$changes.values().next().value){
-                    $$_depVar = dependencyTree.get(firstElement)
+                    $$_depVar = $$_dependencyTree.get(firstElement)
                     for (let key in $$_depVar.dependents) {
                         $$_depVar.dependents[key].map(v => v())
                     }

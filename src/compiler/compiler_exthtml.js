@@ -936,7 +936,7 @@ function generate4Vue(scripts, styles, analysis) {
 function extractor_sfc_walker(ast, scripts, exthtml, styles, level) {
     level = level || 1
     let output = []
-    for (let i = 0; i < ast.length-1; i++) {
+    for (let i = 0; i < ast.length; i++) {
         let node = ast[i];
         if (node.section != 'ExtHTMLDocument') {
             continue

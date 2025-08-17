@@ -833,6 +833,7 @@ function generate4Web(scripts, styles, analysis) {
 
         let $$_dependencyTree = new DependencyTree()
         let $$_depVar = null
+        let $$changes = new Set()
 
         let $$_changes = function(nm){
             $$changes.add(nm)
@@ -849,7 +850,7 @@ function generate4Web(scripts, styles, analysis) {
 
         let $$_mounted = false
         let $$_updating = false
-        let $$changes = new Set()
+        
 
         ${analysis.code.dependencyTree.join('\n')}
 

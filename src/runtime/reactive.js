@@ -1,5 +1,3 @@
-import {Var} from './var.js'
-
 //based on 
 // https://www.perplexity.ai/search/what-is-the-best-method-on-mod-e4qA9bJETdSeXK7FtBsNQQ
 // and

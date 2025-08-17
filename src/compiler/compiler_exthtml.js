@@ -819,7 +819,7 @@ function generate4Web(scripts, styles, analysis) {
     //${scripts.filter(script => !script.attrs.some(attr => attr.name === 'context' && attr.value === 'module')).map(script => escodegen.generate(script.children))}
     return `${BANNER}
     import {${Array.from(analysis.code.internal_import).join(",")}} from 'exthtml/lib/dom.js';
-    import {setReactive, checkReactive} from 'exthtml/src/runtime/reactive.js'
+    import {setReactive, checkReactive} from 'exthtml/src/runtime/reactive2.js'
     import { DependencyTree } from 'exthtml/src/compiler/internals/variable.js'
 
 

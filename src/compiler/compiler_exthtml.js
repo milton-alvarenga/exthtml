@@ -872,7 +872,9 @@ function generate4Web(scripts, styles, analysis) {
                 while(firstElement = $$changes.values().next().value){
                     $$_depVar = $$_dependencyTree.get(firstElement)
                     for (let key in $$_depVar.dependents) {
-                        $$_depVar.dependents[key].map(v => v())
+                        for (let fn of $_depVar.dependents[key]) {
+                            $$_depVar.dependents[key].fn()
+                        }
                     }
                     // Remove the first element
                     $$changes.delete(firstElement)

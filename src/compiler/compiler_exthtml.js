@@ -819,8 +819,8 @@ function generate4Web(scripts, styles, analysis) {
     //${scripts.filter(script => !script.attrs.some(attr => attr.name === 'context' && attr.value === 'module')).map(script => escodegen.generate(script.children))}
     return `${BANNER}
     import {${Array.from(analysis.code.internal_import).join(",")}} from 'exthtml/lib/dom.js';
-    import {setReactive, checkReactive} from './src/runtime/reactive.js'
-    import { DependencyTree } from './internals/variable.js'
+    import {setReactive, checkReactive} from 'exthtml/runtime/reactive.js'
+    import { DependencyTree } from 'exthtml/internals/variable.js'
 
 
     // Shared state at the module scope

@@ -1,7 +1,7 @@
 import fs from 'fs/promises';
 import { parse } from "../parse/exthtml/parser_exthtml.js"
 import { parseStyle } from "../parse/css/parser_css.js"
-import { parseScript, parseCode, createSetReactiveNode } from "../parse/js/parser_js.js"
+import { parseScript, parseCode, createSetReactiveNode, createCheckReactiveNode } from "../parse/js/parser_js.js"
 import * as macro from "./directives/macro.js"
 import * as drall from "./directives/drall.js"
 import * as customAttr from "./attributes/custom.js"
@@ -275,10 +275,13 @@ console.log(inspect(parent, { depth: null, colors: true }));
             }
         });
 
-
         let currentScope = rootScope
+        let closestBodyParentStack = [];
         estreewalker.walk(scripts[x].children.body, {
-            enter(node) {
+            enter(node, parent) {
+                if (node.body && Array.isArray(node.body)) {
+                    closestBodyParentStack.push(node);
+                }
                 if (map.has(node)) currentScope = map.get(node);
                 if (
                     //An UpdateExpression (e.g., x++ or --y)
@@ -297,12 +300,32 @@ console.log(inspect(parent, { depth: null, colors: true }));
                             globals.has(name)
                         ) {
                             result.willChange.add(name);
+
+
+                            // Insert a new statement after this VariableDeclaration node
+                            const checkReactiveNode = createCheckReactiveNode(name);
+
+                            // Use top of the stack as the closest body parent (Find the index of the current VariableDeclaration node in parent's body)
+                            const closestParent = closestBodyParentStack[closestBodyParentStack.length - 1];
+                            if (closestParent) {
+                                const body = closestParent.body;
+                                const index = body.indexOf(parent);
+
+                                // Insert the setReactive statement right after in the parent's body array
+                                if (index !== -1) {
+                                    body.splice(index + 1, 0, checkReactiveNode);
+                                }
+                            }
                         }
                     }
                 }
             },
             leave(node) {
                 if (map.has(node)) currentScope = currentScope.parent;
+
+                if (node.body && Array.isArray(node.body)) {
+                    closestBodyParentStack.pop();
+                }
             },
         });
 

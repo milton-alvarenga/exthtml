@@ -463,6 +463,7 @@ function traverseExthtml(exthtml, result, parent_nm) {
                 result.code.internal_import.add("detach")
                 variableName = `$$${exthtml.value.toLowerCase()}_${elem_counter++}`
                 result.code.elems.push(variableName)
+                result.code.create.push(`${variableName} = el('${exthtml.value.toLowerCase()}')`)
                 exthtml.dynamic_attrs.forEach(dynamicAttr => traverseExthtmlAttr(dynamicAttr))
                 exthtml.event_attrs.forEach(eventAttr => traverseExthtmlEventAttr(eventAttr))
                 result.code.mount.push(`append(${parent_nm},${variableName})`)

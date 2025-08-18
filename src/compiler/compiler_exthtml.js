@@ -441,7 +441,7 @@ function traverseExthtml(exthtml, result, parent_nm) {
                 result.code.internal_import.add("detach")
                 variableName = `$$txt_${elem_counter++}`
                 result.code.elems.push(variableName)
-                result.code.create.push(`${variableName} = text('${exthtml.value}')`)
+                result.code.create.push(`${variableName} = text('${exthtml.value.replace(/\n/g, '\\n')}')`)
                 result.code.mount.push(`append(${parent_nm},${variableName})`)
                 result.code.destroy.push(`detach(${variableName})`)
                 return

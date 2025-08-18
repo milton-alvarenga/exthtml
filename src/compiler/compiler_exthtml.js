@@ -118,6 +118,7 @@ function analyse(exthtml, scripts, styles, filePath) {
         reactiveDeclarations: {},
         code: {
             internal_import: new Set(),
+            imports: [],
             shared_state: [],
             regular_state: [],
             dependencyTree: [],
@@ -141,6 +142,7 @@ function analyse(exthtml, scripts, styles, filePath) {
                 result.code.internal_import.add('addCssLinkOnHead, removeCssLinkFromHead')
                 result.code.create.push(`addCssLinkOnHead('/${baseName}')`)
                 result.code.destroy.push(`removeCssLinkFromHead('/${baseName}')`)
+                result.code.imports.push(`import 'virtual:${baseName}.css'`)
             } else {
                 //Must to be inline css as we did not know the component path
                 result.code.internal_import.add("el")
@@ -853,7 +855,7 @@ function generate4Web(scripts, styles, analysis) {
     import {${Array.from(analysis.code.internal_import).join(",")}} from 'exthtml/lib/dom.js';
     import {setReactive, checkReactive} from 'exthtml/src/runtime/reactive2.js'
     import { DependencyTree } from 'exthtml/src/compiler/internals/variable.js'
-
+    ${analysis.code.imports.join(",")}
 
     // Shared state at the module scope
     ${analysis.code.shared_state.join("\n")}
@@ -946,7 +948,7 @@ function extractor_sfc_walker(ast, scripts, exthtml, styles, level) {
             scripts.push(node)
         } else if (node.type == 'STYLE_TAG') {
             styles.push(node)
-        } else {
+        } else if (node.children){
             extractor_sfc_walker(node.children, scripts, exthtml, styles, level + 1)
             if (level == 1) {
                 exthtml.push(node)

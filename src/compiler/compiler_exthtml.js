@@ -726,6 +726,8 @@ function htmlRegularAttr(attr, mode, result, variableName, parent_nm) {
             (${attr.value}) ? setAttr(${variableName}, '${attr.name}', ${attr.value}) : rmAttr('${variableName}', '${attr.name}')
         }`)
 
+        result.code.create.push(`${reactiveFnName}()`)
+
         //result.code.update.push(`(${attr.value}) ? setAttr(${variableName}, '${attr.name}', ${attr.value}) : rmAttr('${variableName}', '${attr.name}')`)
     }
 }

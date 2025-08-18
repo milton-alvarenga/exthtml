@@ -142,7 +142,7 @@ function analyse(exthtml, scripts, styles, filePath) {
                 result.code.internal_import.add('addCssLinkOnHead, removeCssLinkFromHead')
                 result.code.create.push(`addCssLinkOnHead('/${baseName}')`)
                 result.code.destroy.push(`removeCssLinkFromHead('/${baseName}')`)
-                result.code.imports.push(`import 'virtual:${baseName}.css'`)
+                result.code.imports.push(`import 'virtual:${baseName}'`)
             } else {
                 //Must to be inline css as we did not know the component path
                 result.code.internal_import.add("el")

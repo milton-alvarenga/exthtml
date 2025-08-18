@@ -15,6 +15,7 @@ import MagicString from 'magic-string';
 import * as acorn from 'acorn'
 import { inspect } from 'util';
 import { DependencyTree } from './internals/variable.js';
+import * as codeUtils from './tools/codeUtils.js'
 
 //import { style } from "../analyse/exthtml/directives/style";
 
@@ -421,7 +422,7 @@ function traverseExthtml(exthtml, result, parent_nm) {
                 variableName = `$$dyn_txt_${elem_counter++}`
                 reactiveFnName = `${variableName}__textContent`
                 result.code.elems.push(variableName)
-                result.code.create.push(`${variableName} = text(${exthtml.value})`)
+                result.code.create.push(`${variableName} = text(${codeUtils.escapeNewLine(exthtml.value)})`)
                 //result.code.update.push(`${variableName}.textContent = \`${exthtml.value}\``)
                 let usedVars = extract_relevant_js_parts_evaluated_to_string(exthtml.value, result)
                 for (const v of usedVars) {
@@ -441,7 +442,7 @@ function traverseExthtml(exthtml, result, parent_nm) {
                 result.code.internal_import.add("detach")
                 variableName = `$$txt_${elem_counter++}`
                 result.code.elems.push(variableName)
-                result.code.create.push(`${variableName} = text('${exthtml.value.replace(/\n/g, '\\n')}')`)
+                result.code.create.push(`${variableName} = text('${codeUtils.escapeNewLine(exthtml.value)}')`)
                 result.code.mount.push(`append(${parent_nm},${variableName})`)
                 result.code.destroy.push(`detach(${variableName})`)
                 return
@@ -464,8 +465,8 @@ function traverseExthtml(exthtml, result, parent_nm) {
                 variableName = `$$${exthtml.value.toLowerCase()}_${elem_counter++}`
                 result.code.elems.push(variableName)
                 result.code.create.push(`${variableName} = el('${exthtml.value.toLowerCase()}')`)
-                exthtml.dynamic_attrs.forEach(dynamicAttr => traverseExthtmlAttr(dynamicAttr))
-                exthtml.event_attrs.forEach(eventAttr => traverseExthtmlEventAttr(eventAttr))
+                exthtml.dynamic_attrs.forEach(dynamicAttr => traverseExthtmlAttr(dynamicAttr, "DYNAMIC", result, variableName, parent_nm))
+                exthtml.event_attrs.forEach(eventAttr => traverseExthtmlEventAttr(eventAttr, "DYNAMIC", result, variableName, parent_nm))
                 result.code.mount.push(`append(${parent_nm},${variableName})`)
                 result.code.destroy.push(`detach(${variableName})`)
                 return
@@ -497,7 +498,6 @@ function traverseExthtml(exthtml, result, parent_nm) {
 
 function traverseExthtmlAttr(attr, mode, result, variableName, parent_nm) {
     let aValidMode = ['DYNAMIC', 'STATIC']
-
     if (!aValidMode.includes(mode)) {
         throw new Error(`Invalid mode: ${mode}. Expected one of: ${aValidMode.join(', ')}`);
     }

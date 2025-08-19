@@ -613,6 +613,7 @@ function htmlBooleanAttr(attr, mode, result, variableName, node, parent_nm) {
         result.code.reactives.push(`function ${reactiveFnName}(){\n
             (${attr.value}) ? setAttr(${variableName}, '${attr.name}', ${attr.value} ? "" : false) : rmAttr(${variableName}, '${attr.name}')
         }`)
+        result.code.create.push(`${reactiveFnName}()`)
         //result.code.update.push(`(${attr.value}) ? setAttr(${variableName}, '${attr.name}', ${attr.value}) : rmAttr(${variableName}, '${attr.name}')`)
     }
 }

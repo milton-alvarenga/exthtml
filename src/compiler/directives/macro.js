@@ -18,6 +18,8 @@ function idname(attr,mode,result,variableName,node, parent_nm) {
         for (const v of usedVars) {
             let depVar = result.dependencyTree.get(v)
             depVar.dependents.directives.add(reactiveFnName)
+            result.code.dependencyTree.push(`$$_depVar = $$_dependencyTree.get('${v}')`)
+            result.code.dependencyTree.push(`$$_depVar.dependents.directives.add(${reactiveFnName})`)
         }
         result.code.reactives.push(`function ${reactiveFnName}(){\n
             setAttr(${variableName}, 'id', ${attr.value})\n

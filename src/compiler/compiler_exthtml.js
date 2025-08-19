@@ -465,7 +465,7 @@ function traverseExthtml(exthtml, result, parent_nm) {
                 variableName = `$$${exthtml.value.toLowerCase()}_${elem_counter++}`
                 result.code.elems.push(variableName)
                 result.code.create.push(`${variableName} = el('${exthtml.value.toLowerCase()}')`)
-                exthtml.dynamic_attrs.forEach(dynamicAttr => traverseExthtmlAttr(dynamicAttr, "DYNAMIC", result, variableName, parent_nm))
+                exthtml.dynamic_attrs.forEach(dynamicAttr => traverseExthtmlAttr(dynamicAttr, "DYNAMIC", result, variableName, exthtml, parent_nm))
                 exthtml.event_attrs.forEach(eventAttr => traverseExthtmlEventAttr(eventAttr, "DYNAMIC", result, variableName, parent_nm))
                 result.code.mount.push(`append(${parent_nm},${variableName})`)
                 result.code.destroy.push(`detach(${variableName})`)
@@ -484,8 +484,8 @@ function traverseExthtml(exthtml, result, parent_nm) {
         
         result.code.create.push(`${variableName} = el('${exthtml.value.toLowerCase()}')`)
         exthtml.children.forEach(node => traverseExthtml(node, result, variableName, parent_nm))
-        exthtml.attrs.forEach(staticAttr => traverseExthtmlAttr(staticAttr, "STATIC", result, variableName, parent_nm))
-        exthtml.dynamic_attrs.forEach(dynamicAttr => traverseExthtmlAttr(dynamicAttr, "DYNAMIC", result, variableName, parent_nm))
+        exthtml.attrs.forEach(staticAttr => traverseExthtmlAttr(staticAttr, "STATIC", result, variableName, exthtml, parent_nm))
+        exthtml.dynamic_attrs.forEach(dynamicAttr => traverseExthtmlAttr(dynamicAttr, "DYNAMIC", result, variableName, exthtml, parent_nm))
         exthtml.event_attrs.forEach(eventAttr => traverseExthtmlEventAttr(eventAttr, "DYNAMIC", result, variableName, parent_nm))
 
         result.code.mount.push(`append(${parent_nm},${variableName})`)
@@ -496,7 +496,7 @@ function traverseExthtml(exthtml, result, parent_nm) {
     }
 }
 
-function traverseExthtmlAttr(attr, mode, result, variableName, parent_nm) {
+function traverseExthtmlAttr(attr, mode, result, variableName, node, parent_nm) {
     let aValidMode = ['DYNAMIC', 'STATIC']
     if (!aValidMode.includes(mode)) {
         throw new Error(`Invalid mode: ${mode}. Expected one of: ${aValidMode.join(', ')}`);
@@ -505,33 +505,33 @@ function traverseExthtmlAttr(attr, mode, result, variableName, parent_nm) {
     switch (attr.category) {
         case "html_global_boolean_attribute":
         case "html_boolean_attribute":
-            htmlBooleanAttr(attr, mode, result, variableName, parent_nm)
+            htmlBooleanAttr(attr, mode, result, variableName, node, parent_nm)
             break
         case "html_data_attribute":
-            htmlDataAttr(attr, mode, result, variableName, parent_nm)
+            htmlDataAttr(attr, mode, result, variableName, node, parent_nm)
             break
         case "html_global_non_boolean_attribute":
         case "html_attribute":
-            htmlRegularAttr(attr, mode, result, variableName, parent_nm)
+            htmlRegularAttr(attr, mode, result, variableName, node, parent_nm)
             break
         case "html_media_readonly":
         case "html_video_readonly":
-            htmlReadOnlyAttr(attr, mode, result, variableName, parent_nm)
+            htmlReadOnlyAttr(attr, mode, result, variableName, node, parent_nm)
             break
         case "class_directive":
-            htmlClassDirective(attr, mode, result, variableName, parent_nm)
+            htmlClassDirective(attr, mode, result, variableName, node, parent_nm)
             break
         case "lang_directive":
-            htmlLangDirective(attr, mode, result, variableName, parent_nm)
+            htmlLangDirective(attr, mode, result, variableName, node, parent_nm)
             break
         case "custom_attribute":
-            htmlCustomAttr(attr, mode, result, variableName, parent_nm)
+            htmlCustomAttr(attr, mode, result, variableName, node, parent_nm)
             break
         case "drall_directive":
-            htmlDrallDirective(attr, mode, result, variableName, parent_nm)
+            htmlDrallDirective(attr, mode, result, variableName, node, parent_nm)
             break
         case "macro_directive":
-            htmlMacroDirective(attr, mode, result, variableName, parent_nm)
+            htmlMacroDirective(attr, mode, result, variableName, node, parent_nm)
             break
         default:
             throw Error(`${traverseExthtmlAttr.name} function: Invalid ${mode.toLowerCase()} attribute on ${attr.name} as it is of category ${attr.category} not recognized`)
@@ -593,7 +593,7 @@ function traverseExthtmlEventAttr(eventAttr, mode, result, variableName, parent_
 }
 
 
-function htmlBooleanAttr(attr, mode, result, variableName, parent_nm) {
+function htmlBooleanAttr(attr, mode, result, variableName, node, parent_nm) {
     checkMode(mode)
 
     result.code.internal_import.add("setAttr")
@@ -617,7 +617,7 @@ function htmlBooleanAttr(attr, mode, result, variableName, parent_nm) {
     }
 }
 
-function htmlDataAttr(attr, mode, result, variableName, parent_nm) {
+function htmlDataAttr(attr, mode, result, variableName, node, parent_nm) {
     checkMode(mode)
 
     // Data attributes are of the form data-xxx
@@ -648,7 +648,7 @@ function htmlDataAttr(attr, mode, result, variableName, parent_nm) {
     }
 }
 
-function htmlClassDirective(attr, mode, result, variableName, parent_nm) {
+function htmlClassDirective(attr, mode, result, variableName, node, parent_nm) {
     if (mode != "DYNAMIC") {
         throw Error(`${htmlClassDirective.name} function: Invalid ${mode.toLowerCase()} attribute on class directive as it is only dynamic attribute`)
     }
@@ -693,7 +693,7 @@ function htmlClassAttr(attr, mode, result, variableName, parent_nm) {
     }
 }
 
-function htmlRegularAttr(attr, mode, result, variableName, parent_nm) {
+function htmlRegularAttr(attr, mode, result, variableName, node, parent_nm) {
     checkMode(mode)
     // Handle special cases for 'class'
     if (attr.name === 'class') {
@@ -723,7 +723,13 @@ function htmlRegularAttr(attr, mode, result, variableName, parent_nm) {
         }
 
         result.code.reactives.push(`function ${reactiveFnName}(){
+            if ('${node.value}' == 'INPUT && '${attr.value} && document.activeElement === ${variableName}) {
+                const cursorPosition = input.selectionStart
+            }
             (${attr.value}) ? setAttr(${variableName}, '${attr.name}', ${attr.value}) : rmAttr('${variableName}', '${attr.name}')
+            if ('${node.value}' == 'INPUT && '${attr.value} && document.activeElement === ${variableName}) {
+                    input.setSelectionRange(cursorPosition, cursorPosition)
+            }
         }`)
 
         result.code.create.push(`${reactiveFnName}()`)
@@ -732,11 +738,11 @@ function htmlRegularAttr(attr, mode, result, variableName, parent_nm) {
     }
 }
 
-function htmlReadOnlyAttr(attr, mode, result, variableName, parent_nm) {
+function htmlReadOnlyAttr(attr, mode, result, variableName, node, parent_nm) {
     throw Error(`${htmlReadOnlyAttr.name} function: Invalid ${mode.toLowerCase()} attribute on ${attr.name} as it is readonly attribute`)
 }
 
-function htmlCustomAttr(attr, mode, result, variableName, parent_nm) {
+function htmlCustomAttr(attr, mode, result, variableName, node, parent_nm) {
     checkMode(mode)
 
     if (!(attr.name in customAttr.customAttributes)) {
@@ -747,22 +753,22 @@ function htmlCustomAttr(attr, mode, result, variableName, parent_nm) {
 
 }
 
-function htmlDrallDirective(attr, mode, result, variableName, parent_nm) {
+function htmlDrallDirective(attr, mode, result, variableName, node, parent_nm) {
     checkMode(mode)
 
     if (!(attr.name in drall.directives)) {
         throw Error(`${htmlDrallDirective.name} function: Invalid ${mode.toLowerCase()} attribute on ${attr.name} as it is macro directive attribute but the compiler could not found it on directive list`)
     }
-    drall.directives[attr.name](attr, mode, result, variableName, parent_nm)
+    drall.directives[attr.name](attr, mode, result, variableName, node, parent_nm)
 }
 
-function htmlMacroDirective(attr, mode, result, variableName, parent_nm) {
+function htmlMacroDirective(attr, mode, result, variableName, node, parent_nm) {
     checkMode(mode)
 
     if (!(attr.name in macro.directives)) {
         throw Error(`${htmlMacroDirective.name} function: Invalid ${mode.toLowerCase()} attribute on ${attr.name} as it is macro directive attribute but the compiler could not found it on directive list`)
     }
-    macro.directives[attr.name](attr, mode, result, variableName, parent_nm)
+    macro.directives[attr.name](attr, mode, result, variableName, node, parent_nm)
 }
 
 function handleStyleAttr(attr, mode, result, variableName) {

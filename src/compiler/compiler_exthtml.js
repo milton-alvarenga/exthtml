@@ -600,7 +600,7 @@ function htmlBooleanAttr(attr, mode, result, variableName, node, parent_nm) {
     result.code.internal_import.add("rmAttr")
 
     if (mode == "STATIC") {
-        result.code.create.push(`('${attr.value}') ? setAttr(${variableName}, '${attr.name}', '${attr.value}') : rmAttr('${variableName}', '${attr.name}')`)
+        result.code.create.push(`('${attr.value}') ? setAttr(${variableName}, '${attr.name}', '${attr.value}') : rmAttr(${variableName}, '${attr.name}')`)
     } else {
         let reactiveFnName = `${variableName}__${attr.name}`
         let usedVars = extract_relevant_js_parts_evaluated_to_boolean(attr.value, result)
@@ -611,9 +611,9 @@ function htmlBooleanAttr(attr, mode, result, variableName, node, parent_nm) {
             result.code.dependencyTree.push(`$$_depVar.dependents.directives.add(${reactiveFnName})`)
         }
         result.code.reactives.push(`function ${reactiveFnName}(){\n
-            (${attr.value}) ? setAttr(${variableName}, '${attr.name}', ${attr.value} ? "" : false) : rmAttr('${variableName}', '${attr.name}')
+            (${attr.value}) ? setAttr(${variableName}, '${attr.name}', ${attr.value} ? "" : false) : rmAttr(${variableName}, '${attr.name}')
         }`)
-        //result.code.update.push(`(${attr.value}) ? setAttr(${variableName}, '${attr.name}', ${attr.value}) : rmAttr('${variableName}', '${attr.name}')`)
+        //result.code.update.push(`(${attr.value}) ? setAttr(${variableName}, '${attr.name}', ${attr.value}) : rmAttr(${variableName}, '${attr.name}')`)
     }
 }
 
@@ -726,7 +726,7 @@ function htmlRegularAttr(attr, mode, result, variableName, node, parent_nm) {
             if ('${node.value}' == 'INPUT' && ${attr.value} && document.activeElement === ${variableName}) {
                 const cursorPosition = ${variableName}.selectionStart
             }
-            (${attr.value}) ? setAttr(${variableName}, '${attr.name}', ${attr.value}) : rmAttr('${variableName}', '${attr.name}')
+            (${attr.value}) ? setAttr(${variableName}, '${attr.name}', ${attr.value}) : rmAttr(${variableName}, '${attr.name}')
             if ('${node.value}' == 'INPUT' && ${attr.value} && document.activeElement === ${variableName}) {
                     ${variableName}.setSelectionRange(cursorPosition, cursorPosition)
             }
@@ -734,7 +734,7 @@ function htmlRegularAttr(attr, mode, result, variableName, node, parent_nm) {
 
         result.code.create.push(`${reactiveFnName}()`)
 
-        //result.code.update.push(`(${attr.value}) ? setAttr(${variableName}, '${attr.name}', ${attr.value}) : rmAttr('${variableName}', '${attr.name}')`)
+        //result.code.update.push(`(${attr.value}) ? setAttr(${variableName}, '${attr.name}', ${attr.value}) : rmAttr(${variableName}, '${attr.name}')`)
     }
 }
 

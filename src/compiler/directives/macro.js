@@ -20,8 +20,8 @@ function idname(attr,mode,result,variableName,node, parent_nm) {
             depVar.dependents.directives.add(reactiveFnName)
         }
         result.code.reactives.push(`function ${reactiveFnName}(){\n
-            setAttr(${variableName}, 'id', \`${attr.value}\`)\n
-            setAttr(${variableName}, 'name', \`${attr.value}\`)\n
+            setAttr(${variableName}, 'id', ${attr.value})\n
+            setAttr(${variableName}, 'name', ${attr.value})\n
         }`)
 
         result.code.create.push(`${reactiveFnName}()`)

@@ -723,12 +723,13 @@ function htmlRegularAttr(attr, mode, result, variableName, node, parent_nm) {
         }
 
         result.code.reactives.push(`function ${reactiveFnName}(){
+            let cursorPosition
             if ('${node.value}' == 'INPUT' && ${attr.value} && document.activeElement === ${variableName}) {
-                const cursorPosition = ${variableName}.selectionStart
+                cursorPosition = ${variableName}.selectionStart
             }
             (${attr.value}) ? setAttr(${variableName}, '${attr.name}', ${attr.value}) : rmAttr(${variableName}, '${attr.name}')
             if ('${node.value}' == 'INPUT' && ${attr.value} && document.activeElement === ${variableName}) {
-                    ${variableName}.setSelectionRange(cursorPosition, cursorPosition)
+                ${variableName}.setSelectionRange(cursorPosition, cursorPosition)
             }
         }`)
 

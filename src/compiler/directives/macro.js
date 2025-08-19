@@ -18,17 +18,13 @@ function idname(attr,mode,result,variableName,node, parent_nm) {
         for (const v of usedVars) {
             let depVar = result.dependencyTree.get(v)
             depVar.dependents.directives.add(reactiveFnName)
-            ;
         }
         result.code.reactives.push(`function ${reactiveFnName}(){\n
             setAttr(${variableName}, 'id', \`${attr.value}\`)\n
             setAttr(${variableName}, 'name', \`${attr.value}\`)\n
         }`)
 
-        /*
-        result.code.update.push(`setAttr(${variableName}, 'id', \`${attr.value}\`)`)
-        result.code.update.push(`setAttr(${variableName}, 'name', \`${attr.value}\`)`)
-        */
+        result.code.create.push(`${reactiveFnName}()`)
     }
 }
 

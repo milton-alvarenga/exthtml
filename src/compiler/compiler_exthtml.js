@@ -466,6 +466,7 @@ function traverseExthtml(exthtml, result, parent_nm) {
                 variableName = `$$${exthtml.value.toLowerCase()}_${elem_counter++}`
                 result.code.elems.push(variableName)
                 result.code.create.push(`${variableName} = el('${exthtml.value.toLowerCase()}')`)
+                exthtml.attrs.forEach(attr => traverseExthtmlAttr(attr, "STATIC", result, variableName, exthtml, parent_nm))
                 exthtml.dynamic_attrs.forEach(dynamicAttr => traverseExthtmlAttr(dynamicAttr, "DYNAMIC", result, variableName, exthtml, parent_nm))
                 exthtml.event_attrs.forEach(eventAttr => traverseExthtmlEventAttr(eventAttr, "DYNAMIC", result, variableName, parent_nm))
                 result.code.mount.push(`append(${parent_nm},${variableName})`)
@@ -485,7 +486,7 @@ function traverseExthtml(exthtml, result, parent_nm) {
         
         result.code.create.push(`${variableName} = el('${exthtml.value.toLowerCase()}')`)
         exthtml.children.forEach(node => traverseExthtml(node, result, variableName, parent_nm))
-        exthtml.attrs.forEach(staticAttr => traverseExthtmlAttr(staticAttr, "STATIC", result, variableName, exthtml, parent_nm))
+        exthtml.attrs.forEach(attr => traverseExthtmlAttr(attr, "STATIC", result, variableName, exthtml, parent_nm))
         exthtml.dynamic_attrs.forEach(dynamicAttr => traverseExthtmlAttr(dynamicAttr, "DYNAMIC", result, variableName, exthtml, parent_nm))
         exthtml.event_attrs.forEach(eventAttr => traverseExthtmlEventAttr(eventAttr, "DYNAMIC", result, variableName, parent_nm))
 

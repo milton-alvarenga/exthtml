@@ -1,6 +1,7 @@
 export const functions = new Set([
   'alert',
   'confirm',
+  'console',
   'prompt',
   'setTimeout',
   'setInterval',

@@ -866,21 +866,21 @@ function generate4Web(scripts, styles, analysis) {
     //${scripts.filter(script => !script.attrs.some(attr => attr.name === 'context' && attr.value === 'module')).map(script => escodegen.generate(script.children))}
     return `${BANNER}
     import {${Array.from(analysis.code.internal_import).join(",")}} from 'exthtml/lib/dom.js';
-    import {setReactive, checkReactive} from 'exthtml/src/runtime/reactive2.js'
-    import { DependencyTree } from 'exthtml/src/compiler/internals/variable.js'
-    ${analysis.code.imports.join(",")}
+    import {setReactive, checkReactive} from 'exthtml/src/runtime/reactive2.js';
+    import { DependencyTree } from 'exthtml/src/compiler/internals/variable.js';
+    ${analysis.code.imports.join(";\n")};
 
     // Shared state at the module scope
     ${analysis.code.shared_state.join("\n")}
 
     export default function(){
-        let ${analysis.code.elems.join(',')}
+        let ${analysis.code.elems.join(',')};
 
         ${Array.from(analysis.undeclared_variables).map((v) => `let ${v};`).join('\n')}
 
-        let $$_dependencyTree = new DependencyTree()
-        let $$_depVar = null
-        let $$changes = new Set()
+        let $$_dependencyTree = new DependencyTree();
+        let $$_depVar = null;
+        let $$changes = new Set();
 
         let $$_changes = function(nm){
             $$changes.add(nm)
@@ -895,45 +895,45 @@ function generate4Web(scripts, styles, analysis) {
         ${analysis.code.reactives.join('\n')}
 
 
-        let $$_mounted = false
-        let $$_updating = false
+        let $$_mounted = false;
+        let $$_updating = false;
         
 
-        ${analysis.code.dependencyTree.join('\n')}
+        ${analysis.code.dependencyTree.join(';\n')};
 
         let lifecycle = {
             create() {
-                ${analysis.code.create.join('\n')}
+                ${analysis.code.create.join(';\n')};
             },
             mount(TARGET) {
-                this.create()
-                ${analysis.code.mount.join('\n')}
-                $$_mounted = true
+                this.create();
+                ${analysis.code.mount.join(';\n')};
+                $$_mounted = true;
             },
             update() {
-                if(!$$_mounted) return
-                if($$_updating) return
-                $$_updating = true
-                ${analysis.code.update.join('\n')}
-                let firstElement
+                if(!$$_mounted) return;
+                if($$_updating) return;
+                $$_updating = true;
+                ${analysis.code.update.join(';\n')}
+                let firstElement;
                 while(firstElement = $$changes.values().next().value){
                     $$_depVar = $$_dependencyTree.get(firstElement)
                     for (let key in $$_depVar.dependents) {
                         for (let fn of $$_depVar.dependents[key]) {
-                            fn()
+                            fn();
                         }
                     }
                     // Remove the first element
-                    $$changes.delete(firstElement)
+                    $$changes.delete(firstElement);
                 }
 
-                $$_updating = false
+                $$_updating = false;
             },
             destroy(TARGET) {
-                ${analysis.code.destroy.join('\n')}
+                ${analysis.code.destroy.join(';\n')};
             },
             capture_state(){
-                return { ${[...analysis.declared_variables, ...analysis.undeclared_variables].join(",")} }
+                return { ${[...analysis.declared_variables, ...analysis.undeclared_variables].join(",")} };
             }
         }
         return lifecycle;

@@ -462,6 +462,7 @@ function traverseExthtml(exthtml, result, parent_nm) {
             case 'SELF_CLOSE_TAG':
                 result.code.internal_import.add("append")
                 result.code.internal_import.add("detach")
+                result.code.internal_import.add("el")
                 variableName = `$$${exthtml.value.toLowerCase()}_${elem_counter++}`
                 result.code.elems.push(variableName)
                 result.code.create.push(`${variableName} = el('${exthtml.value.toLowerCase()}')`)

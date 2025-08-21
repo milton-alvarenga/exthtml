@@ -589,15 +589,26 @@ function traverseExthtmlEventAttr(eventAttr, mode, result, variableName, parent_
         if(!result.functions.has(descriptors.name)){
             throw Error(`${traverseExthtmlEventAttr.name} function: Invalid ${descriptors.type.toLowerCase()} attribute on ${attr.name} and its value as ${attr.value}`)
         }
-        // Compose the full event handler code snippet
-        // DYNAMIC mode: eventAttr.value is an expression to be evaluated at runtime
-        handlerCode = `
-            function ${reactiveFnName}(event) {
-                ${modifierChecks}
-                ${mouseKeyCheck}
-                (${eventAttr.value}) && (${eventAttr.value})(event)
-            }
-        `.replace(/^\s*[\r\n]/gm, '');
+
+        if(descriptors.type == 'functionName'){
+            // Compose the full event handler code snippet
+            // DYNAMIC mode: eventAttr.value is an expression to be evaluated at runtime
+            handlerCode = `
+                function ${reactiveFnName}(event) {
+                    ${modifierChecks}
+                    ${mouseKeyCheck}
+                    (${eventAttr.value}) && (${eventAttr.value})(event)
+                }
+            `.replace(/^\s*[\r\n]/gm, '');
+        } else {
+            handlerCode = `
+                function ${reactiveFnName}(event) {
+                    ${modifierChecks}
+                    ${mouseKeyCheck}
+                    (${descriptors.name}) && (${eventAttr.value})
+                }
+            `.replace(/^\s*[\r\n]/gm, '');
+        }
     } else if(descriptors.type == 'functionCallWithParams'){
         if(!result.functions.has(descriptors.name)){
             throw Error(`${traverseExthtmlEventAttr.name} function: Invalid ${descriptors.type.toLowerCase()} attribute on ${attr.name} and its value as ${attr.value}`)

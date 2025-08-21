@@ -38,7 +38,7 @@ export function createSetReactiveNode(varName) {
         type: 'ExpressionStatement',
         expression: {
             type: 'CallExpression',
-            callee: { type: 'Identifier', name: 'setReactive' },
+            callee: { type: 'Identifier', name: '$$_setReactive' },
             arguments: [
                 { type: 'Literal', value: varName },
                 { type: 'Identifier', name: varName },
@@ -54,7 +54,7 @@ export function createCheckReactiveNode(varName) {
         type: 'ExpressionStatement',
         expression: {
             type: 'CallExpression',
-            callee: { type: 'Identifier', name: 'checkReactive' },
+            callee: { type: 'Identifier', name: '$$_checkReactive' },
             arguments: [
                 { type: 'Literal', value: varName },
                 { type: 'Identifier', name: varName },

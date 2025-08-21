@@ -2,7 +2,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import { parse } from "../parse/exthtml/parser_exthtml.js"
 import { parseStyle } from "../parse/css/parser_css.js"
-import { parseScript, parseCode, createSetReactiveNode, createCheckReactiveNode } from "../parse/js/parser_js.js"
+import { parseScript, parseCode, createSetReactiveNode, createCheckReactiveNode, parseEventDescription } from "../parse/js/parser_js.js"
 import * as macro from "./directives/macro.js"
 import * as drall from "./directives/drall.js"
 import * as customAttr from "./attributes/custom.js"
@@ -297,7 +297,6 @@ console.log(inspect(parent, { depth: null, colors: true }));
                             });
                         }
 
-
                         // Insert a new statement after this VariableDeclaration node
                         const setReactiveNode = createSetReactiveNode(decl.id.name);
 
@@ -349,7 +348,7 @@ console.log(inspect(parent, { depth: null, colors: true }));
                                 const body = closestParent.body;
                                 const index = body.indexOf(parent);
 
-                                // Insert the setReactive statement right after in the parent's body array
+                                // Insert the checkReactive statement right after in the parent's body array
                                 if (index !== -1) {
                                     body.splice(index + 1, 0, checkReactiveNode);
                                 }
@@ -484,7 +483,7 @@ function traverseExthtml(exthtml, result, parent_nm) {
         result.code.internal_import.add("append")
         result.code.internal_import.add("detach")
         result.code.elems.push(variableName)
-        
+
         result.code.create.push(`${variableName} = $$_el('${exthtml.value.toLowerCase()}')`)
         exthtml.children.forEach(node => traverseExthtml(node, result, variableName, parent_nm))
         exthtml.attrs.forEach(attr => traverseExthtmlAttr(attr, "STATIC", result, variableName, exthtml, parent_nm))
@@ -580,15 +579,78 @@ function traverseExthtmlEventAttr(eventAttr, mode, result, variableName, parent_
     }
 
     let reactiveFnName = `${variableName}__handlerCode`
-    // Compose the full event handler code snippet
-    // DYNAMIC mode: eventAttr.value is an expression to be evaluated at runtime
-    const handlerCode = `
-        function ${reactiveFnName}(event) {
-            ${modifierChecks}
-            ${mouseKeyCheck}
-            (${eventAttr.value}) && (${eventAttr.value})(event)
+
+
+    let descriptors = parseEventDescription(eventAttr.value)
+
+    let handlerCode = ''
+    if(['functionName','functionCall'].indexOf(descriptors.type) > -1){
+        //Has the function been declared?
+        if(!result.functions.has(descriptors.name)){
+            throw Error(`${traverseExthtmlEventAttr.name} function: Invalid ${descriptors.type.toLowerCase()} attribute on ${attr.name} and its value as ${attr.value}`)
         }
-    `.replace(/^\s*[\r\n]/gm, '');
+        // Compose the full event handler code snippet
+        // DYNAMIC mode: eventAttr.value is an expression to be evaluated at runtime
+        handlerCode = `
+            function ${reactiveFnName}(event) {
+                ${modifierChecks}
+                ${mouseKeyCheck}
+                (${eventAttr.value}) && (${eventAttr.value})(event)
+            }
+        `.replace(/^\s*[\r\n]/gm, '');
+    } else if(descriptors.type == 'functionCallWithParams'){
+        if(!result.functions.has(descriptors.name)){
+            throw Error(`${traverseExthtmlEventAttr.name} function: Invalid ${descriptors.type.toLowerCase()} attribute on ${attr.name} and its value as ${attr.value}`)
+        }
+        // Compose the full event handler code snippet
+        // DYNAMIC mode: eventAttr.value is an expression to be evaluated at runtime
+        handlerCode = `
+            function ${reactiveFnName}(event) {
+                ${modifierChecks}
+                ${mouseKeyCheck}
+                //if want the event, need to add on parameter as event (not string)
+                (${descriptors.name}) && (${eventAttr.value})(${descriptors.parameters.join(',')})
+            }
+        `.replace(/^\s*[\r\n]/gm, '');
+    } else if(descriptors.type == 'assignment'){
+        // Insert a new statement after this VariableDeclaration node
+        let reactive = descriptors.variableChanged.filter((nm) => result.declared_variables.has(nm)).map(nm => createCheckReactiveNode(nm));
+        handlerCode = `
+                function ${reactiveFnName}(event) {
+                    ${modifierChecks}
+                    ${mouseKeyCheck}
+                    ${eventAttr.value}
+                    ${escodegen.generate(reactive)}
+                }
+            `.replace(/^\s*[\r\n]/gm, '');
+
+    } else if(descriptors.type == 'arrowFunction'){
+        if( parameters.length ){
+            handlerCode = `
+                function ${reactiveFnName}(event) {
+                    ${modifierChecks}
+                    ${mouseKeyCheck}
+                    (${descriptors.parameters.join(',')})=>${descriptors.rawBody}
+                }
+            `.replace(/^\s*[\r\n]/gm, '');
+        } else {
+            handlerCode = `
+                function ${reactiveFnName}(event) {
+                    ${modifierChecks}
+                    ${mouseKeyCheck}
+                    (event)=>${descriptors.rawBody}
+                }
+            `.replace(/^\s*[\r\n]/gm, '');
+        }
+    } else {
+        handlerCode = `
+            function ${reactiveFnName}(event) {
+                ${modifierChecks}
+                ${mouseKeyCheck}
+                (${eventAttr.value}) && (${eventAttr.value})(event)
+            }
+        `.replace(/^\s*[\r\n]/gm, '');
+    }
 
     result.code.reactives.push(`${handlerCode.trim()}\n`)
     result.code.mount.push(`${variableName}.addEventListener('${eventAttr.name}', ${reactiveFnName})`);
@@ -843,7 +905,7 @@ export function extract_relevant_js_parts_evaluated_to_string(code, result){
     })
 
     return usedVars
-    
+
     //console.log(inspect(ast, { depth: null, colors: true }))
 }
 
@@ -853,6 +915,7 @@ function extract_relevant_js_parts_evaluated_to_boolean(code, result){
 
 
 function generateCtx(scripts, analysis) {
+    return ''
     return `function ctx(){
         ${Array.from(analysis.undeclared_variables).map((v) => `let ${v};`).join('\n')}
         ${scripts.map(script => escodegen.generate(script.children))}
@@ -898,7 +961,7 @@ function generate4Web(scripts, styles, analysis) {
 
         let $$_mounted = false;
         let $$_updating = false;
-        
+
 
         ${analysis.code.dependencyTree.join(';\n')};
 
@@ -946,7 +1009,7 @@ function generate4React(scripts, styles, analysis) {
 }
 
 function generate4Vue(scripts, styles, analysis) {
-    
+
 }
 
 function extractor_sfc_walker(ast, scripts, exthtml, styles, level) {

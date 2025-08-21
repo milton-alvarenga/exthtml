@@ -625,7 +625,7 @@ function traverseExthtmlEventAttr(eventAttr, mode, result, variableName, parent_
         `.replace(/^\s*[\r\n]/gm, '');
     } else if(descriptors.type == 'assignment'){
         // Insert a new statement after this VariableDeclaration node
-        let reactive = [descriptors.variableChanged].filter((nm) => result.declared_variables.has(nm)).map(nm => createCheckReactiveNode(nm)).join(';\n');
+        let reactive = [descriptors.variableChanged].filter((nm) => result.declared_variables.has(nm)).map(nm => escodegen.generate(createCheckReactiveNode(nm))).join(';\n');
         handlerCode = `
                 function ${reactiveFnName}(event) {
                     ${modifierChecks}

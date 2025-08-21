@@ -953,7 +953,7 @@ function generate4Web(scripts, styles, analysis) {
             }
         }
 
-        ${scripts.filter(script => !script.attrs.some(attr => attr.name === 'context' && attr.value === 'module')).map(script => escodegen.generate(script.children))}
+        ${scripts.filter(script => !script.attrs.some(attr => attr.name === 'context' && attr.value === 'module')).map(script => escodegen.generate(script.children)+'\n').join('')}
 
 
         ${analysis.code.reactives.join('\n')}

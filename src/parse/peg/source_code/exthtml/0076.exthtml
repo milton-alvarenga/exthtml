@@ -1,0 +1,18 @@
+<script>
+let ok = "OK"
+
+function changeOK(){
+    ok = "ChangedOk!"
+}
+
+function changeOKWithParameter(new_value){
+    ok = new_value
+}
+</script>
+<p>{ok}</p>
+<button @click={changeOK}>fn</button>
+<button @click={changeOK()}>fn()</button>
+<button @click={changeOKWithParameter("changed")}>fn(with_parameter)</button>
+<button @click={ok = "OK assignment"}>ok = "OK"</button>
+<button @click={() => ok = "OK arrow"}>Arrow function</button>
+<button @click={() => {ok = "OK arrow with bracket"}}>Arrow function with bracket</button>

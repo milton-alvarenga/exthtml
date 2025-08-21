@@ -1,0 +1,545 @@
+[
+  {
+    "section": "ExtHTMLDocument",
+    "type": "SCRIPT_TAG",
+    "value": "\nlet ok = \"OK\"\n\nfunction changeOK(){\n    ok = \"ChangedOk!\"\n}\n\nfunction changeOKWithParameter(new_value){\n    ok = new_value\n}\n",
+    "attrs": [],
+    "dynamic_attrs": [],
+    "event_attrs": [],
+    "children": [],
+    "location": {
+      "start": {
+        "offset": 0,
+        "line": 1,
+        "column": 1
+      },
+      "end": {
+        "offset": 143,
+        "line": 11,
+        "column": 10
+      }
+    }
+  },
+  {
+    "section": "ExtHTMLDocument",
+    "type": "NEW_LINE",
+    "value": [
+      "\n"
+    ],
+    "attrs": [],
+    "dynamic_attrs": [],
+    "event_attrs": [],
+    "children": [],
+    "location": {
+      "start": {
+        "offset": 143,
+        "line": 11,
+        "column": 10
+      },
+      "end": {
+        "offset": 144,
+        "line": 12,
+        "column": 1
+      }
+    }
+  },
+  {
+    "section": "ExtHTMLDocument",
+    "type": "HTML_NESTED_TAG",
+    "value": "P",
+    "attrs": [],
+    "dynamic_attrs": [],
+    "event_attrs": [],
+    "children": [
+      {
+        "section": "ExtHTMLDocument",
+        "type": "DYNAMIC_TEXT_NODE",
+        "value": "ok",
+        "attrs": [],
+        "dynamic_attrs": [],
+        "event_attrs": [],
+        "children": [],
+        "location": {
+          "start": {
+            "offset": 147,
+            "line": 12,
+            "column": 4
+          },
+          "end": {
+            "offset": 151,
+            "line": 12,
+            "column": 8
+          }
+        }
+      }
+    ],
+    "location": {
+      "start": {
+        "offset": 144,
+        "line": 12,
+        "column": 1
+      },
+      "end": {
+        "offset": 155,
+        "line": 12,
+        "column": 12
+      }
+    }
+  },
+  {
+    "section": "ExtHTMLDocument",
+    "type": "NEW_LINE",
+    "value": [
+      "\n"
+    ],
+    "attrs": [],
+    "dynamic_attrs": [],
+    "event_attrs": [],
+    "children": [],
+    "location": {
+      "start": {
+        "offset": 155,
+        "line": 12,
+        "column": 12
+      },
+      "end": {
+        "offset": 156,
+        "line": 13,
+        "column": 1
+      }
+    }
+  },
+  {
+    "section": "ExtHTMLDocument",
+    "type": "HTML_NESTED_TAG",
+    "value": "BUTTON",
+    "attrs": [],
+    "dynamic_attrs": [],
+    "event_attrs": [
+      {
+        "name": "click",
+        "value": "changeOK",
+        "category": "html_attribute",
+        "modifiers": [],
+        "mouse_keys": "",
+        "keyboard_modifiers_keys": [],
+        "pos": 0
+      }
+    ],
+    "children": [
+      {
+        "section": "ExtHTMLDocument",
+        "type": "TEXT_NODE",
+        "value": "fn",
+        "attrs": [],
+        "dynamic_attrs": [],
+        "event_attrs": [],
+        "children": [],
+        "location": {
+          "start": {
+            "offset": 182,
+            "line": 13,
+            "column": 27
+          },
+          "end": {
+            "offset": 184,
+            "line": 13,
+            "column": 29
+          }
+        }
+      }
+    ],
+    "location": {
+      "start": {
+        "offset": 156,
+        "line": 13,
+        "column": 1
+      },
+      "end": {
+        "offset": 193,
+        "line": 13,
+        "column": 38
+      }
+    }
+  },
+  {
+    "section": "ExtHTMLDocument",
+    "type": "NEW_LINE",
+    "value": [
+      "\n"
+    ],
+    "attrs": [],
+    "dynamic_attrs": [],
+    "event_attrs": [],
+    "children": [],
+    "location": {
+      "start": {
+        "offset": 193,
+        "line": 13,
+        "column": 38
+      },
+      "end": {
+        "offset": 194,
+        "line": 14,
+        "column": 1
+      }
+    }
+  },
+  {
+    "section": "ExtHTMLDocument",
+    "type": "HTML_NESTED_TAG",
+    "value": "BUTTON",
+    "attrs": [],
+    "dynamic_attrs": [],
+    "event_attrs": [
+      {
+        "name": "click",
+        "value": "changeOK()",
+        "category": "html_attribute",
+        "modifiers": [],
+        "mouse_keys": "",
+        "keyboard_modifiers_keys": [],
+        "pos": 0
+      }
+    ],
+    "children": [
+      {
+        "section": "ExtHTMLDocument",
+        "type": "TEXT_NODE",
+        "value": "fn()",
+        "attrs": [],
+        "dynamic_attrs": [],
+        "event_attrs": [],
+        "children": [],
+        "location": {
+          "start": {
+            "offset": 222,
+            "line": 14,
+            "column": 29
+          },
+          "end": {
+            "offset": 226,
+            "line": 14,
+            "column": 33
+          }
+        }
+      }
+    ],
+    "location": {
+      "start": {
+        "offset": 194,
+        "line": 14,
+        "column": 1
+      },
+      "end": {
+        "offset": 235,
+        "line": 14,
+        "column": 42
+      }
+    }
+  },
+  {
+    "section": "ExtHTMLDocument",
+    "type": "NEW_LINE",
+    "value": [
+      "\n"
+    ],
+    "attrs": [],
+    "dynamic_attrs": [],
+    "event_attrs": [],
+    "children": [],
+    "location": {
+      "start": {
+        "offset": 235,
+        "line": 14,
+        "column": 42
+      },
+      "end": {
+        "offset": 236,
+        "line": 15,
+        "column": 1
+      }
+    }
+  },
+  {
+    "section": "ExtHTMLDocument",
+    "type": "HTML_NESTED_TAG",
+    "value": "BUTTON",
+    "attrs": [],
+    "dynamic_attrs": [],
+    "event_attrs": [
+      {
+        "name": "click",
+        "value": "changeOKWithParameter(\"changed\")",
+        "category": "html_attribute",
+        "modifiers": [],
+        "mouse_keys": "",
+        "keyboard_modifiers_keys": [],
+        "pos": 0
+      }
+    ],
+    "children": [
+      {
+        "section": "ExtHTMLDocument",
+        "type": "TEXT_NODE",
+        "value": "fn(with_parameter)",
+        "attrs": [],
+        "dynamic_attrs": [],
+        "event_attrs": [],
+        "children": [],
+        "location": {
+          "start": {
+            "offset": 286,
+            "line": 15,
+            "column": 51
+          },
+          "end": {
+            "offset": 304,
+            "line": 15,
+            "column": 69
+          }
+        }
+      }
+    ],
+    "location": {
+      "start": {
+        "offset": 236,
+        "line": 15,
+        "column": 1
+      },
+      "end": {
+        "offset": 313,
+        "line": 15,
+        "column": 78
+      }
+    }
+  },
+  {
+    "section": "ExtHTMLDocument",
+    "type": "NEW_LINE",
+    "value": [
+      "\n"
+    ],
+    "attrs": [],
+    "dynamic_attrs": [],
+    "event_attrs": [],
+    "children": [],
+    "location": {
+      "start": {
+        "offset": 313,
+        "line": 15,
+        "column": 78
+      },
+      "end": {
+        "offset": 314,
+        "line": 16,
+        "column": 1
+      }
+    }
+  },
+  {
+    "section": "ExtHTMLDocument",
+    "type": "HTML_NESTED_TAG",
+    "value": "BUTTON",
+    "attrs": [],
+    "dynamic_attrs": [],
+    "event_attrs": [
+      {
+        "name": "click",
+        "value": "ok = \"OK assignment\"",
+        "category": "html_attribute",
+        "modifiers": [],
+        "mouse_keys": "",
+        "keyboard_modifiers_keys": [],
+        "pos": 0
+      }
+    ],
+    "children": [
+      {
+        "section": "ExtHTMLDocument",
+        "type": "TEXT_NODE",
+        "value": "ok = \"OK\"",
+        "attrs": [],
+        "dynamic_attrs": [],
+        "event_attrs": [],
+        "children": [],
+        "location": {
+          "start": {
+            "offset": 352,
+            "line": 16,
+            "column": 39
+          },
+          "end": {
+            "offset": 361,
+            "line": 16,
+            "column": 48
+          }
+        }
+      }
+    ],
+    "location": {
+      "start": {
+        "offset": 314,
+        "line": 16,
+        "column": 1
+      },
+      "end": {
+        "offset": 370,
+        "line": 16,
+        "column": 57
+      }
+    }
+  },
+  {
+    "section": "ExtHTMLDocument",
+    "type": "NEW_LINE",
+    "value": [
+      "\n"
+    ],
+    "attrs": [],
+    "dynamic_attrs": [],
+    "event_attrs": [],
+    "children": [],
+    "location": {
+      "start": {
+        "offset": 370,
+        "line": 16,
+        "column": 57
+      },
+      "end": {
+        "offset": 371,
+        "line": 17,
+        "column": 1
+      }
+    }
+  },
+  {
+    "section": "ExtHTMLDocument",
+    "type": "HTML_NESTED_TAG",
+    "value": "BUTTON",
+    "attrs": [],
+    "dynamic_attrs": [],
+    "event_attrs": [
+      {
+        "name": "click",
+        "value": "() => ok = \"OK arrow\"",
+        "category": "html_attribute",
+        "modifiers": [],
+        "mouse_keys": "",
+        "keyboard_modifiers_keys": [],
+        "pos": 0
+      }
+    ],
+    "children": [
+      {
+        "section": "ExtHTMLDocument",
+        "type": "TEXT_NODE",
+        "value": "Arrow function",
+        "attrs": [],
+        "dynamic_attrs": [],
+        "event_attrs": [],
+        "children": [],
+        "location": {
+          "start": {
+            "offset": 410,
+            "line": 17,
+            "column": 40
+          },
+          "end": {
+            "offset": 424,
+            "line": 17,
+            "column": 54
+          }
+        }
+      }
+    ],
+    "location": {
+      "start": {
+        "offset": 371,
+        "line": 17,
+        "column": 1
+      },
+      "end": {
+        "offset": 433,
+        "line": 17,
+        "column": 63
+      }
+    }
+  },
+  {
+    "section": "ExtHTMLDocument",
+    "type": "NEW_LINE",
+    "value": [
+      "\n"
+    ],
+    "attrs": [],
+    "dynamic_attrs": [],
+    "event_attrs": [],
+    "children": [],
+    "location": {
+      "start": {
+        "offset": 433,
+        "line": 17,
+        "column": 63
+      },
+      "end": {
+        "offset": 434,
+        "line": 18,
+        "column": 1
+      }
+    }
+  },
+  {
+    "section": "ExtHTMLDocument",
+    "type": "HTML_NESTED_TAG",
+    "value": "BUTTON",
+    "attrs": [],
+    "dynamic_attrs": [],
+    "event_attrs": [
+      {
+        "name": "click",
+        "value": "() => {ok = \"OK arrow with bracket\"}",
+        "category": "html_attribute",
+        "modifiers": [],
+        "mouse_keys": "",
+        "keyboard_modifiers_keys": [],
+        "pos": 0
+      }
+    ],
+    "children": [
+      {
+        "section": "ExtHTMLDocument",
+        "type": "TEXT_NODE",
+        "value": "Arrow function with bracket",
+        "attrs": [],
+        "dynamic_attrs": [],
+        "event_attrs": [],
+        "children": [],
+        "location": {
+          "start": {
+            "offset": 488,
+            "line": 18,
+            "column": 55
+          },
+          "end": {
+            "offset": 515,
+            "line": 18,
+            "column": 82
+          }
+        }
+      }
+    ],
+    "location": {
+      "start": {
+        "offset": 434,
+        "line": 18,
+        "column": 1
+      },
+      "end": {
+        "offset": 524,
+        "line": 18,
+        "column": 91
+      }
+    }
+  }
+]

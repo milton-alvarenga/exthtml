@@ -68,11 +68,11 @@ export function createCheckReactiveNode(varName) {
 export function parseEventDescription(eventDescription) {
     let ast = parseCode(eventDescription)
 
-    if(!ast || !ast.body || !ast.body[0]){
+    if(!ast || !ast.body || !ast.body[0] || !ast.body[0].expression){
         throw new Error("Error to parse event description: " + eventDescription);
     }
 
-    ast = ast.body[0]
+    ast = ast.body[0].expression
 
     if (ast.type === "Identifier") {
         // Case: just function name, e.g. fnName
@@ -136,7 +136,7 @@ export function parseEventDescription(eventDescription) {
         };
     }
     else {
-        throw new Error("Unsupported expression type: " + ast.type);
+        throw new Error("Unsupported expression type: " + ast.type + " and description: " + eventDescription);
     }
 }
 

@@ -494,7 +494,7 @@ function traverseExthtml(exthtml, result, parent_nm) {
         result.code.destroy.push(`$$_detach(${variableName})`)
     } catch (err) {
         let errors = [err, new Error(`${traverseExthtml.name} Error on ${exthtml.type}.${exthtml.value} at line ${exthtml.location.start.line}`)]
-        //console.log(errors);
+        console.log(errors);
         throw new AggregateError(errors)
     }
 }
@@ -645,7 +645,8 @@ function traverseExthtmlEventAttr(eventAttr, mode, result, variableName, parent_
                 function ${reactiveFnName}(event) {
                     ${modifierChecks}
                     ${mouseKeyCheck}
-                    (${descriptors.parameters.join(',')})=>${descriptors.rawBody}
+                    let $$_arrowfn = (${descriptors.parameters.join(',')})=>${descriptors.rawBody};
+                    $$_arrowfn(${descriptors.parameters.join(',')});
                     ${reactive}
                 }
             `.replace(/^\s*[\r\n]/gm, '');
@@ -654,7 +655,8 @@ function traverseExthtmlEventAttr(eventAttr, mode, result, variableName, parent_
                 function ${reactiveFnName}(event) {
                     ${modifierChecks}
                     ${mouseKeyCheck}
-                    (event)=>${descriptors.rawBody}
+                    let $$_arrowfn = (event)=>${descriptors.rawBody};
+                    $$_arrowfn(event);
                     ${reactive}
                 }
             `.replace(/^\s*[\r\n]/gm, '');

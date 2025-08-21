@@ -665,7 +665,7 @@ function htmlClassDirective(attr, mode, result, variableName, node, parent_nm) {
         result.code.dependencyTree.push(`$$_depVar.dependents.directives.add(${reactiveFnName})`)
     }
     result.code.reactives.push(`function ${reactiveFnName}(){
-        (!!(${attr.value})) ? ${variableName}.classList.add('${attr.name.trim()}'): ${variableName}.classList.remove('${attr.name}')
+        (!!(${attr.value})) ? ${variableName}.classList.add('${attr.name.trim()}') : ${variableName}.classList.length === 1 ? $$_rmAttr(${variableName}, '${attr.name}') : ${variableName}.classList.remove('${attr.name}')
     }`)
     //class:xxxxxx
     //result.code.update.push(`(!!(${attr.value})) ? ${variableName}.classList.add('${attr.name}'): ${variableName}.classList.remove('${attr.name}')`)
@@ -686,7 +686,7 @@ function htmlClassAttr(attr, mode, result, variableName, parent_nm) {
                 result.code.dependencyTree.push(`$$_depVar.dependents.directives.add(${reactiveFnName})`)
             }
             result.code.reactives.push(`function ${reactiveFnName}(){
-                (!!(${expression})) ? ${variableName}.classList.add('${_class.trim()}'): ${variableName}.classList.remove('${_class}')
+                (!!(${expression})) ? ${variableName}.classList.add('${_class.trim()}') : ${variableName}.classList.length === 1 ? $$_rmAttr(${variableName}, '${_class}') : ${variableName}.classList.remove('${_class}')
             }`)
 
             //result.code.update.push(`(!!(${expression})) ? ${variableName}.classList.add('${_class}'): ${variableName}.classList.remove('${_class}')`)

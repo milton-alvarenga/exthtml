@@ -625,7 +625,7 @@ function traverseExthtmlEventAttr(eventAttr, mode, result, variableName, parent_
             `.replace(/^\s*[\r\n]/gm, '');
 
     } else if(descriptors.type == 'arrowFunction'){
-        if( parameters.length ){
+        if( descriptors.parameters.length ){
             handlerCode = `
                 function ${reactiveFnName}(event) {
                     ${modifierChecks}

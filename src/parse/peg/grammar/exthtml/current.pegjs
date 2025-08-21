@@ -206,7 +206,14 @@ DoubleQuoteString = '"'  ch:([^"]*)      '"'  __ { return ch.join(""); }
 
 SingleQuoteString = '\'' ch:([^']*)      '\'' __ { return ch.join(""); }
 
-VariableQuoteString = '{' ch:([^}]*) '}' { return ch.join(""); }
+//VariableQuoteString = '{' ch:([^}]*) '}' { return ch.join(""); }
+
+VariableQuoteString = "{" content:NestedBraces "}" { return content; }
+
+NestedBraces = parts:(NestedBrace / [^{}])* { return parts.join(""); }
+
+NestedBrace = "{" inner:NestedBraces "}" { return "{" + inner + "}"; }
+
 
 
 SelfCloseTagName =  'area'i / 'base'i / 'br'i / 'col'i / 'embed'i / 'hr'i / 'img'i / 'input'i / 'link'i

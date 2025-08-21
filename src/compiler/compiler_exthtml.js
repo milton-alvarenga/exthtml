@@ -727,7 +727,7 @@ function htmlClassDirective(attr, mode, result, variableName, node, parent_nm) {
         result.code.dependencyTree.push(`$$_depVar.dependents.directives.add(${reactiveFnName})`)
     }
     result.code.reactives.push(`function ${reactiveFnName}(){
-        (!!(${attr.value})) ? ${variableName}.classList.add('${attr.name.trim()}') : ${variableName}.classList.length === 1 ? $$_rmAttr(${variableName}, 'class') : ${variableName}.classList.remove('${attr.name}')
+        (!!(${attr.value})) ? ${variableName}.classList.add('${attr.name.trim()}') : ${variableName}.classList.remove('${attr.name}') && ${variableName}.classList.length === 0 && $$_rmAttr(${variableName}, 'class')
     }`)
     //class:xxxxxx
     //result.code.update.push(`(!!(${attr.value})) ? ${variableName}.classList.add('${attr.name}'): ${variableName}.classList.remove('${attr.name}')`)

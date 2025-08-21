@@ -614,13 +614,13 @@ function traverseExthtmlEventAttr(eventAttr, mode, result, variableName, parent_
         `.replace(/^\s*[\r\n]/gm, '');
     } else if(descriptors.type == 'assignment'){
         // Insert a new statement after this VariableDeclaration node
-        let reactive = descriptors.variableChanged.filter((nm) => result.declared_variables.has(nm)).map(nm => createCheckReactiveNode(nm));
+        let reactive = [descriptors.variableChanged].filter((nm) => result.declared_variables.has(nm)).map(nm => createCheckReactiveNode(nm)).join(';\n');
         handlerCode = `
                 function ${reactiveFnName}(event) {
                     ${modifierChecks}
                     ${mouseKeyCheck}
                     ${eventAttr.value}
-                    ${escodegen.generate(reactive)}
+                    ${reactive}
                 }
             `.replace(/^\s*[\r\n]/gm, '');
 

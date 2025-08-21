@@ -620,7 +620,7 @@ function traverseExthtmlEventAttr(eventAttr, mode, result, variableName, parent_
                 ${modifierChecks}
                 ${mouseKeyCheck}
                 //if want the event, need to add on parameter as event (not string)
-                (${descriptors.name}) && (${eventAttr.value})(${descriptors.parameters.join(',')})
+                (${descriptors.name}) && (${descriptors.name})(${descriptors.parameters.join(',')})
             }
         `.replace(/^\s*[\r\n]/gm, '');
     } else if(descriptors.type == 'assignment'){

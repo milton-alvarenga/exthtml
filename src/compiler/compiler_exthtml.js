@@ -140,9 +140,10 @@ function analyse(exthtml, scripts, styles, filePath) {
                 }
                 let baseName = path.basename(filePath, path.extname(filePath)) // get name without extension
                 baseName += '.css'; // add .css extension
-                result.code.internal_import.add('addCssLinkOnHead, removeCssLinkFromHead')
-                result.code.create.push(`addCssLinkOnHead('/${baseName}')`)
-                result.code.destroy.push(`removeCssLinkFromHead('/${baseName}')`)
+                result.code.internal_import.add('addCssLinkOnHead')
+                result.code.internal_import.add('removeCssLinkFromHead')
+                result.code.create.push(`$$_addCssLinkOnHead('/${baseName}')`)
+                result.code.destroy.push(`$$_removeCssLinkFromHead('/${baseName}')`)
                 result.code.imports.push(`import 'virtual:${baseName}'`)
             } else {
                 //Must to be inline css as we did not know the component path
@@ -153,10 +154,10 @@ function analyse(exthtml, scripts, styles, filePath) {
 
                 let varname = '$$style_1'
                 result.code.elems.push(varname)
-                result.code.create.push(`${varname} = el('style')`)
-                result.code.create.push(`setAttr(${variableName}, 'textContent', '${styles[x].value}'`)
-                result.code.mount.push(`append(TARGET,${variableName})`)
-                result.code.destroy.push(`detach(${variableName})`)
+                result.code.create.push(`${varname} = $$_el('style')`)
+                result.code.create.push(`$$_setAttr(${variableName}, 'textContent', '${styles[x].value}'`)
+                result.code.mount.push(`$$_append(TARGET,${variableName})`)
+                result.code.destroy.push(`$$_detach(${variableName})`)
             }
         }
     }
@@ -432,8 +433,8 @@ function traverseExthtml(exthtml, result, parent_nm) {
                     result.code.dependencyTree.push(`$$_depVar.dependents.texts.add(${reactiveFnName})`)
                 }
                 result.code.reactives.push(`function ${reactiveFnName}(){${variableName}.textContent = ${exthtml.value}}\n`)
-                result.code.mount.push(`append(${parent_nm},${variableName})`)
-                result.code.destroy.push(`detach(${variableName})`)
+                result.code.mount.push(`$$_append(${parent_nm},${variableName})`)
+                result.code.destroy.push(`$$_detach(${variableName})`)
                 return
 
             case 'TEXT_NODE':
@@ -443,8 +444,8 @@ function traverseExthtml(exthtml, result, parent_nm) {
                 variableName = `$$txt_${elem_counter++}`
                 result.code.elems.push(variableName)
                 result.code.create.push(`${variableName} = text('${codeUtils.escapeNewLine(exthtml.value)}')`)
-                result.code.mount.push(`append(${parent_nm},${variableName})`)
-                result.code.destroy.push(`detach(${variableName})`)
+                result.code.mount.push(`$$_append(${parent_nm},${variableName})`)
+                result.code.destroy.push(`$$_detach(${variableName})`)
                 return
 
             case 'TEXTAREA_TAG':
@@ -465,12 +466,12 @@ function traverseExthtml(exthtml, result, parent_nm) {
                 result.code.internal_import.add("el")
                 variableName = `$$${exthtml.value.toLowerCase()}_${elem_counter++}`
                 result.code.elems.push(variableName)
-                result.code.create.push(`${variableName} = el('${exthtml.value.toLowerCase()}')`)
+                result.code.create.push(`${variableName} = $$_el('${exthtml.value.toLowerCase()}')`)
                 exthtml.attrs.forEach(attr => traverseExthtmlAttr(attr, "STATIC", result, variableName, exthtml, parent_nm))
                 exthtml.dynamic_attrs.forEach(dynamicAttr => traverseExthtmlAttr(dynamicAttr, "DYNAMIC", result, variableName, exthtml, parent_nm))
                 exthtml.event_attrs.forEach(eventAttr => traverseExthtmlEventAttr(eventAttr, "DYNAMIC", result, variableName, parent_nm))
-                result.code.mount.push(`append(${parent_nm},${variableName})`)
-                result.code.destroy.push(`detach(${variableName})`)
+                result.code.mount.push(`$$_append(${parent_nm},${variableName})`)
+                result.code.destroy.push(`$$_detach(${variableName})`)
                 return
             case 'COMPONENT':
 
@@ -484,14 +485,14 @@ function traverseExthtml(exthtml, result, parent_nm) {
         result.code.internal_import.add("detach")
         result.code.elems.push(variableName)
         
-        result.code.create.push(`${variableName} = el('${exthtml.value.toLowerCase()}')`)
+        result.code.create.push(`${variableName} = $$_el('${exthtml.value.toLowerCase()}')`)
         exthtml.children.forEach(node => traverseExthtml(node, result, variableName, parent_nm))
         exthtml.attrs.forEach(attr => traverseExthtmlAttr(attr, "STATIC", result, variableName, exthtml, parent_nm))
         exthtml.dynamic_attrs.forEach(dynamicAttr => traverseExthtmlAttr(dynamicAttr, "DYNAMIC", result, variableName, exthtml, parent_nm))
         exthtml.event_attrs.forEach(eventAttr => traverseExthtmlEventAttr(eventAttr, "DYNAMIC", result, variableName, parent_nm))
 
-        result.code.mount.push(`append(${parent_nm},${variableName})`)
-        result.code.destroy.push(`detach(${variableName})`)
+        result.code.mount.push(`$$_append(${parent_nm},${variableName})`)
+        result.code.destroy.push(`$$_detach(${variableName})`)
     } catch (err) {
         let errors = [err, new Error(`${traverseExthtml.name} Error on ${exthtml.type}.${exthtml.value} at line ${exthtml.location.start.line}`)]
         throw new AggregateError(errors)
@@ -602,7 +603,7 @@ function htmlBooleanAttr(attr, mode, result, variableName, node, parent_nm) {
     result.code.internal_import.add("rmAttr")
 
     if (mode == "STATIC") {
-        result.code.create.push(`('${attr.value}') ? setAttr(${variableName}, '${attr.name}', '${attr.value}') : rmAttr(${variableName}, '${attr.name}')`)
+        result.code.create.push(`('${attr.value}') ? $$_setAttr(${variableName}, '${attr.name}', '${attr.value}') : $$_rmAttr(${variableName}, '${attr.name}')`)
     } else {
         let reactiveFnName = `${variableName}__${attr.name}`
         let usedVars = extract_relevant_js_parts_evaluated_to_boolean(attr.value, result)
@@ -613,7 +614,7 @@ function htmlBooleanAttr(attr, mode, result, variableName, node, parent_nm) {
             result.code.dependencyTree.push(`$$_depVar.dependents.directives.add(${reactiveFnName})`)
         }
         result.code.reactives.push(`function ${reactiveFnName}(){\n
-            (${attr.value}) ? setAttr(${variableName}, '${attr.name}', ${attr.value} ? "" : false) : rmAttr(${variableName}, '${attr.name}')
+            (${attr.value}) ? $$_setAttr(${variableName}, '${attr.name}', ${attr.value} ? "" : false) : $$_rmAttr(${variableName}, '${attr.name}')
         }`)
         result.code.create.push(`${reactiveFnName}()`)
         //result.code.update.push(`(${attr.value}) ? setAttr(${variableName}, '${attr.name}', ${attr.value}) : rmAttr(${variableName}, '${attr.name}')`)
@@ -713,7 +714,7 @@ function htmlRegularAttr(attr, mode, result, variableName, node, parent_nm) {
     result.code.internal_import.add("rmAttr")
 
     if (mode == "STATIC") {
-        result.code.create.push(`('${attr.value}') ? setAttr(${variableName}, '${attr.name}', '${attr.value}') : rmAttr(${variableName}, '${attr.name}')`)
+        result.code.create.push(`('${attr.value}') ? $$_setAttr(${variableName}, '${attr.name}', '${attr.value}') : $$_rmAttr(${variableName}, '${attr.name}')`)
     } else {
         let reactiveFnName = `${variableName}__${attr.name}`
 
@@ -730,7 +731,7 @@ function htmlRegularAttr(attr, mode, result, variableName, node, parent_nm) {
             if ('${node.value}' == 'INPUT' && ${attr.value} && document.activeElement === ${variableName}) {
                 cursorPosition = ${variableName}.selectionStart
             }
-            (${attr.value}) ? setAttr(${variableName}, '${attr.name}', ${attr.value}) : rmAttr(${variableName}, '${attr.name}')
+            (${attr.value}) ? $$_setAttr(${variableName}, '${attr.name}', ${attr.value}) : $$_rmAttr(${variableName}, '${attr.name}')
             if ('${node.value}' == 'INPUT' && ${attr.value} && document.activeElement === ${variableName}) {
                 ${variableName}.setSelectionRange(cursorPosition, cursorPosition)
             }
@@ -865,9 +866,9 @@ function generateCtx(scripts, analysis) {
 function generate4Web(scripts, styles, analysis) {
     //${scripts.filter(script => !script.attrs.some(attr => attr.name === 'context' && attr.value === 'module')).map(script => escodegen.generate(script.children))}
     return `${BANNER}
-    import {${Array.from(analysis.code.internal_import).join(",")}} from 'exthtml/lib/dom.js';
-    import {setReactive, checkReactive} from 'exthtml/src/runtime/reactive2.js';
-    import { DependencyTree } from 'exthtml/src/compiler/internals/variable.js';
+    import {${Array.from(analysis.code.internal_import).map(name => `${name} as $$_${name}`).join(", ")}} from 'exthtml/src/runtime/dom.js';
+    import {setReactive as $$_setReactive, checkReactive as $$_checkReactive} from 'exthtml/src/runtime/reactive2.js';
+    import { DependencyTree as $$_DependencyTree } from 'exthtml/src/compiler/internals/variable.js';
     ${analysis.code.imports.join(";\n")};
 
     // Shared state at the module scope
@@ -878,14 +879,14 @@ function generate4Web(scripts, styles, analysis) {
 
         ${Array.from(analysis.undeclared_variables).map((v) => `let ${v};`).join('\n')}
 
-        let $$_dependencyTree = new DependencyTree();
+        let $$_dependencyTree = new $$_DependencyTree();
         let $$_depVar = null;
         let $$changes = new Set();
 
         let $$_changes = function(nm){
             $$changes.add(nm)
             if(!$$_updating){
-                lifecycle.update();
+                $$_lifecycle.update();
             }
         }
 
@@ -901,7 +902,7 @@ function generate4Web(scripts, styles, analysis) {
 
         ${analysis.code.dependencyTree.join(';\n')};
 
-        let lifecycle = {
+        let $$_lifecycle = {
             create() {
                 ${analysis.code.create.join(';\n')};
             },
@@ -936,7 +937,7 @@ function generate4Web(scripts, styles, analysis) {
                 return { ${[...analysis.declared_variables, ...analysis.undeclared_variables].join(",")} };
             }
         }
-        return lifecycle;
+        return $$_lifecycle;
     }`
 }
 

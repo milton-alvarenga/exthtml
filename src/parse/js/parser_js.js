@@ -68,6 +68,12 @@ export function createCheckReactiveNode(varName) {
 export function parseEventDescription(eventDescription) {
     let ast = parseCode(eventDescription)
 
+    if(!ast || !ast.body || !ast.body[0]){
+        throw new Error("Error to parse event description: " + eventDescription);
+    }
+
+    ast = ast.body[0]
+
     if (ast.type === "Identifier") {
         // Case: just function name, e.g. fnName
         return {

@@ -423,7 +423,7 @@ function traverseExthtml(exthtml, result, parent_nm) {
                 variableName = `$$dyn_txt_${elem_counter++}`
                 reactiveFnName = `${variableName}__textContent`
                 result.code.elems.push(variableName)
-                result.code.create.push(`${variableName} = text(${codeUtils.escapeNewLine(exthtml.value)})`)
+                result.code.create.push(`${variableName} = $$_text(${codeUtils.escapeNewLine(exthtml.value)})`)
                 //result.code.update.push(`${variableName}.textContent = \`${exthtml.value}\``)
                 let usedVars = extract_relevant_js_parts_evaluated_to_string(exthtml.value, result)
                 for (const v of usedVars) {
@@ -443,7 +443,7 @@ function traverseExthtml(exthtml, result, parent_nm) {
                 result.code.internal_import.add("detach")
                 variableName = `$$txt_${elem_counter++}`
                 result.code.elems.push(variableName)
-                result.code.create.push(`${variableName} = text('${codeUtils.escapeNewLine(exthtml.value)}')`)
+                result.code.create.push(`${variableName} = $$_text('${codeUtils.escapeNewLine(exthtml.value)}')`)
                 result.code.mount.push(`$$_append(${parent_nm},${variableName})`)
                 result.code.destroy.push(`$$_detach(${variableName})`)
                 return

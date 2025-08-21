@@ -811,11 +811,11 @@ function htmlRegularAttr(attr, mode, result, variableName, node, parent_nm) {
             let cursorPosition
             if ('${node.value}' == 'INPUT' && ${attr.value} && document.activeElement === ${variableName}) {
                 cursorPosition = ${variableName}.selectionStart
-            }
-            (${attr.value}) ? $$_setAttr(${variableName}, '${attr.name}', ${attr.value}) : $$_rmAttr(${variableName}, '${attr.name}')
+            };
+            (${attr.value}) ? $$_setAttr(${variableName}, '${attr.name}', ${attr.value}) : $$_rmAttr(${variableName}, '${attr.name}');
             if ('${node.value}' == 'INPUT' && ${attr.value} && document.activeElement === ${variableName}) {
                 ${variableName}.setSelectionRange(cursorPosition, cursorPosition)
-            }
+            };
         }`)
 
         result.code.create.push(`${reactiveFnName}()`)

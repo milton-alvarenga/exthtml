@@ -494,6 +494,7 @@ function traverseExthtml(exthtml, result, parent_nm) {
         result.code.destroy.push(`$$_detach(${variableName})`)
     } catch (err) {
         let errors = [err, new Error(`${traverseExthtml.name} Error on ${exthtml.type}.${exthtml.value} at line ${exthtml.location.start.line}`)]
+        //console.log(errors);
         throw new AggregateError(errors)
     }
 }
@@ -636,12 +637,16 @@ function traverseExthtmlEventAttr(eventAttr, mode, result, variableName, parent_
             `.replace(/^\s*[\r\n]/gm, '');
 
     } else if(descriptors.type == 'arrowFunction'){
+        let ast = parseCode(descriptors.rawBody)
+        const { scope: rootScope, map, globals } = periscopic.analyze(ast)
+        let reactive = Array.from(globals.keys()).filter((nm) => result.declared_variables.has(nm)).map(nm => escodegen.generate(createCheckReactiveNode(nm))).join(';\n');
         if( descriptors.parameters.length ){
             handlerCode = `
                 function ${reactiveFnName}(event) {
                     ${modifierChecks}
                     ${mouseKeyCheck}
                     (${descriptors.parameters.join(',')})=>${descriptors.rawBody}
+                    ${reactive}
                 }
             `.replace(/^\s*[\r\n]/gm, '');
         } else {
@@ -650,6 +655,7 @@ function traverseExthtmlEventAttr(eventAttr, mode, result, variableName, parent_
                     ${modifierChecks}
                     ${mouseKeyCheck}
                     (event)=>${descriptors.rawBody}
+                    ${reactive}
                 }
             `.replace(/^\s*[\r\n]/gm, '');
         }

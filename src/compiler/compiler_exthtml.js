@@ -12,9 +12,8 @@ import * as periscopic from 'periscopic';
 import * as knownGlobals from './tools/knownGlobals.js';
 import { locate } from 'locate-character';
 import MagicString from 'magic-string';
-import * as acorn from 'acorn'
 import { inspect } from 'util';
-import { DependencyTree } from './internals/variable.js';
+import {getStructure} from './internals/analyze.js'
 import * as codeUtils from './tools/codeUtils.js'
 
 //import { style } from "../analyse/exthtml/directives/style";
@@ -103,34 +102,7 @@ function analyse(exthtml, scripts, styles, filePath) {
             }
         ]
 */
-    const result = {
-        declared_variables: new Set(),
-        declared_const: new Set(),
-        undeclared_variables: new Set(),
-        dependencyTree: new DependencyTree(),
-        /*
-        Function declarations using the function keyword (e.g., function changeOK() { ... })
-        Function expressions (e.g., const fn = function() { ... })
-        Arrow functions (e.g., const fn = () => { ... })
-        */
-        functions: new Set(),
-        willChange: new Set(),
-        willUseInTemplate: new Set(),
-        reactiveDeclarations: {},
-        code: {
-            internal_import: new Set(),
-            imports: [],
-            shared_state: [],
-            regular_state: [],
-            dependencyTree: [],
-            elems: [],
-            reactives: [],
-            create: [],
-            mount: [],
-            update: [],
-            destroy: []
-        }
-    }
+    const result = getStructure()
 
     for (let x = 0; x < styles.length; x++) {
         if ( styles[x].value ){
@@ -423,7 +395,6 @@ function traverseExthtml(exthtml, result, parent_nm) {
                 reactiveFnName = `${variableName}__textContent`
                 result.code.elems.push(variableName)
                 result.code.create.push(`${variableName} = $$_text(${codeUtils.escapeNewLine(exthtml.value)})`)
-                //result.code.update.push(`${variableName}.textContent = \`${exthtml.value}\``)
                 let usedVars = extract_relevant_js_parts_evaluated_to_string(exthtml.value, result)
                 for (const v of usedVars) {
                     let depVar = result.dependencyTree.get(v)

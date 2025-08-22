@@ -2,8 +2,12 @@ import fs from 'fs';
 import path from 'path';
 import peg from 'peggy';
 
-
-const grammar_content = fs.readFileSync("../src/parse/peg/grammar/exthtml/current.pegjs", "utf8");
+let grammar_content
+try{
+  grammar_content = fs.readFileSync("../src/parse/peg/grammar/exthtml/current.pegjs", "utf8");
+} catch(e){
+  grammar_content = fs.readFileSync("./src/parse/peg/grammar/exthtml/current.pegjs", "utf8");
+}
 
 const parserSource = peg.generate(grammar_content,{output:"source", format: "es"});
 

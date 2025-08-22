@@ -12,29 +12,29 @@ export function parseStyle(style_ast){
     const code = node.value
     style_ast.hash = hash(code)
     style_ast.prefix = 'exthtml'
-    return csstree.parse(code).children
+    return csstree.parse(code)
 }
 
-export function updateNames(style_ast){
+export function updateNames(style){
     let classNames = {}
     let idNames = {}
     let typeSelect = {}
 
     // Walk AST and extract class and id selectors
-    csstree.walk(style_ast, {
+    csstree.walk(style.children, {
         visit: 'Selector',
         enter(node) {
             node.children.forEach(child => {
                 if (child.type === 'ClassSelector') {
-                    let new_nm = style_ast.prefix+style_ast.hash+child.name
+                    let new_nm = style.prefix+'-'+style.hash+'-'+child.name
                     classNames[child.name] = new_nm
                     child.name = new_nm
                 } else if (child.type === 'IdSelector') {
-                    let new_nm = style_ast.prefix+style_ast.hash+child.name
+                    let new_nm = style.prefix+'-'+style.hash+'-'+child.name
                     idNames[child.name] = new_nm
                     child.name = new_nm
                 } else if (child.type === 'TypeSelector') {
-                    let new_nm = style_ast.prefix+style_ast.hash+child.name
+                    let new_nm = style.prefix+'-'+style.hash+'-'+child.name
                     typeSelect[child.name] = new_nm
                     child.name = new_nm
                 }

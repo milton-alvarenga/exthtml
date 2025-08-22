@@ -105,7 +105,7 @@ function analyse(exthtml, scripts, styles, filePath) {
     const result = getStructure()
     for (let x = 0; x < styles.length; x++) {
         if ( styles[x].value ){
-            result.cssTree = updateNames(styles[x].children)
+            result.cssTree = updateNames(styles[x])
             if( filePath ){
                 if( x > 0 ){
                     continue
@@ -720,6 +720,7 @@ function htmlClassDirective(attr, mode, result, variableName, node, parent_nm) {
     if (mode != "DYNAMIC") {
         throw Error(`${htmlClassDirective.name} function: Invalid ${mode.toLowerCase()} attribute on class directive as it is only dynamic attribute`)
     }
+
     let reactiveFnName = `${variableName}__${attr.name}`
     let usedVars = extract_relevant_js_parts_evaluated_to_boolean(attr.value, result)
     for (const v of usedVars) {
@@ -728,6 +729,7 @@ function htmlClassDirective(attr, mode, result, variableName, node, parent_nm) {
         result.code.dependencyTree.push(`$$_depVar = $$_dependencyTree.get('${v}')`)
         result.code.dependencyTree.push(`$$_depVar.dependents.directives.add(${reactiveFnName})`)
     }
+
     let className = result.cssTree.classNames.hasOwnProperty(attr.name.trim()) ? result.cssTree.classNames[attr.name.trim()] : attr.name.trim()
     result.code.reactives.push(`function ${reactiveFnName}(){
         (!!(${attr.value})) ? ${variableName}.classList.add('${className}') : ${variableName}.classList.remove('${className}') && ${variableName}.classList.length === 0 && $$_rmAttr(${variableName}, 'class')
@@ -741,7 +743,7 @@ function htmlClassAttr(attr, mode, result, variableName, parent_nm) {
         let operations = attr.value.split(",")
 
         operations.forEach(operation => {
-            let [_class, expression] = operation.split(":");
+            let [_class, expression] = operation.split(":").map(v=>v.trim());
             let reactiveFnName = `${variableName}__${_class}`
             let usedVars = extract_relevant_js_parts_evaluated_to_boolean(expression, result)
             for (const v of usedVars) {

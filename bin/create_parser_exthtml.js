@@ -3,7 +3,7 @@ import path from 'path';
 import peg from 'peggy';
 
 
-const grammar_content = fs.readFileSync("./src/parse/peg/grammar/exthtml/current.pegjs", "utf8");
+const grammar_content = fs.readFileSync("../src/parse/peg/grammar/exthtml/current.pegjs", "utf8");
 
 const parserSource = peg.generate(grammar_content,{output:"source", format: "es"});
 

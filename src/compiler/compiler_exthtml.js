@@ -105,7 +105,7 @@ function analyse(exthtml, scripts, styles, filePath) {
     const result = getStructure()
     for (let x = 0; x < styles.length; x++) {
         if ( styles[x].value ){
-            result.cssTree = updateNames(styles[x])
+            result.cssTree = updateNames(styles[x].children)
             if( filePath ){
                 if( x > 0 ){
                     continue
@@ -128,7 +128,7 @@ function analyse(exthtml, scripts, styles, filePath) {
                 result.code.elems.push(varname)
                 result.code.create.push(`${varname} = $$_el('style')`)
                 //result.code.create.push(`$$_setAttr(${variableName}, 'textContent', '${styles[x].value}'`)
-                result.code.create.push(`$$_setAttr(${variableName}, 'textContent', '${ast2strCss(styles[x])}'`)
+                result.code.create.push(`$$_setAttr(${variableName}, 'textContent', '${ast2strCss(styles[x].children)}'`)
                 result.code.mount.push(`$$_append(TARGET,${variableName})`)
                 result.code.destroy.push(`$$_detach(${variableName})`)
             }
@@ -728,8 +728,9 @@ function htmlClassDirective(attr, mode, result, variableName, node, parent_nm) {
         result.code.dependencyTree.push(`$$_depVar = $$_dependencyTree.get('${v}')`)
         result.code.dependencyTree.push(`$$_depVar.dependents.directives.add(${reactiveFnName})`)
     }
+    let className = result.cssTree.classNames.hasOwnProperty(attr.name.trim()) ? result.cssTree.classNames[attr.name.trim()] : attr.name.trim()
     result.code.reactives.push(`function ${reactiveFnName}(){
-        (!!(${attr.value})) ? ${variableName}.classList.add('${attr.name.trim()}') : ${variableName}.classList.remove('${attr.name}') && ${variableName}.classList.length === 0 && $$_rmAttr(${variableName}, 'class')
+        (!!(${attr.value})) ? ${variableName}.classList.add('${className}') : ${variableName}.classList.remove('${className}') && ${variableName}.classList.length === 0 && $$_rmAttr(${variableName}, 'class')
     }`)
     //class:xxxxxx
     //result.code.update.push(`(!!(${attr.value})) ? ${variableName}.classList.add('${attr.name}'): ${variableName}.classList.remove('${attr.name}')`)
@@ -749,15 +750,16 @@ function htmlClassAttr(attr, mode, result, variableName, parent_nm) {
                 result.code.dependencyTree.push(`$$_depVar = $$_dependencyTree.get('${v}')`)
                 result.code.dependencyTree.push(`$$_depVar.dependents.directives.add(${reactiveFnName})`)
             }
+            let className = result.cssTree.classNames.hasOwnProperty(_class.trim()) ? result.cssTree.classNames[_class.trim()] : _class.trim()
             result.code.reactives.push(`function ${reactiveFnName}(){
-                (!!(${expression})) ? ${variableName}.classList.add('${_class.trim()}') : ${variableName}.classList.length === 1 ? $$_rmAttr(${variableName}, 'class') : ${variableName}.classList.remove('${_class}')
+                (!!(${expression})) ? ${variableName}.classList.add('${className}') : ${variableName}.classList.length === 1 ? $$_rmAttr(${variableName}, 'class') : ${variableName}.classList.remove('${className}')
             }`)
 
             //result.code.update.push(`(!!(${expression})) ? ${variableName}.classList.add('${_class}'): ${variableName}.classList.remove('${_class}')`)
         });
     } else {
         // Static class attribute: set once on create
-        result.code.create.push(`${variableName}.classList.add('${attr.value.split(" ").map(cls => `"${cls.trim()}"`).join(", ")}')`)
+        result.code.create.push(`${variableName}.classList.add('${attr.value.split(" ").map(cls => `"${result.cssTree.className[cls.trim()]}"`).join(", ")}')`)
     }
 }
 

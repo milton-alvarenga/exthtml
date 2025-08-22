@@ -1,4 +1,5 @@
 import { DependencyTree } from './variable.js';
+import {emptyCssTree} from '../../parse/css/parser_css.js';
 
 export function getStructure(){
     return {
@@ -6,6 +7,7 @@ export function getStructure(){
         declared_const: new Set(),
         undeclared_variables: new Set(),
         dependencyTree: new DependencyTree(),
+        cssTree: emptyCssTree(),
         /*
         Function declarations using the function keyword (e.g., function changeOK() { ... })
         Function expressions (e.g., const fn = function() { ... })

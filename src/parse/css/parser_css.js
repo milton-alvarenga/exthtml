@@ -10,11 +10,12 @@ export function parseStyle(style_ast){
         throw new Error("Unexpected node on parserStyle.");
     }
     const code = node.value
+    node.hash = hash(code)
     return csstree.parse(code).children
 }
 
 // generate CSS from AST
-function ast2strCss(ast){
+export function ast2strCss(ast){
     return csstree.generate(ast)
 }
 
@@ -65,4 +66,16 @@ function getAllAttributeSelector(ast){
     })
 
     return Array.from(attributeSelectors)
+}
+
+function hash(str) {
+  let hash = 5381;
+  let i = str.length;
+
+  while (i--) {
+    hash = (hash * 33) ^ str.charCodeAt(i);
+  }
+
+  // Convert to positive 32-bit integer and then to base36 string
+  return (hash >>> 0).toString(36);
 }

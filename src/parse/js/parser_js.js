@@ -127,12 +127,29 @@ export function parseEventDescription(eventDescription) {
 
         // Detect if the function body is a block or a single expression
         const bodyType = ast.body.type === "BlockStatement" ? "block" : "expression";
+        const rawBody = eventDescription.slice(ast.body.start, ast.body.end);
 
         return {
             type: "arrowFunction",
             parameters,
             bodyType,
-            rawBody: eventDescription.slice(ast.body.start, ast.body.end),
+            rawBody: rawBody,
+        };
+    }
+    else if(ast.type == "UpdateExpression"){
+        // Extract the variable changed (argument of the UpdateExpression)
+        const variableChanged = getAssignmentLeftSide(ast.argument);
+
+        // For UpdateExpression, dependencies are usually just the argument itself
+        // or could be empty if you don't need dependencies here
+        const dependencies = []
+
+        return {
+            type: "updateExpression",
+            variableChanged,
+            dependencies,
+            operator: ast.operator,   // e.g. ++ or --
+            prefix: ast.prefix        // boolean: true if ++x, false if x++
         };
     }
     else {

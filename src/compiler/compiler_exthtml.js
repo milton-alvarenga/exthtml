@@ -1,7 +1,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { parse } from "../parse/exthtml/parser_exthtml.js"
-import { parseStyle } from "../parse/css/parser_css.js"
+import { parseStyle,updateNames,ast2strCss } from "../parse/css/parser_css.js"
 import { parseScript, parseCode, createSetReactiveNode, createCheckReactiveNode, parseEventDescription } from "../parse/js/parser_js.js"
 import * as macro from "./directives/macro.js"
 import * as drall from "./directives/drall.js"
@@ -103,9 +103,9 @@ function analyse(exthtml, scripts, styles, filePath) {
         ]
 */
     const result = getStructure()
-
     for (let x = 0; x < styles.length; x++) {
         if ( styles[x].value ){
+            result.cssTree = updateNames(styles[x])
             if( filePath ){
                 if( x > 0 ){
                     continue
@@ -127,7 +127,8 @@ function analyse(exthtml, scripts, styles, filePath) {
                 let varname = '$$style_1'
                 result.code.elems.push(varname)
                 result.code.create.push(`${varname} = $$_el('style')`)
-                result.code.create.push(`$$_setAttr(${variableName}, 'textContent', '${styles[x].value}'`)
+                //result.code.create.push(`$$_setAttr(${variableName}, 'textContent', '${styles[x].value}'`)
+                result.code.create.push(`$$_setAttr(${variableName}, 'textContent', '${ast2strCss(styles[x])}'`)
                 result.code.mount.push(`$$_append(TARGET,${variableName})`)
                 result.code.destroy.push(`$$_detach(${variableName})`)
             }
@@ -632,6 +633,17 @@ function traverseExthtmlEventAttr(eventAttr, mode, result, variableName, parent_
                 }
             `.replace(/^\s*[\r\n]/gm, '');
         }
+    } else if(descriptors.type == 'updateExpression'){
+        // Insert a new statement after this VariableDeclaration node
+        let reactive = [descriptors.variableChanged].filter((nm) => result.declared_variables.has(nm)).map(nm => escodegen.generate(createCheckReactiveNode(nm))).join(';\n');
+        handlerCode = `
+            function ${reactiveFnName}(event) {
+                ${modifierChecks}
+                ${mouseKeyCheck}
+                ${eventAttr.value}
+                ${reactive}
+            }
+        `.replace(/^\s*[\r\n]/gm, '');
     } else {
         handlerCode = `
             function ${reactiveFnName}(event) {

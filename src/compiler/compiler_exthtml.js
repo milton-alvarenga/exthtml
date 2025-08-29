@@ -699,6 +699,9 @@ function htmlDataAttr(attr, mode, result, variableName, node, parent_nm) {
         // For static, check if the value is truthy to set or remove dataset property
         result.code.create.push(`('${attr.value}') ? ${variableName}.dataset['${dataKey}'] = '${attr.value}' : delete ${variableName}.dataset['${dataKey}']`)
     } else {
+        result.code.internal_import.add("setAttr")
+        result.code.internal_import.add("rmAttr")
+
         let reactiveFnName = `${variableName}__dataset`
 
         let usedVars = extract_relevant_js_parts_evaluated_to_string(attr.value, result)
@@ -720,6 +723,9 @@ function htmlClassDirective(attr, mode, result, variableName, node, parent_nm) {
     if (mode != "DYNAMIC") {
         throw Error(`${htmlClassDirective.name} function: Invalid ${mode.toLowerCase()} attribute on class directive as it is only dynamic attribute`)
     }
+
+    result.code.internal_import.add("setAttr")
+    result.code.internal_import.add("rmAttr")
 
     let reactiveFnName = `${variableName}__${attr.name}`
     let usedVars = extract_relevant_js_parts_evaluated_to_boolean(attr.value, result)

@@ -50,7 +50,7 @@ export function updateNames(style){
 
 export function emptyCssTree(){
     return {
-        "className":{},
+        "classNames":{},
         "idNames":{},
         "typeSelect":{}
     }

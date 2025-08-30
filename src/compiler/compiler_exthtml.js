@@ -716,6 +716,7 @@ function htmlDataAttr(attr, mode, result, variableName, node, parent_nm) {
         // For dynamic, evaluate expression and set or delete accordingly
         //result.code.update.push(`(${attr.value}) ? ${variableName}.dataset['${dataKey}'] = ${attr.value} : delete ${variableName}.dataset['${dataKey}']`)
         result.code.reactives.push(`function ${reactiveFnName}(){(${attr.value}) ? ${variableName}.dataset['${dataKey}'] = ${attr.value} : delete ${variableName}.dataset['${dataKey}']}`)
+        result.code.create.push(`${reactiveFnName}()`)
     }
 }
 
@@ -739,6 +740,7 @@ function htmlClassDirective(attr, mode, result, variableName, node, parent_nm) {
     result.code.reactives.push(`function ${reactiveFnName}(){
         (!!(${attr.value})) ? ${variableName}.classList.add('${className}') : ${variableName}.classList.remove('${className}') && ${variableName}.classList.length === 0 && $$_rmAttr(${variableName}, 'class')
     }`)
+    result.code.create.push(`${reactiveFnName}()`)
     //class:xxxxxx
     //result.code.update.push(`(!!(${attr.value})) ? ${variableName}.classList.add('${attr.name}'): ${variableName}.classList.remove('${attr.name}')`)
 }
@@ -765,6 +767,7 @@ function htmlClassAttr(attr, mode, result, variableName, parent_nm) {
             result.code.reactives.push(`function ${reactiveFnName}(){
                 (!!(${expression})) ? ${variableName}.classList.add('${className}') : ${variableName}.classList.length === 1 ? $$_rmAttr(${variableName}, 'class') : ${variableName}.classList.remove('${className}')
             }`)
+            result.code.create.push(`${reactiveFnName}()`)
 
             //result.code.update.push(`(!!(${expression})) ? ${variableName}.classList.add('${_class}'): ${variableName}.classList.remove('${_class}')`)
         });
@@ -900,6 +903,7 @@ function handleStyleAttr(attr, mode, result, variableName) {
                 }
             })()
         `);
+        //result.code.create.push(`${reactiveFnName}()`)
     }
 }
 

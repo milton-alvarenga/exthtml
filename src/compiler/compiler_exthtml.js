@@ -1006,7 +1006,7 @@ function generate4Web(scripts, styles, analysis) {
                     }
                     $$_depVar = $$_dependencyTree.get(firstElement)
                     for (let key in $$_depVar.dependents) {
-                        if key == 'variables' {
+                        if (key == 'variables') {
                             $$changes.add(key);
                             continue;
                         }

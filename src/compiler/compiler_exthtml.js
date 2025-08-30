@@ -996,15 +996,25 @@ function generate4Web(scripts, styles, analysis) {
                 if(!$$_mounted) return;
                 if($$_updating) return;
                 $$_updating = true;
+                let $$_done = new Set();
                 ${analysis.code.update.join(';\n')}
                 let firstElement;
                 while(firstElement = $$changes.values().next().value){
+                    if($$_done.has(firstElement)){
+                        $$changes.delete(firstElement);
+                        continue
+                    }
                     $$_depVar = $$_dependencyTree.get(firstElement)
                     for (let key in $$_depVar.dependents) {
+                        if key == 'variables' {
+                            $$changes.add(key);
+                            continue;
+                        }
                         for (let fn of $$_depVar.dependents[key]) {
                             fn();
                         }
                     }
+                    $$_done.add(firstElement);
                     // Remove the first element
                     $$changes.delete(firstElement);
                 }

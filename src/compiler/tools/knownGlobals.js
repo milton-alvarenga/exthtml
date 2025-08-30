@@ -1,7 +1,6 @@
 export const functions = new Set([
   'alert',
   'confirm',
-  'console',
   'prompt',
   'setTimeout',
   'setInterval',
@@ -15,5 +14,5 @@ export const functions = new Set([
 ]);
 
 export const objects = new Set([
-  'console',
+  'console'
 ])

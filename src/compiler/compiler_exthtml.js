@@ -142,7 +142,7 @@ function analyse(exthtml, scripts, styles, filePath) {
         script_pre_analyse(scripts[x], result)
         const { scope: rootScope, map, globals } = periscopic.analyze(scripts[x].children)
         result.declared_variables = new Set(rootScope.declarations.keys())
-        result.undeclared_variables = Array.from(globals.keys()).filter(v => !knownGlobals.functions.has(v));
+        result.undeclared_variables = Array.from(globals.keys()).filter(v => !(knownGlobals.functions.has(v) || knownGlobals.objects.has(v)));
         //console.log(inspect(scripts[x].children.body, { depth: null, colors: true }));
 
         /*
@@ -724,7 +724,6 @@ function htmlClassDirective(attr, mode, result, variableName, node, parent_nm) {
         throw Error(`${htmlClassDirective.name} function: Invalid ${mode.toLowerCase()} attribute on class directive as it is only dynamic attribute`)
     }
 
-    result.code.internal_import.add("setAttr")
     result.code.internal_import.add("rmAttr")
 
     let reactiveFnName = `${variableName}__${attr.name}`
@@ -750,6 +749,10 @@ function htmlClassAttr(attr, mode, result, variableName, parent_nm) {
 
         operations.forEach(operation => {
             let [_class, expression] = operation.split(":").map(v=>v.trim());
+            if(!_class){
+                throw Error(`${htmlClassAttr.name} function: Invalid empty class attribute '${operation}'`)
+            }
+            result.code.internal_import.add("rmAttr")
             let reactiveFnName = `${variableName}__${_class}`
             let usedVars = extract_relevant_js_parts_evaluated_to_boolean(expression, result)
             for (const v of usedVars) {

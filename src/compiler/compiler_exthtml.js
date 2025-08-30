@@ -961,7 +961,7 @@ function generate4Web(scripts, styles, analysis) {
         let $$_depVar = null;
         let $$changes = new Set();
 
-        let $$_changes = (nm) => {
+        let $$_changes = function(nm){
             $$changes.add(nm)
             if(!$$_updating){
                 $$_lifecycle.update();

@@ -55,7 +55,10 @@ export function setReactive(nm, value, dependencyTree,$$_changes){
   if( depVar.dataType == PRIMITIVE ){
     return value
   }
-  return buildProxy(value, (change) => track(change,nm, $$_changes))
+  let cb = function(){
+    $$_changes(nm)
+  }
+  return buildProxy(value, (change) => track(change,nm,cb))
 }
 
 export function checkReactive(nm,value,dependencyTree,$$_changes){
@@ -67,8 +70,7 @@ export function checkReactive(nm,value,dependencyTree,$$_changes){
   }
 }
 
-function track(change, nm, $$_changes){
-  $$_changes(nm)
-
-  console.log("function track: ",change)
+function track(change, nm, cb){
+  cb()
+  console.log("function track on var: ",nm,"is: ",change)
 }

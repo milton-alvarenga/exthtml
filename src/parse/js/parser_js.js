@@ -37,16 +37,22 @@ export function createSetReactiveNode(varName) {
     return {
         type: 'ExpressionStatement',
         expression: {
-            type: 'CallExpression',
-            callee: { type: 'Identifier', name: '$$_setReactive' },
-            arguments: [
-                { type: 'Literal', value: varName },
-                { type: 'Identifier', name: varName },
-                { type: 'Identifier', name: '$$_dependencyTree' },
-                { type: 'Identifier', name: '$$_changes' }
-            ]
+            type: 'AssignmentExpression',
+            operator: '=',
+            left: { type: 'Identifier', name: varName },
+            right: {
+                type: 'CallExpression',
+                callee: { type: 'Identifier', name: '$$_setReactive' },
+                arguments: [
+                    { type: 'Literal', value: varName },
+                    { type: 'Identifier', name: varName },
+                    { type: 'Identifier', name: '$$_dependencyTree' },
+                    { type: 'Identifier', name: '$$_changes' }
+                ]
+            }
         }
     }
+
 }
 
 export function createCheckReactiveNode(varName) {
@@ -68,7 +74,7 @@ export function createCheckReactiveNode(varName) {
 export function parseEventDescription(eventDescription) {
     let ast = parseCode(eventDescription)
 
-    if(!ast || !ast.body || !ast.body[0] || !ast.body[0].expression){
+    if (!ast || !ast.body || !ast.body[0] || !ast.body[0].expression) {
         throw new Error("Error to parse event description: " + eventDescription);
     }
 
@@ -114,14 +120,14 @@ export function parseEventDescription(eventDescription) {
 
         // Extract dependencies from the right side (could be identifiers, function calls etc.)
         const dependencies = extractDependencies(ast.right);
- 
+
         return {
             type: "assignment",
             variableChanged,
             dependencies,
         };
     }
-    else if(ast.type === "ArrowFunctionExpression"){
+    else if (ast.type === "ArrowFunctionExpression") {
         // Extract parameters - list their source text
         const parameters = ast.params.map(param => eventDescription.slice(param.start, param.end));
 
@@ -136,7 +142,7 @@ export function parseEventDescription(eventDescription) {
             rawBody: rawBody,
         };
     }
-    else if(ast.type == "UpdateExpression"){
+    else if (ast.type == "UpdateExpression") {
         // Extract the variable changed (argument of the UpdateExpression)
         const variableChanged = getAssignmentLeftSide(ast.argument);
 

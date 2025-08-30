@@ -964,8 +964,11 @@ function generate4Web(scripts, styles, analysis) {
         let $$_dependencyTree = new $$_DependencyTree();
         let $$_depVar = null;
         let $$changes = new Set();
+        let $$_mounted = false;
+        let $$_updating = false;
 
         let $$_changes = function(nm){
+            if(!$$_mounted) return;
             $$changes.add(nm)
             if(!$$_updating){
                 $$_lifecycle.update();
@@ -976,10 +979,6 @@ function generate4Web(scripts, styles, analysis) {
 
 
         ${analysis.code.reactives.join('\n')}
-
-
-        let $$_mounted = false;
-        let $$_updating = false;
 
 
         ${analysis.code.dependencyTree.join(';\n')};

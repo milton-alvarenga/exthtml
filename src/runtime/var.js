@@ -104,6 +104,9 @@ export function buildProxy(obj, callback, path = []) {
   return new Proxy(obj, handler);
 }
 
+function isObjectOrArray(value) {
+  return value !== null && (typeof value === 'object');
+}
 
 
 
@@ -161,10 +164,6 @@ function buildProxy(obj, callback, path = []) {
     }
   };
   return new Proxy(obj, handler);
-}
-
-function isObjectOrArray(value) {
-  return value !== null && (typeof value === 'object');
 }
 
 function isArray(value) {

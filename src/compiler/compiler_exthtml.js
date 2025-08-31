@@ -255,6 +255,25 @@ console.log(inspect(parent, { depth: null, colors: true }));
                         depVar.declarationType = node.kind;
                         result.code.dependencyTree.push(`$$_depVar = $$_dependencyTree.get('${decl.id.name}')`)
                         result.code.dependencyTree.push(`$$_depVar.declarationType = '${node.kind}'`)
+                        if (node.kind !== 'const') {
+                            // Generate an assignment expression string for the variable initialization:
+                            // e.g. "x = 5" or "x = someFunction()"
+                            const assignmentAst = {
+                                type: 'ExpressionStatement',
+                                expression: {
+                                    type: 'AssignmentExpression',
+                                    operator: '=',
+                                    left: decl.id,
+                                    right: decl.init || { type: 'Identifier', name: 'undefined' }
+                                }
+                            };
+
+                            const assignmentCode = escodegen.generate(assignmentAst);
+
+                            // Push the recalculate function that reassigns the variable
+                            result.code.dependencyTree.push(`$$_depVar.recalculate = () => { ${assignmentCode}; }`);
+                        }
+
                         if (decl.init) {
                             estreewalker.walk(decl.init, {
                                 enter(innerNode) {
@@ -997,6 +1016,7 @@ function generate4Web(scripts, styles, analysis) {
                 if($$_updating) return;
                 $$_updating = true;
                 let $$_done = new Set();
+                let $$_recalculate = new Set();
                 ${analysis.code.update.join(';\n')}
                 let firstElement;
                 while(firstElement = $$changes.values().next().value){
@@ -1005,9 +1025,19 @@ function generate4Web(scripts, styles, analysis) {
                         continue
                     }
                     $$_depVar = $$_dependencyTree.get(firstElement)
+                    if($$_recalculate.has(firstElement)){
+                        $$_depVar.recalculate();
+                        $$_recalculate.delete(firstElement)
+                    }
                     for (let key in $$_depVar.dependents) {
                         if (key == 'variables') {
-                            $$changes.add(key);
+                            for (let nm of $$_depVar.dependents[key]) {
+                                if($$_done.has(nm)){
+                                    continue;
+                                }
+                                $$changes.add(nm);
+                                $$_recalculate.add(nm)
+                            }
                             continue;
                         }
                         for (let fn of $$_depVar.dependents[key]) {

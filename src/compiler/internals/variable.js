@@ -1,3 +1,5 @@
+import {noop} from '../../utils/general.js';
+
 class DependencyGroup {
   constructor() {
     this.variables = new Set();
@@ -48,6 +50,7 @@ class Variable {
     this._v = initialValue === undefined ? [] : [initialValue]
     this._declarationType = "" // var, let, export, etc.
     this._dataType = ""
+    this.recalculate = noop
     this.dependsOn = new DependencyGroup()
     this.dependents = new DependencyGroup()
   }

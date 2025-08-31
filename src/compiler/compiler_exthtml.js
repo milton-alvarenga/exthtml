@@ -271,7 +271,7 @@ console.log(inspect(parent, { depth: null, colors: true }));
                             const assignmentCode = escodegen.generate(assignmentAst);
 
                             // Push the recalculate function that reassigns the variable
-                            result.code.dependencyTree.push(`$$_depVar.recalculate = () => { ${assignmentCode}; }`);
+                            result.code.dependencyTree.push(`$$_depVar.recalculate = () => { ${assignmentCode} }`);
                         }
 
                         if (decl.init) {

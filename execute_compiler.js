@@ -1,7 +1,7 @@
 import path from 'path';
 import { exthtmlCompileFile } from './src/compiler/compiler_exthtml.js';
 import { fileURLToPath } from 'url';
-import { dirname } from 'path';
+import { dirname,basename } from 'path';
 import { inspect } from 'util';
 
 
@@ -33,7 +33,16 @@ if(update_parser_code){
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const filePath = path.join(__dirname, './src/examples/exthtml/increase_decrease/with_css_on_class_bool_and_no_function.exthtml');
+//const filePath = './src/examples/exthtml/increase_decrease/with_css_on_class_bool_and_no_function.exthtml';
+//const filePath = './src/examples/exthtml/object_and_array_reactivity/object_reactivity.exthtml';
+//const filePath = './src/examples/exthtml/object_and_array_reactivity/array_reactivity.exthtml';
+const filePathIfNoneInformed = './src/examples/exthtml/var_modified_but_could_be_reseted/var_modified_but_could_be_reseted.exthtml';
+
+const args = process.argv.slice(2);
+
+// If an argument is passed, save it to filePath, else undefined
+const filePath = args.length > 0 ? args[0] : path.join(__dirname, filePathIfNoneInformed);
+
 
 async function main() {
   try {
@@ -49,8 +58,9 @@ async function main() {
 
     //console.log(generated_ctx)
     //console.log(generate_code)
-    fs.writeFileSync('output_ctx.js', generated_ctx);
+    //fs.writeFileSync('output_ctx.js', generated_ctx);
     fs.writeFileSync('output.js', generate_code);
+    fs.writeFileSync(path.basename(filePath, path.extname(filePath))+".js", generate_code);
   } catch (err) {
     console.error('Error reading file:', err);
   }

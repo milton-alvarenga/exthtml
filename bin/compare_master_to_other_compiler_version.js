@@ -72,8 +72,6 @@ const exthtmlFiles = getAllExtHTMLFiles(baseDir);
 
 console.log('All .exthtml files found:', exthtmlFiles);
 
-const sourcePath = path.join('.', 'output.js');
-
 
 const targetDir = path.join(root_destination, gitHash);
 if (!fs.existsSync(targetDir)) {
@@ -92,6 +90,7 @@ exthtmlFiles.forEach(arg => {
     }
 
     let filename = path.basename(arg)
+    const sourcePath = path.join('.', path.basename(arg, path.extname(arg))+".js");
 
     // Define target file path
     const targetPath = path.join(targetDir, filename);

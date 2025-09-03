@@ -400,7 +400,54 @@ function script_pre_analyse(script, result) {
 
 }
 
+function removeDuplicateCheckReactiveDeep(node, lastFound) {
+    if (!node || typeof node !== 'object') return;
+
+    lastFound = lastFound || "";
+    // Check keys for arrays or objects and recurse
+    for (const key in node) {
+        if (Array.isArray(node[key])) {
+            // For arrays of nodes, filter duplicates then recurse into each node
+            if (key === 'body' || key === 'consequent' || key === 'alternate' || key === 'block' || key === 'handlers') {
+                const seenVarNames = new Set();
+                node[key] = node[key].filter(child => {
+                    if (
+                        child.type === 'ExpressionStatement'
+                        &&
+                        child.expression.type === 'CallExpression'
+                        &&
+                        child.expression.callee.type === 'Identifier'
+                        &&
+                        child.expression.callee.name === '$$_checkReactive'
+                        &&
+                        child.expression.arguments.length === 4
+                        &&
+                        child.expression.arguments[0].type === 'Literal'
+                    ) {
+                        const varName = child.expression.arguments[0].value;
+                        if (lastFound == varName) {
+                            return false; // remove duplicate
+                        } else {
+                            lastFound = varName
+                            return true;
+                        }
+                    }
+                    lastFound = ""
+                    return true;
+                });
+            }
+            // Recurse into each item in the array
+            node[key].forEach(child => removeDuplicateCheckReactiveDeep(child, lastFound));
+        } else if (node[key] && typeof node[key] === 'object') {
+            // Recurse into nested AST nodes
+            removeDuplicateCheckReactiveDeep(node[key], lastFound);
+        }
+    }
+}
+
 function script_pos_analyse(script, result) {
+    removeDuplicateCheckReactiveDeep(script.children)
+
     if (script.attrs.some(attr => attr.name == 'context' && attr.value === 'module')) {
         result.code.shared_state.push(escodegen.generate(script.children))
         return

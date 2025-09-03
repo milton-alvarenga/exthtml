@@ -1,7 +1,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { parse } from "../parse/exthtml/parser_exthtml.js"
-import { parseStyle,updateNames,ast2strCss } from "../parse/css/parser_css.js"
+import { parseStyle, updateNames, ast2strCss } from "../parse/css/parser_css.js"
 import { parseScript, parseCode, createSetReactiveNode, createCheckReactiveNode, parseEventDescription } from "../parse/js/parser_js.js"
 import * as macro from "./directives/macro.js"
 import * as drall from "./directives/drall.js"
@@ -13,7 +13,7 @@ import * as knownGlobals from './tools/knownGlobals.js';
 import { locate } from 'locate-character';
 import MagicString from 'magic-string';
 import { inspect } from 'util';
-import {getStructure} from './internals/analyze.js'
+import { getStructure } from './internals/analyze.js'
 import * as codeUtils from './tools/codeUtils.js'
 
 //import { style } from "../analyse/exthtml/directives/style";
@@ -26,7 +26,7 @@ let elem_counter = 1
 export async function exthtmlCompileFile(filePath) {
     const source_code_content = await fs.readFile(filePath, 'utf8');
     try {
-        return exthtmlCompile(source_code_content,filePath);
+        return exthtmlCompile(source_code_content, filePath);
     } catch (err) {
         if (!Array.isArray(err.errors)) {
             err.errors = [err];
@@ -38,7 +38,7 @@ export async function exthtmlCompileFile(filePath) {
 }
 
 
-export function exthtmlCompile(source_code_content,filePath) {
+export function exthtmlCompile(source_code_content, filePath) {
     const ast = parse(source_code_content);
 
     let { scripts = [], exthtml = [], styles = [] } = extract_sfc_contents_parts(ast)
@@ -46,8 +46,9 @@ export function exthtmlCompile(source_code_content,filePath) {
     let parsedOutput = parseScriptsAndStylesTags(scripts, styles)
     scripts = parsedOutput[0]
     styles = parsedOutput[1]
+    //console.log(inspect(scripts, { depth: null, colors: true, showHidden: true }));
     const analysis = analyse(exthtml, scripts, styles, filePath)
-//console.log(inspect(analysis, { depth: null, colors: true }))
+    //console.log(inspect(analysis, { depth: null, colors: true }))
     const generated_ctx = generateCtx(scripts, analysis)
     const generate_code = generate4Web(scripts, styles, analysis)
     return [scripts, exthtml, styles, generate_code, generated_ctx]
@@ -78,36 +79,36 @@ function parseScriptsAndStylesTags(scripts, styles) {
 
 //https://www.perplexity.ai/search/program-structure-program-bloc-5ZZ_Sz1qS3K.m2rsWCXETg
 function analyse(exthtml, scripts, styles, filePath) {
-/*
-        let vars = {
-            count: {
-                v:[0],
-                dependencies:{
-                    variable:[],
-                    components:[],
-                    directives:[]
-                },
-                dependents:{
-                    variable:[],
-                    components:[],
-                    directives:[]
+    /*
+            let vars = {
+                count: {
+                    v:[0],
+                    dependencies:{
+                        variable:[],
+                        components:[],
+                        directives:[]
+                    },
+                    dependents:{
+                        variable:[],
+                        components:[],
+                        directives:[]
+                    }
                 }
-            }
-        };
-
-        let dirty_queue = [
-            {
-                target_var:
-                generated_by:
-            }
-        ]
-*/
+            };
+    
+            let dirty_queue = [
+                {
+                    target_var:
+                    generated_by:
+                }
+            ]
+    */
     const result = getStructure()
     for (let x = 0; x < styles.length; x++) {
-        if ( styles[x].value ){
+        if (styles[x].value) {
             result.cssTree = updateNames(styles[x])
-            if( filePath ){
-                if( x > 0 ){
+            if (filePath) {
+                if (x > 0) {
                     continue
                 }
                 let baseName = path.basename(filePath, path.extname(filePath)) // get name without extension
@@ -306,12 +307,17 @@ console.log(inspect(parent, { depth: null, colors: true }));
 
         let currentScope = rootScope
         let closestBodyParentStack = [];
+        let parentStack = [];
         estreewalker.walk(scripts[x].children.body, {
             enter(node, parent) {
+                parentStack.push(node);
+                // Track the current body context for potential insertions
                 if (node.body && Array.isArray(node.body)) {
                     closestBodyParentStack.push(node);
                 }
+                // Update current scope from scope map
                 if (map.has(node)) currentScope = map.get(node);
+
                 if (
                     //An UpdateExpression (e.g., x++ or --y)
                     node.type === 'UpdateExpression'
@@ -330,17 +336,23 @@ console.log(inspect(parent, { depth: null, colors: true }));
                         ) {
                             result.willChange.add(name);
 
-
-                            // Insert a new statement after this VariableDeclaration node
+                            // Insert a new statement after this VariableDeclaration node or Update expression
                             const checkReactiveNode = createCheckReactiveNode(name);
 
-                            // Use top of the stack as the closest body parent (Find the index of the current VariableDeclaration node in parent's body)
-                            const closestParent = closestBodyParentStack[closestBodyParentStack.length - 1];
-                            if (closestParent) {
-                                const body = closestParent.body;
-                                const index = body.indexOf(parent);
+                            // Find the closest parent statement in parentStack
+                            const enclosingStmt = parentStack
+                                .slice() // make a copy
+                                .reverse()
+                                .find(n =>
+                                    n && n.type && n.type.endsWith('Statement') &&
+                                    closestBodyParentStack[closestBodyParentStack.length - 1]?.body?.includes(n)
+                                );
 
-                                // Insert the checkReactive statement right after in the parent's body array
+                            const closestParent = closestBodyParentStack[closestBodyParentStack.length - 1];
+
+                            if (enclosingStmt && closestParent) {
+                                const body = closestParent.body;
+                                const index = body.indexOf(enclosingStmt);
                                 if (index !== -1) {
                                     body.splice(index + 1, 0, checkReactiveNode);
                                 }
@@ -375,8 +387,8 @@ console.log(inspect(parent, { depth: null, colors: true }));
         console.log(inspect(map, { depth: null, colors: true, showHidden: true }));
         console.log(inspect(globals, { depth: null, colors: true, showHidden: true }));
         */
-       //console.log(inspect(result, { depth: null, colors: true, showHidden: true }))
-       script_pos_analyse(scripts[x], result)
+        //console.log(inspect(result, { depth: null, colors: true, showHidden: true }))
+        script_pos_analyse(scripts[x], result)
     }
 
     exthtml.forEach(node => traverseExthtml(node, result, 'TARGET'))
@@ -384,12 +396,12 @@ console.log(inspect(parent, { depth: null, colors: true }));
     return result
 }
 
-function script_pre_analyse(script, result){
+function script_pre_analyse(script, result) {
 
 }
 
-function script_pos_analyse(script, result){
-    if ( script.attrs.some(attr => attr.name == 'context' && attr.value === 'module') ) {
+function script_pos_analyse(script, result) {
+    if (script.attrs.some(attr => attr.name == 'context' && attr.value === 'module')) {
         result.code.shared_state.push(escodegen.generate(script.children))
         return
     }
@@ -576,13 +588,13 @@ function traverseExthtmlEventAttr(eventAttr, mode, result, variableName, parent_
     let descriptors = parseEventDescription(eventAttr.value)
 
     let handlerCode = ''
-    if(['functionName','functionCall'].indexOf(descriptors.type) > -1){
+    if (['functionName', 'functionCall'].indexOf(descriptors.type) > -1) {
         //Has the function been declared?
-        if(!result.functions.has(descriptors.name)){
+        if (!result.functions.has(descriptors.name)) {
             throw Error(`${traverseExthtmlEventAttr.name} function: Invalid ${descriptors.type.toLowerCase()} attribute on ${attr.name} and its value as ${attr.value}`)
         }
 
-        if(descriptors.type == 'functionName'){
+        if (descriptors.type == 'functionName') {
             // Compose the full event handler code snippet
             // DYNAMIC mode: eventAttr.value is an expression to be evaluated at runtime
             handlerCode = `
@@ -601,8 +613,8 @@ function traverseExthtmlEventAttr(eventAttr, mode, result, variableName, parent_
                 }
             `.replace(/^\s*[\r\n]/gm, '');
         }
-    } else if(descriptors.type == 'functionCallWithParams'){
-        if(!result.functions.has(descriptors.name)){
+    } else if (descriptors.type == 'functionCallWithParams') {
+        if (!result.functions.has(descriptors.name)) {
             throw Error(`${traverseExthtmlEventAttr.name} function: Invalid ${descriptors.type.toLowerCase()} attribute on ${attr.name} and its value as ${attr.value}`)
         }
         // Compose the full event handler code snippet
@@ -615,7 +627,7 @@ function traverseExthtmlEventAttr(eventAttr, mode, result, variableName, parent_
                 (${descriptors.name}) && (${descriptors.name})(${descriptors.parameters.join(',')})
             }
         `.replace(/^\s*[\r\n]/gm, '');
-    } else if(descriptors.type == 'assignment'){
+    } else if (descriptors.type == 'assignment') {
         // Insert a new statement after this VariableDeclaration node
         let reactive = [descriptors.variableChanged].filter((nm) => result.declared_variables.has(nm)).map(nm => escodegen.generate(createCheckReactiveNode(nm))).join(';\n');
         handlerCode = `
@@ -627,11 +639,11 @@ function traverseExthtmlEventAttr(eventAttr, mode, result, variableName, parent_
                 }
             `.replace(/^\s*[\r\n]/gm, '');
 
-    } else if(descriptors.type == 'arrowFunction'){
+    } else if (descriptors.type == 'arrowFunction') {
         let ast = parseCode(descriptors.rawBody)
         const { scope: rootScope, map, globals } = periscopic.analyze(ast)
         let reactive = Array.from(globals.keys()).filter((nm) => result.declared_variables.has(nm)).map(nm => escodegen.generate(createCheckReactiveNode(nm))).join(';\n');
-        if( descriptors.parameters.length ){
+        if (descriptors.parameters.length) {
             handlerCode = `
                 function ${reactiveFnName}(event) {
                     ${modifierChecks}
@@ -652,7 +664,7 @@ function traverseExthtmlEventAttr(eventAttr, mode, result, variableName, parent_
                 }
             `.replace(/^\s*[\r\n]/gm, '');
         }
-    } else if(descriptors.type == 'updateExpression'){
+    } else if (descriptors.type == 'updateExpression') {
         // Insert a new statement after this VariableDeclaration node
         let reactive = [descriptors.variableChanged].filter((nm) => result.declared_variables.has(nm)).map(nm => escodegen.generate(createCheckReactiveNode(nm))).join(';\n');
         handlerCode = `
@@ -769,8 +781,8 @@ function htmlClassAttr(attr, mode, result, variableName, parent_nm) {
         let operations = attr.value.split(",")
 
         operations.forEach(operation => {
-            let [_class, expression] = operation.split(":").map(v=>v.trim());
-            if(!_class){
+            let [_class, expression] = operation.split(":").map(v => v.trim());
+            if (!_class) {
                 throw Error(`${htmlClassAttr.name} function: Invalid empty class attribute '${operation}'`)
             }
             result.code.internal_import.add("rmAttr")
@@ -926,7 +938,7 @@ function handleStyleAttr(attr, mode, result, variableName) {
     }
 }
 
-export function extract_relevant_js_parts_evaluated_to_string(code, result){
+export function extract_relevant_js_parts_evaluated_to_string(code, result) {
     let ast = parseCode(code)
     //console.log(inspect(ast, { depth: null, colors: true }))
     let usedVars = new Set()
@@ -935,7 +947,7 @@ export function extract_relevant_js_parts_evaluated_to_string(code, result){
     //ExpressionStatement
     estreewalker.walk(ast.body, {
         enter(node) {
-            if ( node.name ){
+            if (node.name) {
                 result.willUseInTemplate.add(node.name)
                 usedVars.add(node.name)
             }
@@ -947,7 +959,7 @@ export function extract_relevant_js_parts_evaluated_to_string(code, result){
     //console.log(inspect(ast, { depth: null, colors: true }))
 }
 
-function extract_relevant_js_parts_evaluated_to_boolean(code, result){
+function extract_relevant_js_parts_evaluated_to_boolean(code, result) {
     return extract_relevant_js_parts_evaluated_to_string(code, result)
 }
 
@@ -994,7 +1006,7 @@ function generate4Web(scripts, styles, analysis) {
             }
         }
 
-        ${scripts.filter(script => !script.attrs.some(attr => attr.name === 'context' && attr.value === 'module')).map(script => escodegen.generate(script.children)+'\n').join('')}
+        ${scripts.filter(script => !script.attrs.some(attr => attr.name === 'context' && attr.value === 'module')).map(script => escodegen.generate(script.children) + '\n').join('')}
 
 
         ${analysis.code.reactives.join('\n')}
@@ -1083,7 +1095,7 @@ function extractor_sfc_walker(ast, scripts, exthtml, styles, level) {
             scripts.push(node)
         } else if (node.type == 'STYLE_TAG') {
             styles.push(node)
-        } else if (node.children){
+        } else if (node.children) {
             extractor_sfc_walker(node.children, scripts, exthtml, styles, level + 1)
             if (level == 1) {
                 exthtml.push(node)

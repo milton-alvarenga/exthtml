@@ -50,7 +50,7 @@ class Variable {
     this._v = initialValue === undefined ? [] : [initialValue]
     this._declarationType = "" // var, let, export, etc.
     this._dataType = ""
-    this.recalculate = noop
+    this.recalculate = []
     this.dependsOn = new DependencyGroup()
     this.dependents = new DependencyGroup()
   }

@@ -240,6 +240,39 @@ console.log(inspect(parent, { depth: null, colors: true }));
         });
 */
 
+        estreewalker.walk(scripts[x].children.body, {
+            enter(node, parent) {
+                if (parent !== null) {
+                    // We are at a child node (first level), so skip its children
+                    this.skip();
+                }
+
+                // Check if node is a FunctionDeclaration and its parent is Program (global scope)
+                if (node.type === 'FunctionDeclaration') {
+                    result.functions.add(node.id.name)
+                } else if (
+                    node.type === 'VariableDeclaration'
+                    &&
+                    node.declarations
+                ){
+                    node.declarations.forEach(decl => {
+                        if(
+                            decl
+                            &&
+                            decl.init
+                            &&
+                            (
+                                decl.init.type === 'FunctionExpression'
+                                ||
+                                decl.init.type === 'ArrowFunctionExpression'
+                            )
+                        ){
+                            result.functions.add(decl.id.name);
+                        }
+                    })
+                }
+            }
+        });
 
 
 
@@ -249,14 +282,38 @@ console.log(inspect(parent, { depth: null, colors: true }));
         estreewalker.walk(scripts[x].children, {
             enter(node, parent) {
                 // should now show the Program node for top-level nodes
-                if (node.type === 'VariableDeclaration' && parent.type === 'Program') {
+                if (
+                    node.type === 'VariableDeclaration'
+                    &&
+                    parent.type === 'Program'
+                ) {
                     node.declarations.forEach(decl => {
+                        if (result.functions.has(decl.id.name)){
+                            return;
+                        }
 
                         let depVar = result.dependencyTree.get(decl.id.name);
                         depVar.declarationType = node.kind;
                         result.code.dependencyTree.push(`$$_depVar = $$_dependencyTree.get('${decl.id.name}')`)
                         result.code.dependencyTree.push(`$$_depVar.declarationType = '${node.kind}'`)
-                        if (node.kind !== 'const') {
+                        let has_dependency = false;
+                        if (decl.init) {
+                            estreewalker.walk(decl.init, {
+                                enter(innerNode) {
+                                    if (innerNode.type === 'Identifier') {
+                                        has_dependency = true
+                                        let _depVar = result.dependencyTree.get(innerNode.name);
+                                        _depVar.dependents.variables.add(decl.id.name);
+                                        depVar.dependsOn.variables.add(innerNode.name);
+                                        result.code.dependencyTree.push(`$$_depVar.dependsOn.variables.add(${innerNode.name})`)
+                                        result.code.dependencyTree.push(`$$_depVar = $$_dependencyTree.get('${innerNode.name}')`)
+                                        result.code.dependencyTree.push(`$$_depVar.dependents.variables.add('${decl.id.name}')`)
+                                    }
+                                }
+                            });
+                        }
+
+                        if (node.kind !== 'const' && has_dependency) {
                             // Generate an assignment expression string for the variable initialization:
                             // e.g. "x = 5" or "x = someFunction()"
                             const assignmentAst = {
@@ -272,22 +329,7 @@ console.log(inspect(parent, { depth: null, colors: true }));
                             const assignmentCode = escodegen.generate(assignmentAst);
 
                             // Push the recalculate function that reassigns the variable
-                            result.code.dependencyTree.push(`$$_depVar.recalculate = () => { ${assignmentCode} }`);
-                        }
-
-                        if (decl.init) {
-                            estreewalker.walk(decl.init, {
-                                enter(innerNode) {
-                                    if (innerNode.type === 'Identifier') {
-                                        let _depVar = result.dependencyTree.get(innerNode.name);
-                                        _depVar.dependents.variables.add(decl.id.name);
-                                        depVar.dependsOn.variables.add(innerNode.name);
-                                        result.code.dependencyTree.push(`$$_depVar.dependsOn.variables.add(${innerNode.name})`)
-                                        result.code.dependencyTree.push(`$$_depVar = $$_dependencyTree.get('${innerNode.name}')`)
-                                        result.code.dependencyTree.push(`$$_depVar.dependents.variables.add('${decl.id.name}')`)
-                                    }
-                                }
-                            });
+                            result.code.dependencyTree.push(`$$_depVar.recalculate.push(() => { ${assignmentCode} })`);
                         }
 
                         // Insert a new statement after this VariableDeclaration node
@@ -370,18 +412,6 @@ console.log(inspect(parent, { depth: null, colors: true }));
             },
         });
 
-        estreewalker.walk(scripts[x].children.body, {
-            enter(node, parent) {
-                if (parent !== null) {
-                    // We are at a child node (first level), so skip its children
-                    this.skip();
-                }
-                // Check if node is a FunctionDeclaration and its parent is Program (global scope)
-                if (node.type === 'FunctionDeclaration') {
-                    result.functions.add(node.id.name)
-                }
-            }
-        });
         /*
         console.log(inspect(scope, { depth: null, colors: true, showHidden: true }));
         console.log(inspect(map, { depth: null, colors: true, showHidden: true }));
@@ -1085,8 +1115,10 @@ function generate4Web(scripts, styles, analysis) {
                     }
                     $$_depVar = $$_dependencyTree.get(firstElement)
                     if($$_recalculate.has(firstElement)){
-                        $$_depVar.recalculate();
-                        $$_recalculate.delete(firstElement)
+                        $$_depVar.recalculate.forEach((fn, index) => {
+                            fn();
+                        });
+                        $$_recalculate.delete(firstElement);
                     }
                     for (let key in $$_depVar.dependents) {
                         if (key == 'variables') {
@@ -1095,7 +1127,7 @@ function generate4Web(scripts, styles, analysis) {
                                     continue;
                                 }
                                 $$changes.add(nm);
-                                $$_recalculate.add(nm)
+                                $$_recalculate.add(nm);
                             }
                             continue;
                         }

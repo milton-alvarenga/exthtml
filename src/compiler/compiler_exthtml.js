@@ -305,7 +305,7 @@ console.log(inspect(parent, { depth: null, colors: true }));
                                         let _depVar = result.dependencyTree.get(innerNode.name);
                                         _depVar.dependents.variables.add(decl.id.name);
                                         depVar.dependsOn.variables.add(innerNode.name);
-                                        result.code.dependencyTree.push(`$$_depVar.dependsOn.variables.add(${innerNode.name})`)
+                                        result.code.dependencyTree.push(`$$_depVar.dependsOn.variables.add('${innerNode.name}')`)
                                         result.code.dependencyTree.push(`$$_depVar = $$_dependencyTree.get('${innerNode.name}')`)
                                         result.code.dependencyTree.push(`$$_depVar.dependents.variables.add('${decl.id.name}')`)
                                     }
@@ -431,11 +431,34 @@ console.log(inspect(parent, { depth: null, colors: true }));
                         )
                     ) {
                         result.willChange.add(name);
+                        let depVar = result.dependencyTree.get(name);
                         result.code.dependencyTree.push(`$$_depVar = $$_dependencyTree.get('${name}')`)
                         const assignmentCode = escodegen.generate(node);
 
                         // Push the recalculate function that reassigns the variable
                         result.code.dependencyTree.push(`$$_depVar.recalculate.push(() => { ${assignmentCode} })`);
+
+                        estreewalker.walk(node.right, {
+                            enter(node) {
+                                if (
+                                    node.type === 'Identifier'
+                                    &&
+                                    (
+                                        currentScope.find_owner(node.name) === rootScope
+                                        ||
+                                        globals.has(node.name)
+                                    )
+
+                                ) {
+                                    let _depVar = result.dependencyTree.get(node.name);
+                                    _depVar.dependents.variables.add(name);
+                                    depVar.dependsOn.variables.add(node.name);
+                                    result.code.dependencyTree.push(`$$_depVar.dependsOn.variables.add('${node.name}')`);
+                                    result.code.dependencyTree.push(`$$_depVar = $$_dependencyTree.get('${node.name}')`);
+                                    result.code.dependencyTree.push(`$$_depVar.dependents.variables.add('${name}')`);
+                                }
+                            }
+                        });
                     }
                 }
             },

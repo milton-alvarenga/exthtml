@@ -1185,8 +1185,14 @@ function generate4Web(scripts, styles, analysis) {
                                 if($$_done.has(nm)){
                                     continue;
                                 }
-                                $$changes.add(nm);
-                                $$_recalculate.add(nm);
+                                if(nm == firstElement){
+                                    $$_depVar.recalculate.forEach((fn, index) => {
+                                        fn();
+                                    });
+                                } else {
+                                    $$changes.add(nm);
+                                    $$_recalculate.add(nm);
+                                }
                             }
                             continue;
                         }

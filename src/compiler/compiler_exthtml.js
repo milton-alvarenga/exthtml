@@ -328,7 +328,9 @@ console.log(inspect(parent, { depth: null, colors: true }));
 
                             const assignmentCode = escodegen.generate(assignmentAst);
 
-                            // Push the recalculate function that reassigns the variable
+                            result.code.dependencyTree.push(`$$_depVar = $$_dependencyTree.get('${decl.id.name}')`)
+
+                            // Push the recalculate function that reassigns the variable                            
                             result.code.dependencyTree.push(`$$_depVar.recalculate.push(() => { ${assignmentCode} })`);
                         }
 
@@ -431,7 +433,6 @@ console.log(inspect(parent, { depth: null, colors: true }));
                         )
                     ) {
                         result.willChange.add(name);
-                        let depVar = result.dependencyTree.get(name);
                         result.code.dependencyTree.push(`$$_depVar = $$_dependencyTree.get('${name}')`)
                         const assignmentCode = escodegen.generate(node);
 
@@ -452,7 +453,7 @@ console.log(inspect(parent, { depth: null, colors: true }));
                                 ) {
                                     let _depVar = result.dependencyTree.get(node.name);
                                     _depVar.dependents.variables.add(name);
-                                    depVar.dependsOn.variables.add(node.name);
+                                    _depVar.dependsOn.variables.add(node.name);
                                     result.code.dependencyTree.push(`$$_depVar.dependsOn.variables.add('${node.name}')`);
                                     result.code.dependencyTree.push(`$$_depVar = $$_dependencyTree.get('${node.name}')`);
                                     result.code.dependencyTree.push(`$$_depVar.dependents.variables.add('${name}')`);

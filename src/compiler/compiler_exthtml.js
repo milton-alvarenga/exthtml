@@ -254,9 +254,9 @@ console.log(inspect(parent, { depth: null, colors: true }));
                     node.type === 'VariableDeclaration'
                     &&
                     node.declarations
-                ){
+                ) {
                     node.declarations.forEach(decl => {
-                        if(
+                        if (
                             decl
                             &&
                             decl.init
@@ -266,7 +266,7 @@ console.log(inspect(parent, { depth: null, colors: true }));
                                 ||
                                 decl.init.type === 'ArrowFunctionExpression'
                             )
-                        ){
+                        ) {
                             result.functions.add(decl.id.name);
                         }
                     })
@@ -288,7 +288,7 @@ console.log(inspect(parent, { depth: null, colors: true }));
                     parent.type === 'Program'
                 ) {
                     node.declarations.forEach(decl => {
-                        if (result.functions.has(decl.id.name)){
+                        if (result.functions.has(decl.id.name)) {
                             return;
                         }
 
@@ -400,6 +400,42 @@ console.log(inspect(parent, { depth: null, colors: true }));
                                 }
                             }
                         }
+                    }
+                }
+
+                if (
+                    node.type === "AssignmentExpression"
+                    &&
+                    node.left.type === "MemberExpression"
+                ) {
+                    let name = null;
+                    //It is an Array or object on pattern obj[attr]
+                    if (node.left.computed) {
+                        // This is like arr[4] = ...
+                        //console.log("Array index assignment detected:", node.left.object.name, "[...]", "at position", node.left.property.value);
+                        name = node.left.object.name
+                        //It is an object on pattern obj.attr
+                    } else {
+                        // This is like obj.a = ...
+                        //console.log("Object property assignment detected:", node.left.object.name, ".", node.left.property.name);
+                        name = node.left.object.name
+                    }
+
+                    if (
+                        name
+                        &&
+                        (
+                            currentScope.find_owner(name) === rootScope
+                            ||
+                            globals.has(name)
+                        )
+                    ) {
+                        result.willChange.add(name);
+                        result.code.dependencyTree.push(`$$_depVar = $$_dependencyTree.get('${name}')`)
+                        const assignmentCode = escodegen.generate(node);
+
+                        // Push the recalculate function that reassigns the variable
+                        result.code.dependencyTree.push(`$$_depVar.recalculate.push(() => { ${assignmentCode} })`);
                     }
                 }
             },

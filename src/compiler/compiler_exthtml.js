@@ -77,7 +77,6 @@ function parseScriptsAndStylesTags(scripts, styles) {
     return [scripts, styles]
 }
 
-//https://www.perplexity.ai/search/program-structure-program-bloc-5ZZ_Sz1qS3K.m2rsWCXETg
 function analyse(exthtml, scripts, styles, filePath) {
     /*
             let vars = {

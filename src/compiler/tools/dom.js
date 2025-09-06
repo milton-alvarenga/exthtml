@@ -136,3 +136,19 @@ function add_location(element, file, line, column, char) {
 		loc: { file, line, column, char }
 	};
 }
+
+export function addCssLinkOnHead(css_fullpath) {
+  // Check if a link element with the same href already exists in the head
+  const exists = Array.from(document.head.querySelectorAll('link[rel="stylesheet"]'))
+    .some(link => link.getAttribute('href') === css_fullpath);
+
+  if (!exists) {
+    // Create new link element
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = css_fullpath;
+
+    // Append to head
+    document.head.appendChild(link);
+  }
+}

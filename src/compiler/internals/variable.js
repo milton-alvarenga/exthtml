@@ -51,8 +51,8 @@ export class DependencyTree {
       output.push(`${dependencyTreeVarName} = $$_dependencyTree.get('${varname}')`);
       output.push(`${dependencyTreeVarName}.declarationType = '${this.tree[varname].declarationType}'`)
       output.push(`${dependencyTreeVarName}.recalculate = '[${this.tree[varname].recalculate.join(',')}]'`)
-      output.push(`${dependencyTreeVarName}.depOn(${JSON.stringify(Array.from(this.tree[varname].dependsOn.variables))},${JSON.stringify(Array.from(this.tree[varname].dependsOn.components))},${JSON.stringify(Array.from(this.tree[varname].dependsOn.directives))},${JSON.stringify(Array.from(this.tree[varname].dependsOn.functions))},${JSON.stringify(Array.from(this.tree[varname].dependsOn.texts))})`)
-      output.push(`${dependencyTreeVarName}.dep(${JSON.stringify(Array.from(this.tree[varname].dependents.variables))},${JSON.stringify(Array.from(this.tree[varname].dependents.components))},${JSON.stringify(Array.from(this.tree[varname].dependents.directives))},${JSON.stringify(Array.from(this.tree[varname].dependents.functions))},${JSON.stringify(Array.from(this.tree[varname].dependents.texts))})`)
+      output.push(`${dependencyTreeVarName}.depOn(${JSON.stringify(Array.from(this.tree[varname].dependsOn.variables))},[${Array.from(this.tree[varname].dependsOn.components).join(',')}],[${Array.from(this.tree[varname].dependsOn.directives).join(',')}],[${Array.from(this.tree[varname].dependsOn.functions).join(',')}],[${Array.from(this.tree[varname].dependsOn.texts).join(',')}])`)
+      output.push(`${dependencyTreeVarName}.dep(${JSON.stringify(Array.from(this.tree[varname].dependents.variables))},[${Array.from(this.tree[varname].dependents.components).join(',')}],[${Array.from(this.tree[varname].dependents.directives).join(',')}],[${Array.from(this.tree[varname].dependents.functions).join(',')}],[${Array.from(this.tree[varname].dependents.texts).join(',')}])`)
     });
 
     return output

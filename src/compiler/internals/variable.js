@@ -1,12 +1,22 @@
-import {noop} from '../../utils/general.js';
-
 class DependencyGroup {
-  constructor() {
-    this.variables = new Set();
-    this.components = new Set();
-    this.directives = new Set();
-    this.functions = new Set();
-    this.texts = new Set();
+  constructor(
+    variables,
+    components,
+    directives,
+    functions,
+    texts
+  ) {
+    variables = variables || [];
+    components = components || [];
+    directives = directives || [];
+    functions = functions || [];
+    texts = texts || [];
+
+    this.variables = new Set(variables);
+    this.components = new Set(components);
+    this.directives = new Set(directives);
+    this.functions = new Set(functions);
+    this.texts = new Set(texts);
   }
 }
 
@@ -31,6 +41,21 @@ export class DependencyTree {
     */
 
     return this.tree[varname]
+  }
+
+  compile(dependencyTreeVarName){
+    dependencyTreeVarName = dependencyTreeVarName || '$$_depVar';
+    let output = [];
+
+    Object.keys(this.tree).forEach(varname => {
+      output.push(`${dependencyTreeVarName} = $$_dependencyTree.get('${varname}')`);
+      output.push(`${dependencyTreeVarName}.declarationType = '${this.tree[varname].declarationType}'`)
+      output.push(`${dependencyTreeVarName}.recalculate = '[${this.tree[varname].recalculate.join(',')}]'`)
+      output.push(`${dependencyTreeVarName}.dependsOn = new DependencyGroup(${JSON.stringify(Array.from(this.tree[varname].dependsOn.variables))},${JSON.stringify(Array.from(this.tree[varname].dependsOn.components))},${JSON.stringify(Array.from(this.tree[varname].dependsOn.directives))},${JSON.stringify(Array.from(this.tree[varname].dependsOn.functions))},${JSON.stringify(Array.from(this.tree[varname].dependsOn.texts))})`)
+      output.push(`${dependencyTreeVarName}.dependents = new DependencyGroup(${JSON.stringify(Array.from(this.tree[varname].dependents.variables))},${JSON.stringify(Array.from(this.tree[varname].dependents.components))},${JSON.stringify(Array.from(this.tree[varname].dependents.directives))},${JSON.stringify(Array.from(this.tree[varname].dependents.functions))},${JSON.stringify(Array.from(this.tree[varname].dependents.texts))})`)
+    });
+
+    return output
   }
 }
 

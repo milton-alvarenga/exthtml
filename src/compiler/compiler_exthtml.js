@@ -293,20 +293,24 @@ console.log(inspect(parent, { depth: null, colors: true }));
 
                         let depVar = result.dependencyTree.get(decl.id.name);
                         depVar.declarationType = node.kind;
-// result.code.dependencyTree.push(`$$_depVar = $$_dependencyTree.get('${decl.id.name}')`)
-// result.code.dependencyTree.push(`$$_depVar.declarationType = '${node.kind}'`)
+                        // result.code.dependencyTree.push(`$$_depVar = $$_dependencyTree.get('${decl.id.name}')`)
+                        // result.code.dependencyTree.push(`$$_depVar.declarationType = '${node.kind}'`)
                         let has_dependency = false;
                         if (decl.init) {
+                            let is_object = decl.init.type == 'ObjectExpression';
                             estreewalker.walk(decl.init, {
-                                enter(innerNode) {
+                                enter(innerNode, parent) {
                                     if (innerNode.type === 'Identifier') {
+                                        if (is_object && parent.key == innerNode) {
+                                            return
+                                        }
                                         has_dependency = true
                                         let _depVar = result.dependencyTree.get(innerNode.name);
                                         _depVar.dependents.variables.add(decl.id.name);
                                         depVar.dependsOn.variables.add(innerNode.name);
-// result.code.dependencyTree.push(`$$_depVar.dependsOn.variables.add('${innerNode.name}')`)
-// result.code.dependencyTree.push(`$$_depVar = $$_dependencyTree.get('${innerNode.name}')`)
-// result.code.dependencyTree.push(`$$_depVar.dependents.variables.add('${decl.id.name}')`)
+                                        // result.code.dependencyTree.push(`$$_depVar.dependsOn.variables.add('${innerNode.name}')`)
+                                        // result.code.dependencyTree.push(`$$_depVar = $$_dependencyTree.get('${innerNode.name}')`)
+                                        // result.code.dependencyTree.push(`$$_depVar.dependents.variables.add('${decl.id.name}')`)
                                     }
                                 }
                             });
@@ -328,11 +332,11 @@ console.log(inspect(parent, { depth: null, colors: true }));
                             const assignmentCode = escodegen.generate(assignmentAst);
 
                             let depVar = result.dependencyTree.get(decl.id.name);
-//result.code.dependencyTree.push(`$$_depVar = $$_dependencyTree.get('${decl.id.name}')`)
+                            //result.code.dependencyTree.push(`$$_depVar = $$_dependencyTree.get('${decl.id.name}')`)
 
                             // Push the recalculate function that reassigns the variable
                             depVar.recalculate.push(`() => { ${assignmentCode} }`);
-//result.code.dependencyTree.push(`$$_depVar.recalculate.push(() => { ${assignmentCode} })`);
+                            //result.code.dependencyTree.push(`$$_depVar.recalculate.push(() => { ${assignmentCode} })`);
                         }
 
                         // Insert a new statement after this VariableDeclaration node
@@ -435,12 +439,12 @@ console.log(inspect(parent, { depth: null, colors: true }));
                     ) {
                         result.willChange.add(name);
                         let depVar = result.dependencyTree.get(name);
-//result.code.dependencyTree.push(`$$_depVar = $$_dependencyTree.get('${name}')`)
+                        //result.code.dependencyTree.push(`$$_depVar = $$_dependencyTree.get('${name}')`)
                         const assignmentCode = escodegen.generate(node);
 
                         // Push the recalculate function that reassigns the variable
                         depVar.recalculate.push(`() => { ${assignmentCode} }`);
-//result.code.dependencyTree.push(`$$_depVar.recalculate.push(() => { ${assignmentCode} })`);
+                        //result.code.dependencyTree.push(`$$_depVar.recalculate.push(() => { ${assignmentCode} })`);
 
 
 
@@ -460,9 +464,9 @@ console.log(inspect(parent, { depth: null, colors: true }));
                                     depVar.dependsOn.variables.add(node.name);
                                     let _depVar = result.dependencyTree.get(node.name);
                                     _depVar.dependents.variables.add(name);
-// result.code.dependencyTree.push(`$$_depVar.dependsOn.variables.add('${node.name}')`);
-// result.code.dependencyTree.push(`$$_depVar = $$_dependencyTree.get('${node.name}')`);
-// result.code.dependencyTree.push(`$$_depVar.dependents.variables.add('${name}')`);
+                                    // result.code.dependencyTree.push(`$$_depVar.dependsOn.variables.add('${node.name}')`);
+                                    // result.code.dependencyTree.push(`$$_depVar = $$_dependencyTree.get('${node.name}')`);
+                                    // result.code.dependencyTree.push(`$$_depVar.dependents.variables.add('${name}')`);
                                 }
                             }
                         });
@@ -576,8 +580,8 @@ function traverseExthtml(exthtml, result, parent_nm) {
                 for (const v of usedVars) {
                     let depVar = result.dependencyTree.get(v)
                     depVar.dependents.texts.add(reactiveFnName)
-// result.code.dependencyTree.push(`$$_depVar = $$_dependencyTree.get('${v}')`)
-// result.code.dependencyTree.push(`$$_depVar.dependents.texts.add(${reactiveFnName})`)
+                    // result.code.dependencyTree.push(`$$_depVar = $$_dependencyTree.get('${v}')`)
+                    // result.code.dependencyTree.push(`$$_depVar.dependents.texts.add(${reactiveFnName})`)
                 }
                 result.code.reactives.push(`function ${reactiveFnName}(){${variableName}.textContent = ${exthtml.value}}\n`)
                 result.code.mount.push(`$$_append(${parent_nm},${variableName})`)
@@ -850,8 +854,8 @@ function htmlBooleanAttr(attr, mode, result, variableName, node, parent_nm) {
         for (const v of usedVars) {
             let depVar = result.dependencyTree.get(v)
             depVar.dependents.directives.add(reactiveFnName)
-// result.code.dependencyTree.push(`$$_depVar = $$_dependencyTree.get('${v}')`)
-// result.code.dependencyTree.push(`$$_depVar.dependents.directives.add(${reactiveFnName})`)
+            // result.code.dependencyTree.push(`$$_depVar = $$_dependencyTree.get('${v}')`)
+            // result.code.dependencyTree.push(`$$_depVar.dependents.directives.add(${reactiveFnName})`)
         }
         result.code.reactives.push(`function ${reactiveFnName}(){\n
             (${attr.value}) ? $$_setAttr(${variableName}, '${attr.name}', ${attr.value} ? "" : false) : $$_rmAttr(${variableName}, '${attr.name}')
@@ -884,8 +888,8 @@ function htmlDataAttr(attr, mode, result, variableName, node, parent_nm) {
         for (const v of usedVars) {
             let depVar = result.dependencyTree.get(v)
             depVar.dependents.directives.add(reactiveFnName)
-// result.code.dependencyTree.push(`$$_depVar = $$_dependencyTree.get('${v}')`)
-// result.code.dependencyTree.push(`$$_depVar.dependents.directives.add(${reactiveFnName})`)
+            // result.code.dependencyTree.push(`$$_depVar = $$_dependencyTree.get('${v}')`)
+            // result.code.dependencyTree.push(`$$_depVar.dependents.directives.add(${reactiveFnName})`)
         }
 
 
@@ -908,8 +912,8 @@ function htmlClassDirective(attr, mode, result, variableName, node, parent_nm) {
     for (const v of usedVars) {
         let depVar = result.dependencyTree.get(v)
         depVar.dependents.directives.add(reactiveFnName)
-// result.code.dependencyTree.push(`$$_depVar = $$_dependencyTree.get('${v}')`)
-// result.code.dependencyTree.push(`$$_depVar.dependents.directives.add(${reactiveFnName})`)
+        // result.code.dependencyTree.push(`$$_depVar = $$_dependencyTree.get('${v}')`)
+        // result.code.dependencyTree.push(`$$_depVar.dependents.directives.add(${reactiveFnName})`)
     }
 
     let className = result.cssTree.classNames.hasOwnProperty(attr.name.trim()) ? result.cssTree.classNames[attr.name.trim()] : attr.name.trim()
@@ -937,8 +941,8 @@ function htmlClassAttr(attr, mode, result, variableName, parent_nm) {
             for (const v of usedVars) {
                 let depVar = result.dependencyTree.get(v)
                 depVar.dependents.directives.add(reactiveFnName)
-// result.code.dependencyTree.push(`$$_depVar = $$_dependencyTree.get('${v}')`)
-// result.code.dependencyTree.push(`$$_depVar.dependents.directives.add(${reactiveFnName})`)
+                // result.code.dependencyTree.push(`$$_depVar = $$_dependencyTree.get('${v}')`)
+                // result.code.dependencyTree.push(`$$_depVar.dependents.directives.add(${reactiveFnName})`)
             }
             let className = result.cssTree.classNames.hasOwnProperty(_class.trim()) ? result.cssTree.classNames[_class.trim()] : _class.trim()
             result.code.reactives.push(`function ${reactiveFnName}(){
@@ -979,8 +983,8 @@ function htmlRegularAttr(attr, mode, result, variableName, node, parent_nm) {
         for (const v of usedVars) {
             let depVar = result.dependencyTree.get(v)
             depVar.dependents.directives.add(reactiveFnName)
-// result.code.dependencyTree.push(`$$_depVar = $$_dependencyTree.get('${v}')`)
-// result.code.dependencyTree.push(`$$_depVar.dependents.directives.add(${reactiveFnName})`)
+            // result.code.dependencyTree.push(`$$_depVar = $$_dependencyTree.get('${v}')`)
+            // result.code.dependencyTree.push(`$$_depVar.dependents.directives.add(${reactiveFnName})`)
         }
 
         result.code.reactives.push(`function ${reactiveFnName}(){
@@ -1095,7 +1099,7 @@ export function extract_relevant_js_parts_evaluated_to_string(code, result) {
         enter(node) {
             if (node.type === 'Identifier' && node.name) {
                 result.willUseInTemplate.add(node.name)
-                if( result.declared_variables.has(node.name) ){
+                if (result.declared_variables.has(node.name)) {
                     usedVars.add(node.name)
                 }
             }

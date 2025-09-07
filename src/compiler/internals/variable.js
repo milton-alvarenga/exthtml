@@ -126,7 +126,7 @@ class Variable {
     functions,
     texts
   ) {
-    return new DependencyGroup(
+    this.dependsOn = new DependencyGroup(
       variables,
       components,
       directives,
@@ -142,7 +142,7 @@ class Variable {
     functions,
     texts
   ) {
-    return new DependencyGroup(
+    this.dependents = new DependencyGroup(
       variables,
       components,
       directives,

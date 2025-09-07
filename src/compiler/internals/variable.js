@@ -50,7 +50,7 @@ export class DependencyTree {
     Object.keys(this.tree).forEach(varname => {
       output.push(`${dependencyTreeVarName} = $$_dependencyTree.get('${varname}')`);
       output.push(`${dependencyTreeVarName}.declarationType = '${this.tree[varname].declarationType}'`)
-      output.push(`${dependencyTreeVarName}.recalculate = '[${this.tree[varname].recalculate.join(',')}]'`)
+      output.push(`${dependencyTreeVarName}.recalculate = [${this.tree[varname].recalculate.join(',')}]`)
       output.push(`${dependencyTreeVarName}.depOn(${JSON.stringify(Array.from(this.tree[varname].dependsOn.variables))},[${Array.from(this.tree[varname].dependsOn.components).join(',')}],[${Array.from(this.tree[varname].dependsOn.directives).join(',')}],[${Array.from(this.tree[varname].dependsOn.functions).join(',')}],[${Array.from(this.tree[varname].dependsOn.texts).join(',')}])`)
       output.push(`${dependencyTreeVarName}.dep(${JSON.stringify(Array.from(this.tree[varname].dependents.variables))},[${Array.from(this.tree[varname].dependents.components).join(',')}],[${Array.from(this.tree[varname].dependents.directives).join(',')}],[${Array.from(this.tree[varname].dependents.functions).join(',')}],[${Array.from(this.tree[varname].dependents.texts).join(',')}])`)
     });

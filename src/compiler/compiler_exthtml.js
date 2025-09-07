@@ -933,6 +933,7 @@ function htmlClassAttr(attr, mode, result, variableName, parent_nm) {
             result.code.internal_import.add("rmAttr")
             let reactiveFnName = `${variableName}__${_class}`
             let usedVars = extract_relevant_js_parts_evaluated_to_boolean(expression, result)
+
             for (const v of usedVars) {
                 let depVar = result.dependencyTree.get(v)
                 depVar.dependents.directives.add(reactiveFnName)
@@ -1084,17 +1085,19 @@ function handleStyleAttr(attr, mode, result, variableName) {
 }
 
 export function extract_relevant_js_parts_evaluated_to_string(code, result) {
-    let ast = parseCode(code)
-    //console.log(inspect(ast, { depth: null, colors: true }))
-    let usedVars = new Set()
 
+    let ast = parseCode(code)
+    // console.log(inspect(ast, { depth: null, colors: true }))
+    let usedVars = new Set()
 
     //ExpressionStatement
     estreewalker.walk(ast.body, {
         enter(node) {
-            if (node.name) {
+            if (node.type === 'Identifier' && node.name) {
                 result.willUseInTemplate.add(node.name)
-                usedVars.add(node.name)
+                if( result.declared_variables.has(node.name) ){
+                    usedVars.add(node.name)
+                }
             }
         }
     })

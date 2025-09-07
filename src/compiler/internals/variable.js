@@ -43,7 +43,7 @@ export class DependencyTree {
     return this.tree[varname]
   }
 
-  compile(dependencyTreeVarName){
+  compile(dependencyTreeVarName) {
     dependencyTreeVarName = dependencyTreeVarName || '$$_depVar';
     let output = [];
 
@@ -51,8 +51,8 @@ export class DependencyTree {
       output.push(`${dependencyTreeVarName} = $$_dependencyTree.get('${varname}')`);
       output.push(`${dependencyTreeVarName}.declarationType = '${this.tree[varname].declarationType}'`)
       output.push(`${dependencyTreeVarName}.recalculate = '[${this.tree[varname].recalculate.join(',')}]'`)
-      output.push(`${dependencyTreeVarName}.dependsOn = new DependencyGroup(${JSON.stringify(Array.from(this.tree[varname].dependsOn.variables))},${JSON.stringify(Array.from(this.tree[varname].dependsOn.components))},${JSON.stringify(Array.from(this.tree[varname].dependsOn.directives))},${JSON.stringify(Array.from(this.tree[varname].dependsOn.functions))},${JSON.stringify(Array.from(this.tree[varname].dependsOn.texts))})`)
-      output.push(`${dependencyTreeVarName}.dependents = new DependencyGroup(${JSON.stringify(Array.from(this.tree[varname].dependents.variables))},${JSON.stringify(Array.from(this.tree[varname].dependents.components))},${JSON.stringify(Array.from(this.tree[varname].dependents.directives))},${JSON.stringify(Array.from(this.tree[varname].dependents.functions))},${JSON.stringify(Array.from(this.tree[varname].dependents.texts))})`)
+      output.push(`${dependencyTreeVarName}.depOn(${JSON.stringify(Array.from(this.tree[varname].dependsOn.variables))},${JSON.stringify(Array.from(this.tree[varname].dependsOn.components))},${JSON.stringify(Array.from(this.tree[varname].dependsOn.directives))},${JSON.stringify(Array.from(this.tree[varname].dependsOn.functions))},${JSON.stringify(Array.from(this.tree[varname].dependsOn.texts))})`)
+      output.push(`${dependencyTreeVarName}.dep(${JSON.stringify(Array.from(this.tree[varname].dependents.variables))},${JSON.stringify(Array.from(this.tree[varname].dependents.components))},${JSON.stringify(Array.from(this.tree[varname].dependents.directives))},${JSON.stringify(Array.from(this.tree[varname].dependents.functions))},${JSON.stringify(Array.from(this.tree[varname].dependents.texts))})`)
     });
 
     return output
@@ -115,7 +115,39 @@ class Variable {
     }
   }
 
-  get dataType(){
+  get dataType() {
     return this._dataType;
+  }
+
+  depOn(
+    variables,
+    components,
+    directives,
+    functions,
+    texts
+  ) {
+    return new DependencyGroup(
+      variables,
+      components,
+      directives,
+      functions,
+      texts
+    )
+  }
+
+  dep(
+    variables,
+    components,
+    directives,
+    functions,
+    texts
+  ) {
+    return new DependencyGroup(
+      variables,
+      components,
+      directives,
+      functions,
+      texts
+    )
   }
 }

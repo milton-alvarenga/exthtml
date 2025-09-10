@@ -1117,7 +1117,7 @@ function generate4Web(scripts, styles, analysis) {
     ${analysis.code.shared_state.join("\n")}
 
     export default function(){
-        let ${analysis.code.elems.join(',')};
+        ${analysis.code.elems.length > 0 ? `let ${analysis.code.elems.join(',')};` : ''}
 
         ${Array.from(analysis.undeclared_variables).map((v) => `let ${v};`).join('\n')}
 

@@ -598,21 +598,9 @@ function traverseExthtml(exthtml, result, parent_nm) {
                 variableName = `$$plaintext_${setup.elem_counter++}`
                 break
             case 'HTML_NESTED_TAG':
+            case 'SELF_CLOSE_TAG':
                 variableName = `$$${exthtml.value.toLowerCase()}_${setup.elem_counter++}`
                 break
-            case 'SELF_CLOSE_TAG':
-                result.code.internal_import.add("append")
-                result.code.internal_import.add("detach")
-                result.code.internal_import.add("el")
-                variableName = `$$${exthtml.value.toLowerCase()}_${setup.elem_counter++}`
-                result.code.elems.push(variableName)
-                result.code.create.push(`${variableName} = $$_el('${exthtml.value.toLowerCase()}')`)
-                exthtml.attrs.forEach(attr => traverseExthtmlAttr(attr, "STATIC", result, variableName, exthtml, parent_nm))
-                exthtml.dynamic_attrs.forEach(dynamicAttr => traverseExthtmlAttr(dynamicAttr, "DYNAMIC", result, variableName, exthtml, parent_nm))
-                exthtml.event_attrs.forEach(eventAttr => traverseExthtmlEventAttr(eventAttr, "DYNAMIC", result, variableName, parent_nm))
-                result.code.mount.push(`$$_append(${parent_nm},${variableName})`)
-                result.code.destroy.push(`$$_detach(${variableName})`)
-                return
             case 'COMPONENT':
 
                 break

@@ -1112,7 +1112,9 @@ function generateCtx(scripts, analysis) {
 function generate4Web(scripts, styles, analysis) {
     //${scripts.filter(script => !script.attrs.some(attr => attr.name === 'context' && attr.value === 'module')).map(script => escodegen.generate(script.children))}
     return `${setup.BANNER}
-    import {${Array.from(analysis.code.internal_import).map(name => `${name} as $$_${name}`).join(", ")}} from 'exthtml/src/runtime/dom.js';
+    ${analysis.code.internal_import.size > 0
+    ? `import {${Array.from(analysis.code.internal_import).map(name => `${name} as $$_${name}`).join(", ")}} from 'exthtml/src/runtime/dom.js';` 
+    : ""}
     import {setReactive as $$_setReactive, checkReactive as $$_checkReactive} from 'exthtml/src/runtime/reactive2.js';
     import { DependencyTree as $$_DependencyTree } from 'exthtml/src/compiler/internals/variable.js';
     ${analysis.code.imports.join(";\n")};

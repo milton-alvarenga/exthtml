@@ -17,7 +17,7 @@ export function parseScript(script_ast) {
 }
 
 export function parseCode(source_code) {
-    return acorn.parse(source_code, { ecmaVersion: 2022 })
+    return acorn.parse(source_code, { ecmaVersion: 2022, sourceType: 'module' })
 }
 
 function extract_names(jsNode, result = []) {

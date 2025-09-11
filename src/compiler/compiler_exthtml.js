@@ -141,6 +141,7 @@ function analyse(exthtml, scripts, styles, filePath) {
 
     for (let x = 0; x < scripts.length; x++) {
         if (scripts[x].attrs.some(attr => attr.name == 'context' && attr.value === 'module')) {
+            result.code.shared_state.push(escodegen.generate(script.children))
             continue
         }
 
@@ -542,11 +543,6 @@ function removeDuplicateCheckReactiveDeep(node, lastFound) {
 
 function script_pos_analyse(script, result) {
     removeDuplicateCheckReactiveDeep(script.children)
-
-    if (script.attrs.some(attr => attr.name == 'context' && attr.value === 'module')) {
-        result.code.shared_state.push(escodegen.generate(script.children))
-        return
-    }
 }
 
 function traverseExthtml(exthtml, result, parent_nm) {

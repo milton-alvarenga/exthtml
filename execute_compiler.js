@@ -33,10 +33,17 @@ if(update_parser_code){
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-//const filePath = './src/examples/exthtml/increase_decrease/with_css_on_class_bool_and_no_function.exthtml';
-//const filePath = './src/examples/exthtml/object_and_array_reactivity/object_reactivity.exthtml';
-//const filePath = './src/examples/exthtml/object_and_array_reactivity/array_reactivity.exthtml';
-const filePathIfNoneInformed = './src/examples/exthtml/var_modified_but_could_be_reseted/var_modified_but_could_be_reseted.exthtml';
+//const filePathIfNoneInformed = './src/examples/exthtml/increase_decrease/with_css_on_class_bool_and_no_function.exthtml';
+//const filePathIfNoneInformed = './src/examples/exthtml/object_and_array_reactivity/object_reactivity.exthtml';
+//const filePathIfNoneInformed = './src/examples/exthtml/object_and_array_reactivity/array_reactivity.exthtml';
+//const filePathIfNoneInformed = './src/examples/exthtml/var_modified_but_could_be_reseted/var_modified_but_could_be_reseted.exthtml';
+//const filePathIfNoneInformed = './src/examples/exthtml/array_reactivity/array_reactivity.exthtml';
+//const filePathIfNoneInformed = './src/examples/exthtml/events_on_btn/events_on_btn.exthtml';
+//const filePathIfNoneInformed = './src/examples/exthtml/var_reactivity/var_reactivity.exthtml';
+//const filePathIfNoneInformed = './src/examples/exthtml/input_reactivity_with_event/input_reactivity_with_event.exthtml'
+//const filePathIfNoneInformed = './src/examples/exthtml/var_reactivity_with_logic/var_reactivity_with_logic.exthtml'
+const filePathIfNoneInformed = './src/examples/exthtml/svelte_based/vars/samples/imports/index.exthtml'
+//const filePathIfNoneInformed = './src/examples/exthtml/svelte_based/vars/samples/duplicate-non-hoistable/index.exthtml'
 
 const args = process.argv.slice(2);
 

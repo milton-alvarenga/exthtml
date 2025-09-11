@@ -140,6 +140,10 @@ function analyse(exthtml, scripts, styles, filePath) {
     const toRemove = new Set()
 
     for (let x = 0; x < scripts.length; x++) {
+        if (scripts[x].attrs.some(attr => attr.name == 'context' && attr.value === 'module')) {
+            continue
+        }
+
         script_pre_analyse(scripts[x], result)
         const { scope: rootScope, map, globals } = periscopic.analyze(scripts[x].children)
         result.declared_variables = new Set(rootScope.declarations.keys())

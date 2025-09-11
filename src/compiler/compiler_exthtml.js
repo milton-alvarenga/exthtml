@@ -141,7 +141,7 @@ function analyse(exthtml, scripts, styles, filePath) {
 
     for (let x = 0; x < scripts.length; x++) {
         if (scripts[x].attrs.some(attr => attr.name == 'context' && attr.value === 'module')) {
-            result.code.shared_state.push(escodegen.generate(script.children))
+            result.code.shared_state.push(escodegen.generate(scripts[x].children))
             continue
         }
 

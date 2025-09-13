@@ -434,8 +434,10 @@ console.log(inspect(parent, { depth: null, colors: true }));
                         &&
                         (
                             currentScope.find_owner(name) === rootScope
+                            /*
                             ||
                             globals.has(name)
+                            */
                         )
                     ) {
                         result.willChange.add(name);

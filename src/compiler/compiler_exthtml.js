@@ -634,6 +634,15 @@ function traverseExthtml(exthtml, result, parent_nm) {
         result.code.elems.push(variableName)
 
         result.code.create.push(`${variableName} = $$_el('${exthtml.value.toLowerCase()}')`)
+
+        //Check any type selector on css
+        if (
+            result.cssTree.typeSelect.hasOwnProperty(exthtml.value.toLowerCase())
+        ){
+            // Static class attribute for css type selector : set once on create
+            result.code.create.push(`${variableName}.classList.add('${result.cssTree.typeSelect[exthtml.value.toLowerCase()]}')`)
+        }
+        
         exthtml.children.forEach(node => traverseExthtml(node, result, variableName, parent_nm))
         exthtml.attrs.forEach(attr => traverseExthtmlAttr(attr, "STATIC", result, variableName, exthtml, parent_nm))
         exthtml.dynamic_attrs.forEach(dynamicAttr => traverseExthtmlAttr(dynamicAttr, "DYNAMIC", result, variableName, exthtml, parent_nm))
@@ -902,18 +911,6 @@ function htmlClassDirective(attr, mode, result, variableName, node, parent_nm) {
         throw Error(`${htmlClassDirective.name} function: Invalid ${mode.toLowerCase()} attribute on class directive as it is only dynamic attribute`)
     }
 
-    if(attr.pos === 0){
-        //Check any type selector on css
-        if(
-            result.cssTree.typeSelect.hasOwnProperty(node.value.toLowerCase())
-            &&
-            result.code.create.indexOf(`${variableName}.classList.add('${result.cssTree.typeSelect[node.value.toLowerCase()]}')`) == -1
-        ){
-            // Static class attribute: set once on create
-            result.code.create.push(`${variableName}.classList.add('${result.cssTree.typeSelect[node.value.toLowerCase()]}')`)
-        }
-    }
-
     result.code.internal_import.add("rmAttr")
 
     let reactiveFnName = `${variableName}__${attr.name}`
@@ -935,17 +932,6 @@ function htmlClassDirective(attr, mode, result, variableName, node, parent_nm) {
 }
 
 function htmlClassAttr(attr, mode, result, variableName, node, parent_nm) {
-    if(attr.pos === 0){
-        //Check any type selector on css
-        if(
-            result.cssTree.typeSelect.hasOwnProperty(node.value.toLowerCase())
-            &&
-            result.code.create.indexOf(`${variableName}.classList.add('${result.cssTree.typeSelect[node.value.toLowerCase()]}')`) == -1
-        ){
-            // Static class attribute: set once on create
-            result.code.create.push(`${variableName}.classList.add('${result.cssTree.typeSelect[node.value.toLowerCase()]}')`)
-        }
-    }
     if (mode === "DYNAMIC") {
         let operations = attr.value.split(",")
 

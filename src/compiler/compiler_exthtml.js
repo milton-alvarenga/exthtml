@@ -1122,6 +1122,7 @@ function generateCtx(scripts, analysis) {
 //context="module"
 function generate4Web(scripts, styles, analysis) {
     //${scripts.filter(script => !script.attrs.some(attr => attr.name === 'context' && attr.value === 'module')).map(script => escodegen.generate(script.children))}
+    //${Array.from(analysis.undeclared_variables).map((v) => `let ${v};`).join('\n')}
     return `${setup.BANNER}
     ${analysis.code.internal_import.size > 0
             ? `import {${Array.from(analysis.code.internal_import).map(name => `${name} as $$_${name}`).join(", ")}} from 'exthtml/src/runtime/dom.js';`
@@ -1135,8 +1136,6 @@ function generate4Web(scripts, styles, analysis) {
 
     export default function(){
         ${analysis.code.elems.length > 0 ? `let ${analysis.code.elems.join(',')};` : ''}
-
-        ${Array.from(analysis.undeclared_variables).map((v) => `let ${v};`).join('\n')}
 
         let $$_dependencyTree = new $$_DependencyTree();
         let $$_depVar = null;

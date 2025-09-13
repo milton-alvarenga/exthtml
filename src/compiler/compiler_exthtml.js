@@ -379,8 +379,10 @@ console.log(inspect(parent, { depth: null, colors: true }));
                     for (const name of names) {
                         if (
                             currentScope.find_owner(name) === rootScope
+                            /*
                             ||
                             globals.has(name)
+                            */
                         ) {
                             result.willChange.add(name);
 

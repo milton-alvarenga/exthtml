@@ -107,6 +107,7 @@ function analyse(exthtml, scripts, styles, filePath) {
     for (let x = 0; x < styles.length; x++) {
         if (styles[x].value) {
             result.cssTree = updateNames(styles[x])
+
             if (filePath) {
                 if (x > 0) {
                     continue
@@ -901,6 +902,18 @@ function htmlClassDirective(attr, mode, result, variableName, node, parent_nm) {
         throw Error(`${htmlClassDirective.name} function: Invalid ${mode.toLowerCase()} attribute on class directive as it is only dynamic attribute`)
     }
 
+    if(attr.pos === 0){
+        //Check any type selector on css
+        if(
+            result.cssTree.typeSelect.hasOwnProperty(node.value.toLowerCase())
+            &&
+            result.code.create.indexOf(`${variableName}.classList.add('${result.cssTree.typeSelect[node.value.toLowerCase()]}')`) == -1
+        ){
+            // Static class attribute: set once on create
+            result.code.create.push(`${variableName}.classList.add('${result.cssTree.typeSelect[node.value.toLowerCase()]}')`)
+        }
+    }
+
     result.code.internal_import.add("rmAttr")
 
     let reactiveFnName = `${variableName}__${attr.name}`
@@ -921,7 +934,18 @@ function htmlClassDirective(attr, mode, result, variableName, node, parent_nm) {
     //result.code.update.push(`(!!(${attr.value})) ? ${variableName}.classList.add('${attr.name}'): ${variableName}.classList.remove('${attr.name}')`)
 }
 
-function htmlClassAttr(attr, mode, result, variableName, parent_nm) {
+function htmlClassAttr(attr, mode, result, variableName, node, parent_nm) {
+    if(attr.pos === 0){
+        //Check any type selector on css
+        if(
+            result.cssTree.typeSelect.hasOwnProperty(node.value.toLowerCase())
+            &&
+            result.code.create.indexOf(`${variableName}.classList.add('${result.cssTree.typeSelect[node.value.toLowerCase()]}')`) == -1
+        ){
+            // Static class attribute: set once on create
+            result.code.create.push(`${variableName}.classList.add('${result.cssTree.typeSelect[node.value.toLowerCase()]}')`)
+        }
+    }
     if (mode === "DYNAMIC") {
         let operations = attr.value.split(",")
 
@@ -958,7 +982,7 @@ function htmlRegularAttr(attr, mode, result, variableName, node, parent_nm) {
     checkMode(mode)
     // Handle special cases for 'class'
     if (attr.name === 'class') {
-        htmlClassAttr(attr, mode, result, variableName, parent_nm)
+        htmlClassAttr(attr, mode, result, variableName, node, parent_nm)
         return
     }
     //style

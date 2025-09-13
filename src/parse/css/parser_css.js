@@ -36,7 +36,7 @@ export function updateNames(style){
                 } else if (child.type === 'TypeSelector') {
                     let new_nm = style.prefix+'-'+style.hash+'-'+child.name
                     typeSelect[child.name] = new_nm
-                    child.name = new_nm
+                    child.name = `.${new_nm}`
                 }
             });
         }

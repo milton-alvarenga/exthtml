@@ -494,7 +494,9 @@ console.log(inspect(parent, { depth: null, colors: true }));
 
     result.dependencyTree.css.idNames = result.cssTree.idNames
     result.code.dependencyTree.push(...result.dependencyTree.compile())
-
+    if(result.code.internal_import.has('setAttr')){
+        result.code.internal_import.add('setDepTree')
+    }
     return result
 }
 
@@ -865,7 +867,7 @@ function htmlBooleanAttr(attr, mode, result, variableName, node, parent_nm) {
             // result.code.dependencyTree.push(`$$_depVar.dependents.directives.add(${reactiveFnName})`)
         }
         result.code.reactives.push(`function ${reactiveFnName}(){\n
-            (${attr.value}) ? $$_setAttr(${variableName}, '${attr.name}', ${attr.value} ? "" : false) : $$_rmAttr(${variableName}, '${attr.name}')
+            (${attr.value}) ? $$_setAttr(${variableName}, '${attr.name}', ${!!attr.value} ? "" : false) : $$_rmAttr(${variableName}, '${attr.name}')
         }`)
         result.code.create.push(`${reactiveFnName}()`)
         //result.code.update.push(`(${attr.value}) ? setAttr(${variableName}, '${attr.name}', ${attr.value}) : rmAttr(${variableName}, '${attr.name}')`)
@@ -1165,6 +1167,8 @@ function generate4Web(scripts, styles, analysis) {
                 $$_lifecycle.update();
             }
         }
+
+        ${analysis.code.internal_import.has('setDepTree') ? `$$_setDepTree($$_dependencyTree);` : ""}
 
         ${scripts.filter(script => !script.attrs.some(attr => attr.name === 'context' && attr.value === 'module')).map(script => escodegen.generate(script.children) + '\n').join('')}
 

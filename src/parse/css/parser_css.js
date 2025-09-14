@@ -15,10 +15,10 @@ export function parseStyle(style_ast){
     return csstree.parse(code)
 }
 
-export function updateNames(style){
-    let classNames = {}
-    let idNames = {}
-    let typeSelect = {}
+export function updateNames(style,classNames, idNames, typeSelector){
+    classNames = classNames || {}
+    idNames = idNames || {}
+    typeSelector = typeSelector || {}
 
     // Walk AST and extract class and id selectors
     csstree.walk(style.children, {
@@ -35,7 +35,7 @@ export function updateNames(style){
                     child.name = new_nm
                 } else if (child.type === 'TypeSelector') {
                     let new_nm = style.prefix+'-'+style.hash+'-'+child.name
-                    typeSelect[child.name] = new_nm
+                    typeSelector[child.name] = new_nm
                     child.name = `.${new_nm}`
                 }
             });
@@ -44,7 +44,7 @@ export function updateNames(style){
     return {
         classNames,
         idNames,
-        typeSelect
+        typeSelector
     }
 }
 
@@ -52,7 +52,7 @@ export function emptyCssTree(){
     return {
         "classNames":{},
         "idNames":{},
-        "typeSelect":{}
+        "typeSelector":{}
     }
 }
 

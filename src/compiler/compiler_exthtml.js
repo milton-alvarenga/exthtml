@@ -106,7 +106,7 @@ function analyse(exthtml, scripts, styles, filePath) {
     const result = getStructure()
     for (let x = 0; x < styles.length; x++) {
         if (styles[x].value) {
-            result.cssTree = updateNames(styles[x])
+            result.cssTree = updateNames(styles[x],result.cssTree.classNames,result.cssTree.idNames,result.cssTree.typeSelector)
 
             if (filePath) {
                 if (x > 0) {
@@ -637,10 +637,10 @@ function traverseExthtml(exthtml, result, parent_nm) {
 
         //Check any type selector on css
         if (
-            result.cssTree.typeSelect.hasOwnProperty(exthtml.value.toLowerCase())
+            result.cssTree.typeSelector.hasOwnProperty(exthtml.value.toLowerCase())
         ){
             // Static class attribute for css type selector : set once on create
-            result.code.create.push(`${variableName}.classList.add('${result.cssTree.typeSelect[exthtml.value.toLowerCase()]}')`)
+            result.code.create.push(`${variableName}.classList.add('${result.cssTree.typeSelector[exthtml.value.toLowerCase()]}')`)
         }
         
         exthtml.children.forEach(node => traverseExthtml(node, result, variableName, parent_nm))

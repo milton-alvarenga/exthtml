@@ -13,13 +13,13 @@ export function setAttr(elem, name, value) {
         // Remove attribute if value is null or undefined
         return rmAttr(elem, name)
     } else if (name == 'id') {
-        if (typeof $$_dependencyTree !== 'undefined' && $$_dependencyTree && $$_dependencyTree.getCss().idNames.hasOwnProperty(value)) {
+        if (typeof $$_dependencyTree !== 'undefined' && $$_dependencyTree && $$_dependencyTree.css().idNames.hasOwnProperty(value)) {
             const observer = new MutationObserver((mutationsList) => {
                 for (const mutation of mutationsList) {
                     if (mutation.type === 'attributes' && mutation.attributeName === 'id') {
                         const oldValue = mutation.oldValue; // old id value
-                        if ($$_dependencyTree.getCss().idNames.hasOwnProperty(oldValue)) {
-                            elem.classList.remove($$_dependencyTree.getCss().idNames[oldValue]);
+                        if ($$_dependencyTree.css().idNames.hasOwnProperty(oldValue)) {
+                            elem.classList.remove($$_dependencyTree.css().idNames[oldValue]);
                         }
                         const newValue = mutation.target.getAttribute(mutation.attributeName);
                         const trimmedValue = newValue ? newValue.trim() : '';
@@ -30,8 +30,8 @@ export function setAttr(elem, name, value) {
                             return; // stop further processing
                         }
 
-                        if ($$_dependencyTree.getCss().idNames.hasOwnProperty(trimmedValue)) {
-                            elem.classList.add($$_dependencyTree.getCss().idNames[trimmedValue]);
+                        if ($$_dependencyTree.css().idNames.hasOwnProperty(trimmedValue)) {
+                            elem.classList.add($$_dependencyTree.css().idNames[trimmedValue]);
                         }
                     }
                 }

@@ -492,7 +492,7 @@ console.log(inspect(parent, { depth: null, colors: true }));
 
     exthtml.forEach(node => traverseExthtml(node, result, 'TARGET'))
 
-    result.dependencyTree.getCss().idNames = result.cssTree.idNames
+    result.dependencyTree.css.idNames = result.cssTree.idNames
     result.code.dependencyTree.push(...result.dependencyTree.compile())
 
     return result

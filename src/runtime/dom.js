@@ -13,6 +13,12 @@ export function setAttr(elem, name, value) {
         // Remove attribute if value is null or undefined
         return rmAttr(elem, name)
     } else if (name == 'id') {
+if(typeof $$_dependencyTree !== 'undefined'){
+    console.log($$_dependencyTree)
+    console.log($$_dependencyTree.css.idNames)
+    console.log(value)
+    console.log("-----")
+}
         if (typeof $$_dependencyTree !== 'undefined' && $$_dependencyTree && $$_dependencyTree.css.idNames.hasOwnProperty(value)) {
             const observer = new MutationObserver((mutationsList) => {
                 for (const mutation of mutationsList) {

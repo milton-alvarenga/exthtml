@@ -68,7 +68,7 @@ export class DependencyTree {
     dependencyTreeVarName = dependencyTreeVarName || '$$_depVar';
     let output = [];
 
-    output.push(`${dependencyTreeVarName}.getCss.idNames = ${JSON.stringify(this.css.idNames)}`)
+    output.push(`${dependencyTreeVarName}.getCss().idNames = ${JSON.stringify(this.css.idNames)}`)
     Object.keys(this.js).forEach(varname => {
       output.push(`${dependencyTreeVarName} = $$_dependencyTree.get('${varname}')`);
       output.push(`${dependencyTreeVarName}.declarationType = '${this.js[varname].declarationType}'`)

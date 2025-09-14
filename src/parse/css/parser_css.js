@@ -30,7 +30,7 @@ export function updateNames(style,classNames, idNames, typeSelector){
                     classNames[child.name] = new_nm
                     child.name = new_nm
                 } else if (child.type === 'IdSelector') {
-                    let new_nm = style.prefix+'-'+style.hash+'-'+child.name
+                    let new_nm = style.prefix+'-'+style.hash+'-'+child.name.substring(1)
                     idNames[child.name] = new_nm
                     child.name = new_nm
                 } else if (child.type === 'TypeSelector') {

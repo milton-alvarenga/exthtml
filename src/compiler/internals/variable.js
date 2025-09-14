@@ -20,39 +20,61 @@ class DependencyGroup {
   }
 }
 
-
-export class DependencyTree {
-  constructor(tree = {}) {
-    this.tree = tree;  // use the passed tree or empty object
+class CssTree {
+  constructor (
+    idNames
+  ){
+    this.idNames = idNames || {}
   }
 
   get(varname) {
-    if (!this.tree[varname]) {
-      this.tree[varname] = new Variable()
+    if (!this.idNames[varname]) {
+      this.idNames[varname] = varname;
+    }
+
+    return this.idNames[varname]
+  }
+}
+
+
+export class DependencyTree {
+  constructor(js = {}) {
+    this.js = js;  // use the passed tree or empty object
+    this.css = new CssTree();
+  }
+
+  get(varname) {
+    if (!this.js[varname]) {
+      this.js[varname] = new Variable()
     }
 
     /*
-    const variable = this.tree[varname]
-    // The save method updates the tree with the current variable value
+    const variable = this.js[varname]
+    // The save method updates the js with the current variable value
     variable.save = () => {
-      this.tree[varname] = variable
+      this.js[varname] = variable
     }
     return variable
     */
 
-    return this.tree[varname]
+    return this.js[varname]
+  }
+
+  getCss(){
+    return this.css;
   }
 
   compile(dependencyTreeVarName) {
     dependencyTreeVarName = dependencyTreeVarName || '$$_depVar';
     let output = [];
 
-    Object.keys(this.tree).forEach(varname => {
+    //output.push(`${dependencyTreeVarName}.css.idNames = ${JSON.stringify(this.css.idNames)}`)
+    Object.keys(this.js).forEach(varname => {
       output.push(`${dependencyTreeVarName} = $$_dependencyTree.get('${varname}')`);
-      output.push(`${dependencyTreeVarName}.declarationType = '${this.tree[varname].declarationType}'`)
-      output.push(`${dependencyTreeVarName}.recalculate = [${this.tree[varname].recalculate.join(',')}]`)
-      output.push(`${dependencyTreeVarName}.depOn(${JSON.stringify(Array.from(this.tree[varname].dependsOn.variables))},[${Array.from(this.tree[varname].dependsOn.components).join(',')}],[${Array.from(this.tree[varname].dependsOn.directives).join(',')}],[${Array.from(this.tree[varname].dependsOn.functions).join(',')}],[${Array.from(this.tree[varname].dependsOn.texts).join(',')}])`)
-      output.push(`${dependencyTreeVarName}.dep(${JSON.stringify(Array.from(this.tree[varname].dependents.variables))},[${Array.from(this.tree[varname].dependents.components).join(',')}],[${Array.from(this.tree[varname].dependents.directives).join(',')}],[${Array.from(this.tree[varname].dependents.functions).join(',')}],[${Array.from(this.tree[varname].dependents.texts).join(',')}])`)
+      output.push(`${dependencyTreeVarName}.declarationType = '${this.js[varname].declarationType}'`)
+      output.push(`${dependencyTreeVarName}.recalculate = [${this.js[varname].recalculate.join(',')}]`)
+      output.push(`${dependencyTreeVarName}.depOn(${JSON.stringify(Array.from(this.js[varname].dependsOn.variables))},[${Array.from(this.js[varname].dependsOn.components).join(',')}],[${Array.from(this.js[varname].dependsOn.directives).join(',')}],[${Array.from(this.js[varname].dependsOn.functions).join(',')}],[${Array.from(this.js[varname].dependsOn.texts).join(',')}])`)
+      output.push(`${dependencyTreeVarName}.dep(${JSON.stringify(Array.from(this.js[varname].dependents.variables))},[${Array.from(this.js[varname].dependents.components).join(',')}],[${Array.from(this.js[varname].dependents.directives).join(',')}],[${Array.from(this.js[varname].dependents.functions).join(',')}],[${Array.from(this.js[varname].dependents.texts).join(',')}])`)
     });
 
     return output

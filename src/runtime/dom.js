@@ -1,3 +1,9 @@
+let dependencyTree = null;
+
+export function setDepTree(depTree){
+    dependencyTree = depTree
+}
+
 export function getById(id) {
     return document.getElementById(id)
 }
@@ -13,19 +19,13 @@ export function setAttr(elem, name, value) {
         // Remove attribute if value is null or undefined
         return rmAttr(elem, name)
     } else if (name == 'id') {
-if(typeof $$_dependencyTree !== 'undefined'){
-    console.log($$_dependencyTree)
-    console.log($$_dependencyTree.css.idNames)
-    console.log(value)
-    console.log("-----")
-}
-        if (typeof $$_dependencyTree !== 'undefined' && $$_dependencyTree && $$_dependencyTree.css.idNames.hasOwnProperty(value)) {
+        if (dependencyTree && dependencyTree.css.idNames.hasOwnProperty(value)) {
             const observer = new MutationObserver((mutationsList) => {
                 for (const mutation of mutationsList) {
                     if (mutation.type === 'attributes' && mutation.attributeName === 'id') {
                         const oldValue = mutation.oldValue; // old id value
-                        if ($$_dependencyTree.css.idNames.hasOwnProperty(oldValue)) {
-                            elem.classList.remove($$_dependencyTree.css.idNames[oldValue]);
+                        if (dependencyTree.css.idNames.hasOwnProperty(oldValue)) {
+                            elem.classList.remove(dependencyTree.css.idNames[oldValue]);
                         }
                         const newValue = mutation.target.getAttribute(mutation.attributeName);
                         const trimmedValue = newValue ? newValue.trim() : '';
@@ -36,8 +36,8 @@ if(typeof $$_dependencyTree !== 'undefined'){
                             return; // stop further processing
                         }
 
-                        if ($$_dependencyTree.css.idNames.hasOwnProperty(trimmedValue)) {
-                            elem.classList.add($$_dependencyTree.css.idNames[trimmedValue]);
+                        if (dependencyTree.css.idNames.hasOwnProperty(trimmedValue)) {
+                            elem.classList.add(dependencyTree.css.idNames[trimmedValue]);
                         }
                     }
                 }

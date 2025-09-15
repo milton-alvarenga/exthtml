@@ -646,6 +646,12 @@ function traverseExthtml(exthtml, result, parent_nm) {
             result.code.create.push(`${variableName}.classList.add('${result.cssTree.typeSelector[exthtml.value.toLowerCase()]}')`)
         }
         
+        //Check universal selector
+        if(result.cssTree.typeSelector.hasOwnProperty('*')){
+            // Static class attribute for css type selector : set once on create
+            result.code.create.push(`${variableName}.classList.add('${result.cssTree.typeSelector['*']}')`)
+        }
+
         exthtml.children.forEach(node => traverseExthtml(node, result, variableName, parent_nm))
         exthtml.attrs.forEach(attr => traverseExthtmlAttr(attr, "STATIC", result, variableName, exthtml, parent_nm))
         exthtml.dynamic_attrs.forEach(dynamicAttr => traverseExthtmlAttr(dynamicAttr, "DYNAMIC", result, variableName, exthtml, parent_nm))

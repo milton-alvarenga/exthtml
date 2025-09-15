@@ -39,14 +39,15 @@ export function updateNames(style,classNames, idNames, typeSelector){
                     child.name = new_nm
                     child.type = 'ClassSelector'
                 } else if (child.type === 'TypeSelector') {
-                    let new_nm = style.prefix+'-'+style.hash+'-'+child.name
-                    typeSelector[child.name] = new_nm
-                    child.name = `.${new_nm}`
-                } else if( child.type === 'UniversalSelector') {
-                    let new_nm = style.prefix+'-'+style.hash+'-universal-selector'
-                    typeSelector[child.name] = new_nm
-                    child.name = `.${new_nm}`
-                    child.type = 'ClassSelector'
+                    if( child.name == '*') {
+                        let new_nm = style.prefix+'-'+style.hash+'-universal-selector'
+                        typeSelector[child.name] = new_nm
+                        child.name = `.${new_nm}`
+                    } else {
+                        let new_nm = style.prefix+'-'+style.hash+'-'+child.name
+                        typeSelector[child.name] = new_nm
+                        child.name = `.${new_nm}`
+                    }
                 }
             });
         }

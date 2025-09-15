@@ -9,7 +9,11 @@ export function parseStyle(style_ast){
     ){
         throw new Error("Unexpected node on parserStyle.");
     }
-    const code = node.value
+    return parse(node.value, style_ast)
+}
+
+export function parse(code, style_ast){
+    style_ast = style_ast || {}
     style_ast.hash = hash(code)
     style_ast.prefix = 'exthtml'
     return csstree.parse(code)
@@ -38,6 +42,11 @@ export function updateNames(style,classNames, idNames, typeSelector){
                     let new_nm = style.prefix+'-'+style.hash+'-'+child.name
                     typeSelector[child.name] = new_nm
                     child.name = `.${new_nm}`
+                } else if( child.type === 'UniversalSelector') {
+                    let new_nm = style.prefix+'-'+style.hash+'-universal-selector'
+                    typeSelector[child.name] = new_nm
+                    child.name = `.${new_nm}`
+                    child.type = 'ClassSelector'
                 }
             });
         }

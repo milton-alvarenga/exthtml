@@ -592,8 +592,6 @@ function traverseExthtml(exthtml, result, parent_nm) {
                 for (const v of usedVars) {
                     let depVar = result.dependencyTree.get(v)
                     depVar.dependents.texts.add(reactiveFnName)
-                    // result.code.dependencyTree.push(`$$_depVar = $$_dependencyTree.get('${v}')`)
-                    // result.code.dependencyTree.push(`$$_depVar.dependents.texts.add(${reactiveFnName})`)
                 }
                 result.code.reactives.push(`function ${reactiveFnName}(){${variableName}.textContent = ${exthtml.value}}\n`)
                 result.code.mount.push(`$$_append(${parent_nm},${variableName})`)
@@ -652,10 +650,10 @@ function traverseExthtml(exthtml, result, parent_nm) {
             result.code.create.push(`${variableName}.classList.add('${result.cssTree.typeSelector['*']}')`)
         }
 
-        exthtml.children.forEach(node => traverseExthtml(node, result, variableName, parent_nm))
         exthtml.attrs.forEach(attr => traverseExthtmlAttr(attr, "STATIC", result, variableName, exthtml, parent_nm))
         exthtml.dynamic_attrs.forEach(dynamicAttr => traverseExthtmlAttr(dynamicAttr, "DYNAMIC", result, variableName, exthtml, parent_nm))
         exthtml.event_attrs.forEach(eventAttr => traverseExthtmlEventAttr(eventAttr, "DYNAMIC", result, variableName, parent_nm))
+        exthtml.children.forEach(node => traverseExthtml(node, result, variableName, parent_nm))
 
         result.code.mount.push(`$$_append(${parent_nm},${variableName})`)
         result.code.destroy.push(`$$_detach(${variableName})`)
@@ -869,8 +867,6 @@ function htmlBooleanAttr(attr, mode, result, variableName, node, parent_nm) {
         for (const v of usedVars) {
             let depVar = result.dependencyTree.get(v)
             depVar.dependents.directives.add(reactiveFnName)
-            // result.code.dependencyTree.push(`$$_depVar = $$_dependencyTree.get('${v}')`)
-            // result.code.dependencyTree.push(`$$_depVar.dependents.directives.add(${reactiveFnName})`)
         }
         result.code.reactives.push(`function ${reactiveFnName}(){\n
             (${attr.value}) ? $$_setAttr(${variableName}, '${attr.name}', ${!!attr.value} ? "" : false) : $$_rmAttr(${variableName}, '${attr.name}')
@@ -903,8 +899,6 @@ function htmlDataAttr(attr, mode, result, variableName, node, parent_nm) {
         for (const v of usedVars) {
             let depVar = result.dependencyTree.get(v)
             depVar.dependents.directives.add(reactiveFnName)
-            // result.code.dependencyTree.push(`$$_depVar = $$_dependencyTree.get('${v}')`)
-            // result.code.dependencyTree.push(`$$_depVar.dependents.directives.add(${reactiveFnName})`)
         }
 
 
@@ -927,8 +921,6 @@ function htmlClassDirective(attr, mode, result, variableName, node, parent_nm) {
     for (const v of usedVars) {
         let depVar = result.dependencyTree.get(v)
         depVar.dependents.directives.add(reactiveFnName)
-        // result.code.dependencyTree.push(`$$_depVar = $$_dependencyTree.get('${v}')`)
-        // result.code.dependencyTree.push(`$$_depVar.dependents.directives.add(${reactiveFnName})`)
     }
 
     let className = result.cssTree.classNames.hasOwnProperty(attr.name.trim()) ? result.cssTree.classNames[attr.name.trim()] : attr.name.trim()
@@ -956,8 +948,6 @@ function htmlClassAttr(attr, mode, result, variableName, node, parent_nm) {
             for (const v of usedVars) {
                 let depVar = result.dependencyTree.get(v)
                 depVar.dependents.directives.add(reactiveFnName)
-                // result.code.dependencyTree.push(`$$_depVar = $$_dependencyTree.get('${v}')`)
-                // result.code.dependencyTree.push(`$$_depVar.dependents.directives.add(${reactiveFnName})`)
             }
             let className = result.cssTree.classNames.hasOwnProperty(_class.trim()) ? result.cssTree.classNames[_class.trim()] : _class.trim()
             result.code.reactives.push(`function ${reactiveFnName}(){
@@ -998,8 +988,6 @@ function htmlRegularAttr(attr, mode, result, variableName, node, parent_nm) {
         for (const v of usedVars) {
             let depVar = result.dependencyTree.get(v)
             depVar.dependents.directives.add(reactiveFnName)
-            // result.code.dependencyTree.push(`$$_depVar = $$_dependencyTree.get('${v}')`)
-            // result.code.dependencyTree.push(`$$_depVar.dependents.directives.add(${reactiveFnName})`)
         }
 
         result.code.reactives.push(`function ${reactiveFnName}(){
@@ -1260,6 +1248,7 @@ function generate4Vue(scripts, styles, analysis) {
 
 }
 
+//SFC => Single File Component
 function extractor_sfc_walker(ast, scripts, exthtml, styles, level) {
     level = level || 1
     let output = []

@@ -74,3 +74,46 @@ function track(change, nm, cb){
   cb()
   console.log("function track on var: ",nm,"is: ",change)
 }
+
+export function update($$changes,$$_dependencyTree){
+  let $$_done = new Set();
+  let $$_recalculate = new Set();
+  let firstElement;
+  while(firstElement = $$changes.values().next().value){
+      if($$_done.has(firstElement)){
+          $$changes.delete(firstElement);
+          continue
+      }
+      $$_depVar = $$_dependencyTree.get(firstElement)
+      if($$_recalculate.has(firstElement)){
+          $$_depVar.recalculate.forEach((fn, index) => {
+              fn();
+          });
+          $$_recalculate.delete(firstElement);
+      }
+      for (let key in $$_depVar.dependents) {
+          if (key == 'variables') {
+              for (let nm of $$_depVar.dependents[key]) {
+                  if($$_done.has(nm)){
+                      continue;
+                  }
+                  if(nm == firstElement){
+                      $$_depVar.recalculate.forEach((fn, index) => {
+                          fn();
+                      });
+                  } else {
+                      $$changes.add(nm);
+                      $$_recalculate.add(nm);
+                  }
+              }
+              continue;
+          }
+          for (let fn of $$_depVar.dependents[key]) {
+              fn();
+          }
+      }
+      $$_done.add(firstElement);
+      // Remove the first element
+      $$changes.delete(firstElement);
+  }
+}

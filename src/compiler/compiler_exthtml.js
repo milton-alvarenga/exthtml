@@ -490,6 +490,7 @@ console.log(inspect(parent, { depth: null, colors: true }));
         script_pos_analyse(scripts[x], result)
     }
 
+    //exthtml_pre_analyse(exthtml, result)
     exthtml.forEach(node => traverseExthtml(node, result, 'TARGET'))
 
     result.dependencyTree.css.idNames = result.cssTree.idNames
@@ -566,6 +567,43 @@ function removeDuplicateCheckReactiveDeep(node, lastFound) {
 
 function script_pos_analyse(script, result) {
     removeDuplicateCheckReactiveDeep(script.children)
+}
+
+function exthtml_pre_analyse(exthtml, result, parent_node){
+    parent_node = parent_node || exthtml //It is root
+
+    for(let x = 0; x < exthtml.length-1; x++){
+        switch (exthtml[x].type) {
+            case 'NEW_LINE':
+            case 'SINGLE_LINE_COMMENT':
+            case 'MULTIPLE_LINE_COMMENT':
+            case 'COMMENT_TEXT':
+            case 'SCRIPT_TAG':
+            case 'STYLE_TAG':
+            case 'DYNAMIC_TEXT_NODE':
+            case 'TEXT_NODE':
+                continue
+            case 'TEXTAREA_TAG':
+            case 'TITLE_TAG':
+            case 'PLAINTEXT_TAG':
+            case 'HTML_NESTED_TAG':
+            case 'SELF_CLOSE_TAG':
+            case 'COMPONENT':
+                //OK. Need to analyze
+            break
+            default:
+                throw Error(`${exthtml_pre_analyse.name} Error on unexpected type equal ${exthtml[0].type} and value ${exthtml[0].value} at line ${exthtml[0].location.line}`)
+        }
+        if (exthtml[x].children.length) {
+            for(let z = 0; z < exthtml[x].children.length; z++){
+                exthtml_pre_analyse(exthtml[x].children[z], result, exthtml[x.children])
+            }
+        }
+    }
+}
+
+function exthtml_pos_analyze(exthtml, result){
+
 }
 
 function traverseExthtml(exthtml, result, parent_nm) {
@@ -1138,7 +1176,7 @@ function generate4Web(scripts, styles, analysis) {
     ${analysis.code.internal_import.size > 0
             ? `import {${Array.from(analysis.code.internal_import).map(name => `${name} as $$_${name}`).join(", ")}} from 'exthtml/src/runtime/dom.js';`
             : ""}
-    import {setReactive as $$_setReactive, checkReactive as $$_checkReactive} from 'exthtml/src/runtime/reactive2.js';
+    import {setReactive as $$_setReactive, checkReactive as $$_checkReactive, update as $$_update} from 'exthtml/src/runtime/reactive2.js';
     import { DependencyTree as $$_DependencyTree } from 'exthtml/src/compiler/internals/variable.js';
     ${analysis.code.imports.join(";\n")};
 
@@ -1185,47 +1223,9 @@ function generate4Web(scripts, styles, analysis) {
                 if(!$$_mounted) return;
                 if($$_updating) return;
                 $$_updating = true;
-                let $$_done = new Set();
-                let $$_recalculate = new Set();
                 ${analysis.code.update.join(';\n')}
-                let firstElement;
-                while(firstElement = $$changes.values().next().value){
-                    if($$_done.has(firstElement)){
-                        $$changes.delete(firstElement);
-                        continue
-                    }
-                    $$_depVar = $$_dependencyTree.get(firstElement)
-                    if($$_recalculate.has(firstElement)){
-                        $$_depVar.recalculate.forEach((fn, index) => {
-                            fn();
-                        });
-                        $$_recalculate.delete(firstElement);
-                    }
-                    for (let key in $$_depVar.dependents) {
-                        if (key == 'variables') {
-                            for (let nm of $$_depVar.dependents[key]) {
-                                if($$_done.has(nm)){
-                                    continue;
-                                }
-                                if(nm == firstElement){
-                                    $$_depVar.recalculate.forEach((fn, index) => {
-                                        fn();
-                                    });
-                                } else {
-                                    $$changes.add(nm);
-                                    $$_recalculate.add(nm);
-                                }
-                            }
-                            continue;
-                        }
-                        for (let fn of $$_depVar.dependents[key]) {
-                            fn();
-                        }
-                    }
-                    $$_done.add(firstElement);
-                    // Remove the first element
-                    $$changes.delete(firstElement);
-                }
+
+                $$_update($$changes,$$_dependencyTree)
 
                 $$_updating = false;
             },

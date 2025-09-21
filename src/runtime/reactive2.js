@@ -76,6 +76,7 @@ function track(change, nm, cb){
 }
 
 export function update($$changes,$$_dependencyTree){
+  let $$_depVar = null;
   let $$_done = new Set();
   let $$_recalculate = new Set();
   let firstElement;

@@ -1,0 +1,16 @@
+<table>
+	<thead>
+		<tr>
+			<th>id</th>
+			<th>name</th>
+			<th>age</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>1</td>
+			<td>A</td>
+			<td>10</td>
+		</tr>
+	</tbody>
+</table>

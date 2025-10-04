@@ -1,0 +1,685 @@
+[
+  {
+    "section": "ExtHTMLDocument",
+    "type": "HTML_NESTED_TAG",
+    "value": "TABLE",
+    "attrs": [],
+    "dynamic_attrs": [],
+    "event_attrs": [],
+    "children": [
+      {
+        "section": "ExtHTMLDocument",
+        "type": "TEXT_NODE",
+        "value": "\n\t",
+        "attrs": [],
+        "dynamic_attrs": [],
+        "event_attrs": [],
+        "children": [],
+        "location": {
+          "start": {
+            "offset": 7,
+            "line": 1,
+            "column": 8
+          },
+          "end": {
+            "offset": 9,
+            "line": 2,
+            "column": 2
+          }
+        }
+      },
+      {
+        "section": "ExtHTMLDocument",
+        "type": "COMPONENT",
+        "value": "HTML_NESTED_TAG",
+        "attrs": [],
+        "dynamic_attrs": [],
+        "event_attrs": [],
+        "children": [
+          {
+            "section": "ExtHTMLDocument",
+            "type": "TEXT_NODE",
+            "value": "\n\t\t",
+            "attrs": [],
+            "dynamic_attrs": [],
+            "event_attrs": [],
+            "children": [],
+            "location": {
+              "start": {
+                "offset": 16,
+                "line": 2,
+                "column": 9
+              },
+              "end": {
+                "offset": 19,
+                "line": 3,
+                "column": 3
+              }
+            }
+          },
+          {
+            "section": "ExtHTMLDocument",
+            "type": "HTML_NESTED_TAG",
+            "value": "TR",
+            "attrs": [],
+            "dynamic_attrs": [],
+            "event_attrs": [],
+            "children": [
+              {
+                "section": "ExtHTMLDocument",
+                "type": "TEXT_NODE",
+                "value": "\n\t\t\t",
+                "attrs": [],
+                "dynamic_attrs": [],
+                "event_attrs": [],
+                "children": [],
+                "location": {
+                  "start": {
+                    "offset": 23,
+                    "line": 3,
+                    "column": 7
+                  },
+                  "end": {
+                    "offset": 27,
+                    "line": 4,
+                    "column": 4
+                  }
+                }
+              },
+              {
+                "section": "ExtHTMLDocument",
+                "type": "HTML_NESTED_TAG",
+                "value": "TH",
+                "attrs": [],
+                "dynamic_attrs": [],
+                "event_attrs": [],
+                "children": [
+                  {
+                    "section": "ExtHTMLDocument",
+                    "type": "TEXT_NODE",
+                    "value": "id",
+                    "attrs": [],
+                    "dynamic_attrs": [],
+                    "event_attrs": [],
+                    "children": [],
+                    "location": {
+                      "start": {
+                        "offset": 31,
+                        "line": 4,
+                        "column": 8
+                      },
+                      "end": {
+                        "offset": 33,
+                        "line": 4,
+                        "column": 10
+                      }
+                    }
+                  }
+                ],
+                "location": {
+                  "start": {
+                    "offset": 27,
+                    "line": 4,
+                    "column": 4
+                  },
+                  "end": {
+                    "offset": 38,
+                    "line": 4,
+                    "column": 15
+                  }
+                }
+              },
+              {
+                "section": "ExtHTMLDocument",
+                "type": "TEXT_NODE",
+                "value": "\n\t\t\t",
+                "attrs": [],
+                "dynamic_attrs": [],
+                "event_attrs": [],
+                "children": [],
+                "location": {
+                  "start": {
+                    "offset": 38,
+                    "line": 4,
+                    "column": 15
+                  },
+                  "end": {
+                    "offset": 42,
+                    "line": 5,
+                    "column": 4
+                  }
+                }
+              },
+              {
+                "section": "ExtHTMLDocument",
+                "type": "HTML_NESTED_TAG",
+                "value": "TH",
+                "attrs": [],
+                "dynamic_attrs": [],
+                "event_attrs": [],
+                "children": [
+                  {
+                    "section": "ExtHTMLDocument",
+                    "type": "TEXT_NODE",
+                    "value": "name",
+                    "attrs": [],
+                    "dynamic_attrs": [],
+                    "event_attrs": [],
+                    "children": [],
+                    "location": {
+                      "start": {
+                        "offset": 46,
+                        "line": 5,
+                        "column": 8
+                      },
+                      "end": {
+                        "offset": 50,
+                        "line": 5,
+                        "column": 12
+                      }
+                    }
+                  }
+                ],
+                "location": {
+                  "start": {
+                    "offset": 42,
+                    "line": 5,
+                    "column": 4
+                  },
+                  "end": {
+                    "offset": 55,
+                    "line": 5,
+                    "column": 17
+                  }
+                }
+              },
+              {
+                "section": "ExtHTMLDocument",
+                "type": "TEXT_NODE",
+                "value": "\n\t\t\t",
+                "attrs": [],
+                "dynamic_attrs": [],
+                "event_attrs": [],
+                "children": [],
+                "location": {
+                  "start": {
+                    "offset": 55,
+                    "line": 5,
+                    "column": 17
+                  },
+                  "end": {
+                    "offset": 59,
+                    "line": 6,
+                    "column": 4
+                  }
+                }
+              },
+              {
+                "section": "ExtHTMLDocument",
+                "type": "HTML_NESTED_TAG",
+                "value": "TH",
+                "attrs": [],
+                "dynamic_attrs": [],
+                "event_attrs": [],
+                "children": [
+                  {
+                    "section": "ExtHTMLDocument",
+                    "type": "TEXT_NODE",
+                    "value": "age",
+                    "attrs": [],
+                    "dynamic_attrs": [],
+                    "event_attrs": [],
+                    "children": [],
+                    "location": {
+                      "start": {
+                        "offset": 63,
+                        "line": 6,
+                        "column": 8
+                      },
+                      "end": {
+                        "offset": 66,
+                        "line": 6,
+                        "column": 11
+                      }
+                    }
+                  }
+                ],
+                "location": {
+                  "start": {
+                    "offset": 59,
+                    "line": 6,
+                    "column": 4
+                  },
+                  "end": {
+                    "offset": 71,
+                    "line": 6,
+                    "column": 16
+                  }
+                }
+              },
+              {
+                "section": "ExtHTMLDocument",
+                "type": "TEXT_NODE",
+                "value": "\n\t\t",
+                "attrs": [],
+                "dynamic_attrs": [],
+                "event_attrs": [],
+                "children": [],
+                "location": {
+                  "start": {
+                    "offset": 71,
+                    "line": 6,
+                    "column": 16
+                  },
+                  "end": {
+                    "offset": 74,
+                    "line": 7,
+                    "column": 3
+                  }
+                }
+              }
+            ],
+            "location": {
+              "start": {
+                "offset": 19,
+                "line": 3,
+                "column": 3
+              },
+              "end": {
+                "offset": 79,
+                "line": 7,
+                "column": 8
+              }
+            }
+          },
+          {
+            "section": "ExtHTMLDocument",
+            "type": "TEXT_NODE",
+            "value": "\n\t",
+            "attrs": [],
+            "dynamic_attrs": [],
+            "event_attrs": [],
+            "children": [],
+            "location": {
+              "start": {
+                "offset": 79,
+                "line": 7,
+                "column": 8
+              },
+              "end": {
+                "offset": 81,
+                "line": 8,
+                "column": 2
+              }
+            }
+          }
+        ],
+        "location": {
+          "start": {
+            "offset": 9,
+            "line": 2,
+            "column": 2
+          },
+          "end": {
+            "offset": 89,
+            "line": 8,
+            "column": 10
+          }
+        }
+      },
+      {
+        "section": "ExtHTMLDocument",
+        "type": "TEXT_NODE",
+        "value": "\n\t",
+        "attrs": [],
+        "dynamic_attrs": [],
+        "event_attrs": [],
+        "children": [],
+        "location": {
+          "start": {
+            "offset": 89,
+            "line": 8,
+            "column": 10
+          },
+          "end": {
+            "offset": 91,
+            "line": 9,
+            "column": 2
+          }
+        }
+      },
+      {
+        "section": "ExtHTMLDocument",
+        "type": "HTML_NESTED_TAG",
+        "value": "TBODY",
+        "attrs": [],
+        "dynamic_attrs": [],
+        "event_attrs": [],
+        "children": [
+          {
+            "section": "ExtHTMLDocument",
+            "type": "TEXT_NODE",
+            "value": "\n\t\t",
+            "attrs": [],
+            "dynamic_attrs": [],
+            "event_attrs": [],
+            "children": [],
+            "location": {
+              "start": {
+                "offset": 98,
+                "line": 9,
+                "column": 9
+              },
+              "end": {
+                "offset": 101,
+                "line": 10,
+                "column": 3
+              }
+            }
+          },
+          {
+            "section": "ExtHTMLDocument",
+            "type": "HTML_NESTED_TAG",
+            "value": "TR",
+            "attrs": [],
+            "dynamic_attrs": [],
+            "event_attrs": [],
+            "children": [
+              {
+                "section": "ExtHTMLDocument",
+                "type": "TEXT_NODE",
+                "value": "\n\t\t\t",
+                "attrs": [],
+                "dynamic_attrs": [],
+                "event_attrs": [],
+                "children": [],
+                "location": {
+                  "start": {
+                    "offset": 105,
+                    "line": 10,
+                    "column": 7
+                  },
+                  "end": {
+                    "offset": 109,
+                    "line": 11,
+                    "column": 4
+                  }
+                }
+              },
+              {
+                "section": "ExtHTMLDocument",
+                "type": "HTML_NESTED_TAG",
+                "value": "TD",
+                "attrs": [],
+                "dynamic_attrs": [],
+                "event_attrs": [],
+                "children": [
+                  {
+                    "section": "ExtHTMLDocument",
+                    "type": "TEXT_NODE",
+                    "value": "1",
+                    "attrs": [],
+                    "dynamic_attrs": [],
+                    "event_attrs": [],
+                    "children": [],
+                    "location": {
+                      "start": {
+                        "offset": 113,
+                        "line": 11,
+                        "column": 8
+                      },
+                      "end": {
+                        "offset": 114,
+                        "line": 11,
+                        "column": 9
+                      }
+                    }
+                  }
+                ],
+                "location": {
+                  "start": {
+                    "offset": 109,
+                    "line": 11,
+                    "column": 4
+                  },
+                  "end": {
+                    "offset": 119,
+                    "line": 11,
+                    "column": 14
+                  }
+                }
+              },
+              {
+                "section": "ExtHTMLDocument",
+                "type": "TEXT_NODE",
+                "value": "\n\t\t\t",
+                "attrs": [],
+                "dynamic_attrs": [],
+                "event_attrs": [],
+                "children": [],
+                "location": {
+                  "start": {
+                    "offset": 119,
+                    "line": 11,
+                    "column": 14
+                  },
+                  "end": {
+                    "offset": 123,
+                    "line": 12,
+                    "column": 4
+                  }
+                }
+              },
+              {
+                "section": "ExtHTMLDocument",
+                "type": "HTML_NESTED_TAG",
+                "value": "TD",
+                "attrs": [],
+                "dynamic_attrs": [],
+                "event_attrs": [],
+                "children": [
+                  {
+                    "section": "ExtHTMLDocument",
+                    "type": "TEXT_NODE",
+                    "value": "A",
+                    "attrs": [],
+                    "dynamic_attrs": [],
+                    "event_attrs": [],
+                    "children": [],
+                    "location": {
+                      "start": {
+                        "offset": 127,
+                        "line": 12,
+                        "column": 8
+                      },
+                      "end": {
+                        "offset": 128,
+                        "line": 12,
+                        "column": 9
+                      }
+                    }
+                  }
+                ],
+                "location": {
+                  "start": {
+                    "offset": 123,
+                    "line": 12,
+                    "column": 4
+                  },
+                  "end": {
+                    "offset": 133,
+                    "line": 12,
+                    "column": 14
+                  }
+                }
+              },
+              {
+                "section": "ExtHTMLDocument",
+                "type": "TEXT_NODE",
+                "value": "\n\t\t\t",
+                "attrs": [],
+                "dynamic_attrs": [],
+                "event_attrs": [],
+                "children": [],
+                "location": {
+                  "start": {
+                    "offset": 133,
+                    "line": 12,
+                    "column": 14
+                  },
+                  "end": {
+                    "offset": 137,
+                    "line": 13,
+                    "column": 4
+                  }
+                }
+              },
+              {
+                "section": "ExtHTMLDocument",
+                "type": "HTML_NESTED_TAG",
+                "value": "TD",
+                "attrs": [],
+                "dynamic_attrs": [],
+                "event_attrs": [],
+                "children": [
+                  {
+                    "section": "ExtHTMLDocument",
+                    "type": "TEXT_NODE",
+                    "value": "10",
+                    "attrs": [],
+                    "dynamic_attrs": [],
+                    "event_attrs": [],
+                    "children": [],
+                    "location": {
+                      "start": {
+                        "offset": 141,
+                        "line": 13,
+                        "column": 8
+                      },
+                      "end": {
+                        "offset": 143,
+                        "line": 13,
+                        "column": 10
+                      }
+                    }
+                  }
+                ],
+                "location": {
+                  "start": {
+                    "offset": 137,
+                    "line": 13,
+                    "column": 4
+                  },
+                  "end": {
+                    "offset": 148,
+                    "line": 13,
+                    "column": 15
+                  }
+                }
+              },
+              {
+                "section": "ExtHTMLDocument",
+                "type": "TEXT_NODE",
+                "value": "\n\t\t",
+                "attrs": [],
+                "dynamic_attrs": [],
+                "event_attrs": [],
+                "children": [],
+                "location": {
+                  "start": {
+                    "offset": 148,
+                    "line": 13,
+                    "column": 15
+                  },
+                  "end": {
+                    "offset": 151,
+                    "line": 14,
+                    "column": 3
+                  }
+                }
+              }
+            ],
+            "location": {
+              "start": {
+                "offset": 101,
+                "line": 10,
+                "column": 3
+              },
+              "end": {
+                "offset": 156,
+                "line": 14,
+                "column": 8
+              }
+            }
+          },
+          {
+            "section": "ExtHTMLDocument",
+            "type": "TEXT_NODE",
+            "value": "\n\t",
+            "attrs": [],
+            "dynamic_attrs": [],
+            "event_attrs": [],
+            "children": [],
+            "location": {
+              "start": {
+                "offset": 156,
+                "line": 14,
+                "column": 8
+              },
+              "end": {
+                "offset": 158,
+                "line": 15,
+                "column": 2
+              }
+            }
+          }
+        ],
+        "location": {
+          "start": {
+            "offset": 91,
+            "line": 9,
+            "column": 2
+          },
+          "end": {
+            "offset": 166,
+            "line": 15,
+            "column": 10
+          }
+        }
+      },
+      {
+        "section": "ExtHTMLDocument",
+        "type": "TEXT_NODE",
+        "value": "\n",
+        "attrs": [],
+        "dynamic_attrs": [],
+        "event_attrs": [],
+        "children": [],
+        "location": {
+          "start": {
+            "offset": 166,
+            "line": 15,
+            "column": 10
+          },
+          "end": {
+            "offset": 167,
+            "line": 16,
+            "column": 1
+          }
+        }
+      }
+    ],
+    "location": {
+      "start": {
+        "offset": 0,
+        "line": 1,
+        "column": 1
+      },
+      "end": {
+        "offset": 175,
+        "line": 16,
+        "column": 9
+      }
+    }
+  }
+]

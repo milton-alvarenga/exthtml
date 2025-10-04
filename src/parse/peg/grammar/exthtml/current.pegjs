@@ -237,7 +237,7 @@ Html5TagName = 'abbr'i / 'address'i / 'area'i / 'article'i / 'aside'i / 'audio'i
     / 'object'i / 'ol'i / 'optgroup'i / 'option'i / 'output'i / 'p'i / 'picture'i / 'pre'i
     / 'progress'i / 'q'i / 'rp'i / 'rt'i / 'ruby'i / 'samp'i / 'script'i / 'section'i / 'select'i
     / 'small'i / 'span'i / 'strong'i / 'sub'i / 'summary'i / 'sup'i / 'svg'i / 's'i
-    / 'table'i / 'tbody'i / 'td'i / 'template'i / 'tfoot'i / 'th'i / 'thead'i / 'time'i
+    / 'table'i / 'tbody'i / 'td'i / 'template'i / 'tfoot'i / 'thead'i / 'th'i / 'time'i
     / 'tr'i  / 'ul'i / 'u'i / 'var'i / 'video'i
 
 SvgElementName = SvgElementNameShapeElements

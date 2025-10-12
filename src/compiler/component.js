@@ -22,6 +22,13 @@ class Variable {
         return this._declaration_type
     }
 
+    set addValue(v){
+        if (v != this.v[this.v.length-1]){
+            this.v.push(v)
+        }
+
+    }
+
     set declaration_type(value){
         const allowedValues = ["var","let","export"]
         if (allowedValues.includes(value)) {

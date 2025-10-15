@@ -600,7 +600,11 @@ function exthtml_pre_analyse(exthtml, result, parent_nm, parent_elem, parent_pos
     }
 
     let variableName = getVariableName(exthtml)
-    exthtml.dynamic_attrs.forEach(dynamicAttr => pre_traverseExthtmlAttr(dynamicAttr, "DYNAMIC", result, variableName, exthtml, parent_nm, parent_elem, parent_pos))
+    let len = exthtml.dynamic_attrs.length
+    for(let i = len - 1; i >= 0; i--) {
+        let dynamicAttr = exthtml.dynamic_attrs[i]
+        pre_traverseExthtmlAttr(dynamicAttr, "DYNAMIC", result, variableName, exthtml, parent_nm, parent_elem, parent_pos)
+    }
     exthtml.children.forEach((node,index) => exthtml_pre_analyse(node, result, variableName, node, index))
 }
 
@@ -664,6 +668,7 @@ function getVariableName(exthtml){
 function traverseExthtml(exthtml, result, parent_nm) {
     let variableName = ''
     let reactiveFnName = ''
+    let usedVars = []
     try {
         switch (exthtml.type) {
             case 'NEW_LINE':
@@ -681,7 +686,7 @@ function traverseExthtml(exthtml, result, parent_nm) {
                 reactiveFnName = `${variableName}__textContent`
                 result.code.elems.push(variableName)
                 result.code.create.push(`${variableName} = $$_text(${codeUtils.escapeNewLine(exthtml.value)})`)
-                let usedVars = extract_relevant_js_parts_evaluated_to_string(exthtml.value, result)
+                usedVars = extract_relevant_js_parts_evaluated_to_string(exthtml.value, result)
                 for (const v of usedVars) {
                     let depVar = result.dependencyTree.get(v)
                     depVar.dependents.texts.add(reactiveFnName)
@@ -718,6 +723,56 @@ function traverseExthtml(exthtml, result, parent_nm) {
             case 'COMPONENT':
 
             case 'VirtualIF':
+                variableName = getVariableName(exthtml)
+                result.code.internal_import.add("el")
+                result.code.internal_import.add("append")
+                result.code.internal_import.add("detach")
+
+                reactiveFnName = `${variableName}__ifBlock`
+
+                usedVars = extract_relevant_js_parts_evaluated_to_string(exthtml.value, result)
+                for (const v of usedVars) {
+                    let depVar = result.dependencyTree.get(v)
+                    depVar.dependents.directives.add(reactiveFnName)
+                }
+
+                let result_if_block = result
+                result_if_block.code.create = []
+                result_if_block.code.mount = []
+                result_if_block.code.update = []
+                result_if_block.code.destroy = []
+
+                exthtml.children.forEach(node => traverseExthtml(node, result_if_block, variableName, parent_nm))
+
+                result.code.reactives.push(`${reactiveFnName}_state = false;
+                function ${reactiveFnName}_create(){
+                    ${result_if_block.code.create.join(';\n')};
+                }
+                function ${reactiveFnName}_mount(TARGET){
+                    ${result_if_block.code.mount.join(';\n')};
+                }
+                function ${reactiveFnName}_update(){
+                }
+                function ${reactiveFnName}_destroy(){
+                    ${result_if_block.code.destroy.join(';\n')};
+                }
+                function ${reactiveFnName}(){\n
+                    if(exthtml.value){
+                        if(!${reactiveFnName}_state){
+                            ${reactiveFnName}_create();
+                            ${reactiveFnName}_mount(${parent_nm});
+                        }
+                        ${reactiveFnName}_state = true;
+                    } else {
+                        ${reactiveFnName}_state = false;
+                        ${reactiveFnName}_destroy();
+                    }
+                }`)
+
+                result.code.create.push(`${reactiveFnName}()`)
+                result.code.destroy.push(`$$_detach(${variableName})`)
+
+
                 console.log(inspect(exthtml, { depth: null, colors: true }));
                 return
                 break
@@ -1312,7 +1367,7 @@ function generate4Web(scripts, styles, analysis) {
 
                 $$_updating = false;
             },
-            destroy(TARGET) {
+            destroy() {
                 ${analysis.code.destroy.join(';\n')};
             },
             capture_state(){

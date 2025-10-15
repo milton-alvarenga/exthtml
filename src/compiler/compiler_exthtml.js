@@ -742,7 +742,7 @@ function traverseExthtml(exthtml, result, parent_nm) {
                 result_if_block.code.update = []
                 result_if_block.code.destroy = []
 
-                exthtml.children.forEach(node => traverseExthtml(node, result_if_block, variableName, parent_nm))
+                exthtml.children.forEach(node => traverseExthtml(node, result_if_block, parent_nm, parent_nm))
 
                 result.code.reactives.push(`${reactiveFnName}_state = false;
                 function ${reactiveFnName}_create(){
@@ -757,7 +757,7 @@ function traverseExthtml(exthtml, result, parent_nm) {
                     ${result_if_block.code.destroy.join(';\n')};
                 }
                 function ${reactiveFnName}(){\n
-                    if(exthtml.value){
+                    if(${exthtml.value}){
                         if(!${reactiveFnName}_state){
                             ${reactiveFnName}_create();
                             ${reactiveFnName}_mount(${parent_nm});
@@ -773,9 +773,8 @@ function traverseExthtml(exthtml, result, parent_nm) {
                 result.code.destroy.push(`$$_detach(${variableName})`)
 
 
-                console.log(inspect(exthtml, { depth: null, colors: true }));
+                //console.log(inspect(exthtml, { depth: null, colors: true }));
                 return
-                break
             default:
                 throw Error(`${traverseExthtml.name} Error on unexpected type equal ${exthtml.type} and value ${exthtml.value} at line ${exthtml.location.line}`)
         }

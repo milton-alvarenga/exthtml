@@ -744,7 +744,7 @@ function traverseExthtml(exthtml, result, parent_nm) {
 
                 exthtml.children.forEach(node => traverseExthtml(node, result_if_block, parent_nm, parent_nm))
 
-                result.code.reactives.push(`${reactiveFnName}_state = false;
+                result.code.reactives.push(`let ${reactiveFnName}_state = false;
                 function ${reactiveFnName}_create(){
                     ${result_if_block.code.create.join(';\n')};
                 }

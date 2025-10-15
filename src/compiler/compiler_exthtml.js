@@ -138,7 +138,7 @@ function analyse(exthtml, scripts, styles, filePath) {
                 result.code.create.push(`${varname} = $$_el('style')`)
                 //result.code.create.push(`$$_setAttr(${variableName}, 'textContent', '${styles[x].value}'`)
                 result.code.create.push(`$$_setAttr(${variableName}, 'textContent', '${ast2strCss(styles[x].children)}'`)
-                result.code.mount.push(`$$_append(TARGET,${variableName})`)
+                result.code.mount.push(`$$_append($$_TARGET,${variableName})`)
                 result.code.destroy.push(`$$_detach(${variableName})`)
             }
         }
@@ -497,8 +497,8 @@ console.log(inspect(parent, { depth: null, colors: true }));
         script_pos_analyse(scripts[x], result)
     }
 
-    exthtml.forEach((node, pos) => exthtml_pre_analyse(node, result, 'TARGET', exthtml, pos))
-    exthtml.forEach(node => traverseExthtml(node, result, 'TARGET'))
+    exthtml.forEach((node, pos) => exthtml_pre_analyse(node, result, '$$_TARGET', exthtml, pos))
+    exthtml.forEach(node => traverseExthtml(node, result, '$$_TARGET'))
 
     result.dependencyTree.css.idNames = result.cssTree.idNames
     result.code.dependencyTree.push(...result.dependencyTree.compile())
@@ -748,7 +748,7 @@ function traverseExthtml(exthtml, result, parent_nm) {
                 function ${reactiveFnName}_create(){
                     ${result_if_block.code.create.join(';\n')};
                 }
-                function ${reactiveFnName}_mount(TARGET){
+                function ${reactiveFnName}_mount($$_TARGET){
                     ${result_if_block.code.mount.join(';\n')};
                 }
                 function ${reactiveFnName}_update(){
@@ -756,7 +756,7 @@ function traverseExthtml(exthtml, result, parent_nm) {
                 function ${reactiveFnName}_destroy(){
                     ${result_if_block.code.destroy.join(';\n')};
                 }
-                function ${reactiveFnName}(){\n
+                function ${reactiveFnName}(){
                     if(${exthtml.value}){
                         if(!${reactiveFnName}_state){
                             ${reactiveFnName}_create();
@@ -1323,6 +1323,7 @@ function generate4Web(scripts, styles, analysis) {
     export default function(){
         ${analysis.code.elems.length > 0 ? `let ${analysis.code.elems.join(',')};` : ''}
 
+        let $$_TARGET = null
         let $$_dependencyTree = new $$_DependencyTree();
         let $$_depVar = null;
         let $$changes = new Set();
@@ -1352,6 +1353,7 @@ function generate4Web(scripts, styles, analysis) {
                 ${analysis.code.create.join(';\n')};
             },
             mount(TARGET) {
+                $$_TARGET = TARGET
                 this.create();
                 ${analysis.code.mount.join(';\n')};
                 $$_mounted = true;

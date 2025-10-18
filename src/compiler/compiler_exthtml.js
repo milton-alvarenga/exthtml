@@ -832,7 +832,7 @@ function traverseExthtml(exthtml, result, parent_nm, anchor_nm) {
         exthtml.attrs.forEach(attr => traverseExthtmlAttr(attr, "STATIC", result, variableName, exthtml, parent_nm))
         exthtml.dynamic_attrs.forEach(dynamicAttr => traverseExthtmlAttr(dynamicAttr, "DYNAMIC", result, variableName, exthtml, parent_nm))
         exthtml.event_attrs.forEach(eventAttr => traverseExthtmlEventAttr(eventAttr, "DYNAMIC", result, variableName, parent_nm))
-        exthtml.children.forEach(node => traverseExthtml(node, result, variableName, parent_nm))
+        exthtml.children.forEach(node => traverseExthtml(node, result, parent_nm))
 
         if (setup.dev_version) result.code.mount.push(`/* ${exthtml.type}: ${exthtml.value} */`);
         result.code.mount.push(`$$_append(${parent_nm},${variableName},${anchor_nm})`)

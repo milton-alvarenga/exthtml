@@ -668,6 +668,7 @@ function getVariableName(exthtml){
 
 function traverseExthtml(exthtml, result, parent_nm) {
     let variableName = ''
+    let variableNameAnchor = ''
     let reactiveFnName = ''
     let usedVars = []
     try {
@@ -728,8 +729,13 @@ function traverseExthtml(exthtml, result, parent_nm) {
                 result.code.internal_import.add("el")
                 result.code.internal_import.add("append")
                 result.code.internal_import.add("detach")
+                result.code.internal_import.add("comment")
 
                 reactiveFnName = `${variableName}__ifBlock`
+                variableNameAnchor = `${variableName}__anchor`
+                result.code.elems.push(variableNameAnchor)
+                result.code.mount.push(`$$_append(${parent_nm},${variableNameAnchor})`)
+
 
                 usedVars = extract_relevant_js_parts_evaluated_to_string(exthtml.value, result)
                 for (const v of usedVars) {
@@ -748,13 +754,15 @@ function traverseExthtml(exthtml, result, parent_nm) {
                     }
                 };
 
-                exthtml.children.forEach(node => traverseExthtml(node, result_if_block, parent_nm, parent_nm))
+                result_if_block.code.create.push(`${variableNameAnchor} = $$_comment('${variableName}')`)
+
+                exthtml.children.forEach(node => traverseExthtml(node, result_if_block, variableNameAnchor))
 
                 result.code.reactives.push(`let ${reactiveFnName}_state = false;
                 function ${reactiveFnName}_create(){
                     ${result_if_block.code.create.join(';\n')};
                 }
-                function ${reactiveFnName}_mount($$_TARGET){
+                function ${reactiveFnName}_mount(){
                     ${result_if_block.code.mount.join(';\n')};
                 }
                 function ${reactiveFnName}_update(){

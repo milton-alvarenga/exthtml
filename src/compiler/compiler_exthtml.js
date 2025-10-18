@@ -734,6 +734,7 @@ function traverseExthtml(exthtml, result, parent_nm) {
                 reactiveFnName = `${variableName}__ifBlock`
                 variableNameAnchor = `${variableName}__anchor`
                 result.code.elems.push(variableNameAnchor)
+                result.code.create.push(`${variableNameAnchor} = $$_comment('${variableName}')`)
                 result.code.mount.push(`$$_append(${parent_nm},${variableNameAnchor})`)
 
 
@@ -753,8 +754,6 @@ function traverseExthtml(exthtml, result, parent_nm) {
                         destroy: []
                     }
                 };
-
-                result_if_block.code.create.push(`${variableNameAnchor} = $$_comment('${variableName}')`)
 
                 exthtml.children.forEach(node => traverseExthtml(node, result_if_block, variableNameAnchor))
 

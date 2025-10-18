@@ -666,7 +666,8 @@ function getVariableName(exthtml){
     }
 }
 
-function traverseExthtml(exthtml, result, parent_nm) {
+function traverseExthtml(exthtml, result, parent_nm, anchor_nm) {
+    anchor_nm = anchor_nm || null
     let variableName = ''
     let variableNameAnchor = ''
     let reactiveFnName = ''
@@ -687,6 +688,7 @@ function traverseExthtml(exthtml, result, parent_nm) {
                 variableName = getVariableName(exthtml)
                 reactiveFnName = `${variableName}__textContent`
                 result.code.elems.push(variableName)
+                if (setup.dev_version) result.code.create.push(`/* DYNAMIC_TEXT_NODE: ${exthtml.value} */`);
                 result.code.create.push(`${variableName} = $$_text(${codeUtils.escapeNewLine(exthtml.value)})`)
                 usedVars = extract_relevant_js_parts_evaluated_to_string(exthtml.value, result)
                 for (const v of usedVars) {
@@ -694,7 +696,7 @@ function traverseExthtml(exthtml, result, parent_nm) {
                     depVar.dependents.texts.add(reactiveFnName)
                 }
                 result.code.reactives.push(`function ${reactiveFnName}(){${variableName}.textContent = ${exthtml.value}}\n`)
-                result.code.mount.push(`$$_append(${parent_nm},${variableName})`)
+                result.code.mount.push(`$$_append(${parent_nm},${variableName},${anchor_nm})`)
                 result.code.destroy.push(`$$_detach(${variableName})`)
                 return
 
@@ -704,23 +706,30 @@ function traverseExthtml(exthtml, result, parent_nm) {
                 result.code.internal_import.add("detach")
                 variableName = getVariableName(exthtml)
                 result.code.elems.push(variableName)
+                if (setup.dev_version) result.code.create.push(`/* TEXT_NODE: ${variableName} */`);
                 result.code.create.push(`${variableName} = $$_text('${codeUtils.escapeNewLine(exthtml.value)}')`)
-                result.code.mount.push(`$$_append(${parent_nm},${variableName})`)
+                if (setup.dev_version) result.code.mount.push(`/* TEXT_NODE: ${variableName} */`);
+                result.code.mount.push(`$$_append(${parent_nm},${variableName},${anchor_nm})`)
+                if (setup.dev_version) result.code.destroy.push(`/* TEXT_NODE: ${variableName} */`);
                 result.code.destroy.push(`$$_detach(${variableName})`)
                 return
 
             case 'TEXTAREA_TAG':
                 variableName = getVariableName(exthtml)
+                //if (setup.dev_version) result.code.create.push(`/* TEXTAREA_TAG: ${variableName} */`);
                 break
             case 'TITLE_TAG':
                 variableName = getVariableName(exthtml)
+                //if (setup.dev_version) result.code.create.push(`/* TITLE_TAG: ${variableName} */`);
                 break
             case 'PLAINTEXT_TAG':
                 variableName = getVariableName(exthtml)
+                //if (setup.dev_version) result.code.create.push(`/* PLAINTEXT_TAG: ${variableName} */`);
                 break
             case 'HTML_NESTED_TAG':
             case 'SELF_CLOSE_TAG':
                 variableName = getVariableName(exthtml)
+                //if (setup.dev_version) result.code.create.push(`/* ${exthtml.type}: ${exthtml.value} */`);
                 break
             case 'COMPONENT':
 
@@ -734,8 +743,10 @@ function traverseExthtml(exthtml, result, parent_nm) {
                 reactiveFnName = `${variableName}__ifBlock`
                 variableNameAnchor = `${variableName}__anchor`
                 result.code.elems.push(variableNameAnchor)
+                if (setup.dev_version) result.code.create.push(`/* VirtualIF: ${exthtml.value} */`);
                 result.code.create.push(`${variableNameAnchor} = $$_comment('${variableName}')`)
-                result.code.mount.push(`$$_append(${parent_nm},${variableNameAnchor})`)
+                if (setup.dev_version) result.code.mount.push(`/* ${exthtml.type}: ${exthtml.value} */`);
+                result.code.mount.push(`$$_append(${parent_nm},${variableNameAnchor},${anchor_nm})`)
 
 
                 usedVars = extract_relevant_js_parts_evaluated_to_string(exthtml.value, result)
@@ -755,7 +766,7 @@ function traverseExthtml(exthtml, result, parent_nm) {
                     }
                 };
 
-                exthtml.children.forEach(node => traverseExthtml(node, result_if_block, variableNameAnchor))
+                exthtml.children.forEach(node => traverseExthtml(node, result_if_block, parent_nm, variableNameAnchor))
 
                 result.code.reactives.push(`let ${reactiveFnName}_state = false;
                 function ${reactiveFnName}_create(){
@@ -782,7 +793,9 @@ function traverseExthtml(exthtml, result, parent_nm) {
                     }
                 }`)
 
+                if (setup.dev_version) result.code.mount.push(`/* ${exthtml.type}: ${exthtml.value} */`);
                 result.code.mount.push(`${reactiveFnName}()`)
+                if (setup.dev_version) result.code.destroy.push(`/* ${exthtml.type}: ${exthtml.value} */`);
                 result.code.destroy.push(`$$_detach(${variableName})`)
 
 
@@ -797,6 +810,7 @@ function traverseExthtml(exthtml, result, parent_nm) {
         result.code.internal_import.add("detach")
         result.code.elems.push(variableName)
 
+        if (setup.dev_version) result.code.create.push(`/* ${exthtml.type}: ${exthtml.value} */`);
         result.code.create.push(`${variableName} = $$_el('${exthtml.value.toLowerCase()}')`)
 
         //Check any type selector on css
@@ -804,12 +818,14 @@ function traverseExthtml(exthtml, result, parent_nm) {
             result.cssTree.typeSelector.hasOwnProperty(exthtml.value.toLowerCase())
         ){
             // Static class attribute for css type selector : set once on create
+            if (setup.dev_version) result.code.create.push(`/* ${exthtml.type}: CSS type selector */`);
             result.code.create.push(`${variableName}.classList.add('${result.cssTree.typeSelector[exthtml.value.toLowerCase()]}')`)
         }
         
         //Check universal selector
         if(result.cssTree.typeSelector.hasOwnProperty('*')){
             // Static class attribute for css type selector : set once on create
+            if (setup.dev_version) result.code.create.push(`/* ${exthtml.type}: Universal css selector */`);
             result.code.create.push(`${variableName}.classList.add('${result.cssTree.typeSelector['*']}')`)
         }
 
@@ -818,7 +834,9 @@ function traverseExthtml(exthtml, result, parent_nm) {
         exthtml.event_attrs.forEach(eventAttr => traverseExthtmlEventAttr(eventAttr, "DYNAMIC", result, variableName, parent_nm))
         exthtml.children.forEach(node => traverseExthtml(node, result, variableName, parent_nm))
 
-        result.code.mount.push(`$$_append(${parent_nm},${variableName})`)
+        if (setup.dev_version) result.code.mount.push(`/* ${exthtml.type}: ${exthtml.value} */`);
+        result.code.mount.push(`$$_append(${parent_nm},${variableName},${anchor_nm})`)
+        if (setup.dev_version) result.code.destroy.push(`/* ${exthtml.type}: ${exthtml.value} */`);
         result.code.destroy.push(`$$_detach(${variableName})`)
     } catch (err) {
         let errors = [err, new Error(`${traverseExthtml.name} Error on ${exthtml.type}.${exthtml.value} at line ${exthtml.location.start.line}`)]

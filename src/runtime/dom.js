@@ -95,8 +95,12 @@ export function rmElem(elem) {
     return elem.parent.removeChild(elem)
 }
 
-export function append(parent, elem) {
-    return parent.appendChild(elem)
+export function append(parent, elem, anchor = null) {
+    if (anchor && anchor.parentNode === parent) {
+        return parent.insertBefore(elem, anchor.nextSibling);
+    } else {
+        return parent.appendChild(elem);
+    }
 }
 
 //create element

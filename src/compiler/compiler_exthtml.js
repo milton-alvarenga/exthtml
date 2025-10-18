@@ -666,8 +666,7 @@ function getVariableName(exthtml){
     }
 }
 
-function traverseExthtml(exthtml, result, parent_nm, anchor_nm) {
-    anchor_nm = anchor_nm || null
+function traverseExthtml(exthtml, result, parent_nm, anchor_nm = null) {
     let variableName = ''
     let variableNameAnchor = ''
     let reactiveFnName = ''
@@ -796,7 +795,8 @@ function traverseExthtml(exthtml, result, parent_nm, anchor_nm) {
                 if (setup.dev_version) result.code.mount.push(`/* ${exthtml.type}: ${exthtml.value} */`);
                 result.code.mount.push(`${reactiveFnName}()`)
                 if (setup.dev_version) result.code.destroy.push(`/* ${exthtml.type}: ${exthtml.value} */`);
-                result.code.destroy.push(`$$_detach(${variableName})`)
+                // detach the anchor variable (not the virtual if name)
+                result.code.destroy.push(`$$_detach(${variableNameAnchor})`)
 
 
                 //console.log(inspect(exthtml, { depth: null, colors: true }));
@@ -832,7 +832,7 @@ function traverseExthtml(exthtml, result, parent_nm, anchor_nm) {
         exthtml.attrs.forEach(attr => traverseExthtmlAttr(attr, "STATIC", result, variableName, exthtml, parent_nm))
         exthtml.dynamic_attrs.forEach(dynamicAttr => traverseExthtmlAttr(dynamicAttr, "DYNAMIC", result, variableName, exthtml, parent_nm))
         exthtml.event_attrs.forEach(eventAttr => traverseExthtmlEventAttr(eventAttr, "DYNAMIC", result, variableName, parent_nm))
-        exthtml.children.forEach(node => traverseExthtml(node, result, variableName, parent_nm))
+        exthtml.children.forEach(node => traverseExthtml(node, result, variableName))
 
         if (setup.dev_version) result.code.mount.push(`/* ${exthtml.type}: ${exthtml.value} */`);
         result.code.mount.push(`$$_append(${parent_nm},${variableName},${anchor_nm})`)

@@ -775,7 +775,7 @@ function traverseExthtml(exthtml, result, parent_nm) {
                     }
                 }`)
 
-                result.code.create.push(`${reactiveFnName}()`)
+                result.code.mount.push(`${reactiveFnName}()`)
                 result.code.destroy.push(`$$_detach(${variableName})`)
 
 

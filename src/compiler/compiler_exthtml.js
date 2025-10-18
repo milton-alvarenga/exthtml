@@ -774,7 +774,7 @@ function traverseExthtml(exthtml, result, parent_nm) {
                     if(${exthtml.value}){
                         if(!${reactiveFnName}_state){
                             ${reactiveFnName}_create();
-                            ${reactiveFnName}_mount(${parent_nm});
+                            ${reactiveFnName}_mount();
                         }
                         ${reactiveFnName}_state = true;
                     } else {

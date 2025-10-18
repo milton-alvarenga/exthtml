@@ -777,7 +777,9 @@ function traverseExthtml(exthtml, result, parent_nm, anchor_nm = null) {
                 function ${reactiveFnName}_update(){
                 }
                 function ${reactiveFnName}_destroy(){
-                    ${result_if_block.code.destroy.join(';\n')};
+                    if( ${reactiveFnName}_state ){
+                        ${result_if_block.code.destroy.join(';\n')};
+                    }
                 }
                 function ${reactiveFnName}(){
                     if(${exthtml.value}){
@@ -787,8 +789,8 @@ function traverseExthtml(exthtml, result, parent_nm, anchor_nm = null) {
                         }
                         ${reactiveFnName}_state = true;
                     } else {
-                        ${reactiveFnName}_state = false;
                         ${reactiveFnName}_destroy();
+                        ${reactiveFnName}_state = false;
                     }
                 }`)
 

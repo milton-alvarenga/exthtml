@@ -803,6 +803,88 @@ function traverseExthtml(exthtml, result, parent_nm, anchor_nm = null) {
 
                 //console.log(inspect(exthtml, { depth: null, colors: true }));
                 return
+                case 'VirtualFOR':
+                    variableName = getVariableName(exthtml);
+                    result.code.internal_import.add("comment");
+                    result.code.internal_import.add("append");
+                    result.code.internal_import.add("detach");
+
+                    const forAnchor = `${variableName}__anchor`;
+                    result.code.elems.push(forAnchor);
+                    result.code.create.push(`${forAnchor} = $$_comment('${variableName}')`);
+                    result.code.mount.push(`$$_append(${parent_nm}, ${forAnchor}, ${anchor_nm})`);
+
+                    // Parse "item of items" or "(item, i) of items"
+                    const forMatch = exthtml.value.match(/^\s*(?:\(([^,]+)\s*,\s*([^)]+)\)|([^ ]+))\s+of\s+(.+)$/);
+                    if (!forMatch) throw new Error(`Invalid *for syntax at line ${exthtml.location.start.line}: ${exthtml.value}`);
+
+                    const itemVar = forMatch[1] || forMatch[3];
+                    const indexVar = forMatch[2] || `${variableName}_index`;
+                    const listExpr = forMatch[4];
+
+                    const forFnName = `${variableName}__forBlock`;
+                    const blocksVar = `${variableName}__blocks`;
+
+                    result.code.reactives.push(`
+                        let ${blocksVar} = [];
+
+                        function ${forFnName}_create(ctx){
+                            const ${variableName}_ctx = {...ctx};
+                            ${result.code.internal_import.has("el") ? "" : "import { $$_el } from 'internal';"}
+                            ${result.code.internal_import.has("append") ? "" : "import { $$_append } from 'internal';"}
+
+                            const result_for_block = {
+                                ...result,
+                                code: { create: [], mount: [], update: [], destroy: [] }
+                            };
+
+                            // Render inner block for one iteration
+                            ${exthtml.children.map(child =>
+                                `traverseExthtml(${JSON.stringify(child)}, result_for_block, ${parent_nm}, ${forAnchor});`
+                            ).join('\n')}
+
+                            return {
+                                create() { ${result_for_block.code.create.join(';\n')} },
+                                mount() { ${result_for_block.code.mount.join(';\n')} },
+                                destroy() { ${result_for_block.code.destroy.join(';\n')} }
+                            };
+                        }
+
+                        function ${forFnName}(){
+                            const list = ${listExpr} || [];
+                            const newBlocks = [];
+                            let i = 0;
+
+                            for (const ${itemVar} of list) {
+                                const ctx = { ${itemVar}, ${indexVar}: i };
+                                const block = ${forFnName}_create(ctx);
+                                block.create();
+                                block.mount();
+                                newBlocks.push(block);
+                                i++;
+                            }
+
+                            // Destroy old blocks
+                            for (const oldBlock of ${blocksVar}) {
+                                oldBlock.destroy();
+                            }
+
+                            ${blocksVar} = newBlocks;
+                        }
+                    `);
+
+                    // Extract reactive dependencies
+                    usedVars = extract_relevant_js_parts_evaluated_to_string(listExpr, result);
+                    for (const v of usedVars) {
+                        let depVar = result.dependencyTree.get(v);
+                        depVar.dependents.directives.add(forFnName);
+                    }
+
+                    result.code.mount.push(`${forFnName}()`);
+                    result.code.destroy.push(`for (const b of ${blocksVar}) b.destroy();`);
+                    result.code.destroy.push(`$$_detach(${forAnchor})`);
+                    return;
+
             default:
                 throw Error(`${traverseExthtml.name} Error on unexpected type equal ${exthtml.type} and value ${exthtml.value} at line ${exthtml.location.line}`)
         }

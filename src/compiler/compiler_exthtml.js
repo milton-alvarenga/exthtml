@@ -498,7 +498,10 @@ console.log(inspect(parent, { depth: null, colors: true }));
         script_pos_analyse(scripts[x], result)
     }
 
+    //console.log(inspect(exthtml, { depth: null, colors: true, showHidden: true }))
+    //console.log("============================================")
     exthtml.forEach((node, pos) => exthtml_pre_analyse(node, result, '$$_TARGET', exthtml, pos))
+    //console.log(inspect(exthtml, { depth: null, colors: true, showHidden: true }))
     exthtml.forEach(node => traverseExthtml(node, result, '$$_TARGET'))
 
     result.dependencyTree.css.idNames = result.cssTree.idNames
@@ -606,7 +609,7 @@ function exthtml_pre_analyse(exthtml, result, parent_nm, parent_elem, parent_pos
         let dynamicAttr = exthtml.dynamic_attrs[i]
         pre_traverseExthtmlAttr(dynamicAttr, "DYNAMIC", result, variableName, exthtml, parent_nm, parent_elem, parent_pos)
     }
-    exthtml.children.forEach((node,index) => exthtml_pre_analyse(node, result, variableName, node, index))
+    exthtml.children.forEach((node,index) => exthtml_pre_analyse(node, result, variableName, exthtml.children, index))
 }
 
 function exthtml_pos_analyse(exthtml, result, parent_nm, parent_node, parent_elem, parent_pos){

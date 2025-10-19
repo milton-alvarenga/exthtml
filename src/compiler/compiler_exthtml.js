@@ -780,9 +780,7 @@ function traverseExthtml(exthtml, result, parent_nm, anchor_nm = null) {
                 function ${reactiveFnName}_update(){
                 }
                 function ${reactiveFnName}_destroy(){
-                    if( ${reactiveFnName}_state ){
-                        ${result_if_block.code.destroy.join(';\n')};
-                    }
+                    ${result_if_block.code.destroy.join(';\n')};
                 }
                 function ${reactiveFnName}(){
                     if(${exthtml.value}){

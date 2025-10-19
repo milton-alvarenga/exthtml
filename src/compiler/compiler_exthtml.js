@@ -770,7 +770,7 @@ function traverseExthtml(exthtml, result, parent_nm, anchor_nm = null) {
 
                 exthtml.children.forEach(node => traverseExthtml(node, result_if_block, parent_nm, variableNameAnchor))
 
-                result.code.reactives.push(`let ${reactiveFnName}_state = false;
+                result.code.reactives.push(`
                 function ${reactiveFnName}_create(){
                     ${result_if_block.code.create.join(';\n')};
                 }
@@ -786,14 +786,10 @@ function traverseExthtml(exthtml, result, parent_nm, anchor_nm = null) {
                 }
                 function ${reactiveFnName}(){
                     if(${exthtml.value}){
-                        if(!${reactiveFnName}_state){
-                            ${reactiveFnName}_create();
-                            ${reactiveFnName}_mount();
-                        }
-                        ${reactiveFnName}_state = true;
+                        ${reactiveFnName}_create();
+                        ${reactiveFnName}_mount();
                     } else {
                         ${reactiveFnName}_destroy();
-                        ${reactiveFnName}_state = false;
                     }
                 }`)
 

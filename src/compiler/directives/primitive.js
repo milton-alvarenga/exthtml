@@ -22,8 +22,13 @@ function _if(attr,mode,result,variableName,node,parent_nm) {
     */
 }
 
+function _for(attr,mode,result,variableName,node,parent_nm){
+
+}
+
 
 
 export let directives = {
-    "if":_if
+    "if":_if,
+    "for":_for
 }

@@ -130,7 +130,7 @@ function getUniqueID() {
 }
 
 export function detach(elem) {
-    if (elem.parentNode) {
+    if (elem && elem.parentNode) {
         elem.parentNode.removeChild(elem)
     }
 }

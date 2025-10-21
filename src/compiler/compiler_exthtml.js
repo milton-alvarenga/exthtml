@@ -120,8 +120,8 @@ function analyse(exthtml, scripts, styles, filePath) {
                 if (x > 0) {
                     continue
                 }
-                let baseName = path.basename(filePath, path.extname(filePath)) // get name without extension
-                baseName += '.css'; // add .css extension
+                //let baseName = path.basename(filePath, path.extname(filePath)) // get name without extension
+                let baseName = filePath + '.css'; // add .css extension
                 result.code.internal_import.add('addCssLinkOnHead')
                 result.code.internal_import.add('removeCssLinkFromHead')
                 result.code.create.push(`$$_addCssLinkOnHead('/${baseName}')`)

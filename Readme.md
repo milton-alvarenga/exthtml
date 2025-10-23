@@ -5,4 +5,4 @@ Parser project for an extended version of HTML with native support to basic prog
 
 # Goal
 
-Create an interactive HTML with support to basic programming logics on the HTML
+Create an interactive HTML with support to basic programming logics on the HTML. Sijmplify the project, Code less, do more.

@@ -143,6 +143,11 @@ export function insert(parent, elem, child) {
     parent.insertBefore(elem, child || null);
 }
 
+
+export function insertBefore(parent, el, anchor) {
+  parent.insertBefore(el, anchor);
+}
+
 export function noop() {
 
 }

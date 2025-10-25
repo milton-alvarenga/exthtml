@@ -1434,7 +1434,7 @@ function generate4Web(scripts, styles, analysis) {
     ${analysis.code.shared_state.join("\n")}
 
 
-function setAttr(elem, name, value) {
+function $$_setAttr(elem, name, value) {
     if (!(elem instanceof Element)) {
         throw new Error('First argument must be a DOM Element')
     }

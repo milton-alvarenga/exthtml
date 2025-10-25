@@ -7,7 +7,7 @@
     "dynamic_attrs": [
       {
         "name": "for",
-        "value": "k,v in variable",
+        "value": "{\"item\":\"v\",\"index\":\"k\",\"collection\":\"variable\"}",
         "category": "lang_directive",
         "pos": 0
       }

@@ -1424,7 +1424,7 @@ function generate4Web(scripts, styles, analysis) {
     //${Array.from(analysis.undeclared_variables).map((v) => `let ${v};`).join('\n')}
     return `${setup.BANNER}
     ${analysis.code.internal_import.size > 0
-            ? `import {${Array.from(analysis.code.internal_import).map(name => `${name} as $$_${name}`).join(", ")}} from 'exthtml/src/runtime/dom.js';`
+            ? `import {${Array.from(analysis.code.internal_import).map(name => { if(name == "setAttr"){ return `${name}` }else { return `${name} as $$_${name}`}}).join(", ")}} from 'exthtml/src/runtime/dom.js';`
             : ""}
     import {setReactive as $$_setReactive, checkReactive as $$_checkReactive, update as $$_update} from 'exthtml/src/runtime/reactive2.js';
     import { DependencyTree as $$_DependencyTree } from 'exthtml/src/compiler/internals/variable.js';

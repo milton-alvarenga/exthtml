@@ -1424,7 +1424,7 @@ function generate4Web(scripts, styles, analysis) {
     //${Array.from(analysis.undeclared_variables).map((v) => `let ${v};`).join('\n')}
     return `${setup.BANNER}
     ${analysis.code.internal_import.size > 0
-            ? `import {${Array.from(analysis.code.internal_import).map(name => { if(name == "setAttr"){ return `${name}` }else { return `${name} as $$_${name}`}}).join(", ")}} from 'exthtml/src/runtime/dom.js';`
+            ? `import {${Array.from(analysis.code.internal_import).map(name => `${name} as $$_${name}`).join(", ")}} from 'exthtml/src/runtime/dom.js';`
             : ""}
     import {setReactive as $$_setReactive, checkReactive as $$_checkReactive, update as $$_update} from 'exthtml/src/runtime/reactive2.js';
     import { DependencyTree as $$_DependencyTree } from 'exthtml/src/compiler/internals/variable.js';
@@ -1432,63 +1432,6 @@ function generate4Web(scripts, styles, analysis) {
 
     // Shared state at the module scope
     ${analysis.code.shared_state.join("\n")}
-
-
-function $$_setAttr(elem, name, value) {
-    if (!(elem instanceof Element)) {
-        throw new Error('First argument must be a DOM Element')
-    }
-    if (typeof name !== 'string') {
-        throw new Error('Attribute name must be a string')
-    }
-    if (value === null || value === undefined) {
-        // Remove attribute if value is null or undefined
-        return rmAttr(elem, name)
-    } else if (name == 'id') {
-        if (dependencyTree && dependencyTree.css.idNames.hasOwnProperty(value)) {
-            const observer = new MutationObserver((mutationsList) => {
-                for (const mutation of mutationsList) {
-                    if (mutation.type === 'attributes' && mutation.attributeName === 'id') {
-                        const oldValue = mutation.oldValue; // old id value
-                        if (dependencyTree.css.idNames.hasOwnProperty(oldValue)) {
-                            elem.classList.remove(dependencyTree.css.idNames[oldValue]);
-                        }
-                        const newValue = mutation.target.getAttribute(mutation.attributeName);
-                        const trimmedValue = newValue ? newValue.trim() : '';
-
-                        if (!trimmedValue) {
-                            // new id is null, undefined, or empty after trimming
-                            observer.disconnect();
-                            return; // stop further processing
-                        }
-
-                        if (dependencyTree.css.idNames.hasOwnProperty(trimmedValue)) {
-                            elem.classList.add(dependencyTree.css.idNames[trimmedValue]);
-                        }
-                    }
-                }
-            });
-
-            observer.observe(elem, { attributes: true, attributeFilter: ['id'], attributeOldValue: true });
-        }
-    }
-    // Set or create attribute
-    /*
-    String(undefined); // "undefined"
-    String(null);      // "null"
-    String(true);      // "true"
-    String(123);       // "123"
-    String(123n);      // "123"
-    String("abc");     // "abc"
-    String([1,2,3]);   // "1,2,3"
-    String({a:1});     // "[object Object]"
-    String(function(){return 1;}); // "function(){return 1;}"
-    */
-    const currentValue = elem.getAttribute(name);
-    if (currentValue !== String(value)) {
-        return elem.setAttribute(name, String(value))
-    }
-}
 
     export default function(){
         ${analysis.code.elems.length > 0 ? `let ${analysis.code.elems.join(',')};` : ''}

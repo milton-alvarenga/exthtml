@@ -100,6 +100,7 @@ DynamicAttribute "dynamic attribute" = ( name:GlobalBooleanAttribute text:(__ '=
                                        / ( name: ReadonlyVideoAttr text:( __ '=' __ s:VariableQuoteString)  __  { return { name: name, value: (text && text[3]) ? text[3] : "", type:"dyn_attr", category: "html_video_readonly"}} )
                                        / ( name:HTMLAttrName text:(__ '=' __ s:VariableQuoteString) __ { return { name: name, value: (text && text[3]) ? text[3] : "", type:"dyn_attr", category: "html_attribute"}} )
 									                     / ( '*'name:PrimitiveLanguageReservedDirectives text:(__ '=' __ s:VariableQuoteString) __ { return { name: name, value: (text && text[3]) ? text[3] : "", type:"dyn_attr", category: "lang_directive"}} )
+                                       / ( '*'name:PrimitiveLanguageReservedDirectivesFor text:(__ '=' __ s:VariableForExpression) __ { return { name: name, value: (text && text[3]) ? text[3] : "", type:"dyn_attr", category: "lang_directive"}} )
                                        / ( '*'name:SpecificDrallDirectives text:(__ '=' __ s:VariableQuoteString) __ { return { name: name, value: (text && text[3]) ? text[3] : "", type:"dyn_attr", category: "drall_directive"}} )
                                        / ( '*'name:OptimizationReservedDirectives text:(__ '=' __ s:VariableQuoteString) __ { return { name: name, value: (text && text[3]) ? text[3] : "", type:"dyn_attr", category: "optimization_directive"}} )
                                        / ( '('name:OptimizationReservedDirectivesMacro')' text:(__ '=' __ s:VariableQuoteString) __ { return { name: name, value: (text && text[3]) ? text[3] : "", type:"dyn_attr", category: "macro_directive"}} )
@@ -132,7 +133,9 @@ EventAttribute "event attribute" = ( '@'name:HTMLAttrName event_modifiers:('.'Ev
 
 HTMLDomReferenceDirectiveAttribute = '#'name:HTMLDomVarName __ { return { name: name, value: null, type:"dyn_attr", category: "html_dom_ref_directive"}}
 
-PrimitiveLanguageReservedDirectives = 'if' / 'for' / 'model' / 'in' / 'out'
+PrimitiveLanguageReservedDirectives = 'if' / 'model' / 'in' / 'out'
+
+PrimitiveLanguageReservedDirectivesFor = 'for'
 
 NoArgumentsLanguageReservedDirectives = 'forelse'
 
@@ -189,6 +192,38 @@ MouseEvent = 'click' / 'mousedown' / 'mouseup' / 'mousemove' / 'dblclick' / 'mou
 MouseClick = 'left' / 'right' / 'middle'
 
 EventModifiers = 'stop' / 'prevent' / 'capture' / 'self' / 'once' / 'passive' / 'debounce' / 'throttle'
+
+
+
+/**
+* PrimitiveLanguageReservedDirectivesFor argument
+*/
+VariableForExpression = "{" __ content:ForExpression __ "}" { return JSON.stringify(content); }
+
+ForExpression
+  = ForExpressionOF
+  / ForExpressionIN
+  / ForExpressionAS
+
+ForExpressionOF
+  = itemWithOptionalIndex:ForItemWithOptionalIndex whitespace "of" whitespace collection:Symbol {
+      return { item: itemWithOptionalIndex.itemVar, index: itemWithOptionalIndex.indexVar, collection: collection };
+  }
+
+ForExpressionIN
+  = itemWithOptionalIndex:ForItemWithOptionalIndex whitespace "in" whitespace collection:Symbol {
+      return { item: itemWithOptionalIndex.itemVar, index: itemWithOptionalIndex.indexVar, collection: collection };
+  }
+
+ForExpressionAS
+  = collection:Symbol whitespace "as" whitespace itemWithOptionalIndex:ForItemWithOptionalIndex {
+      return { item: itemWithOptionalIndex.itemVar, index: itemWithOptionalIndex.indexVar, collection: collection };
+  }
+
+ForItemWithOptionalIndex
+  = "(" __ itemVar:Identifier __ "," __ indexVar:Identifier __ ")" { return { itemVar: itemVar, indexVar: indexVar }; }
+  / itemVar:Identifier __ "," __ indexVar:Identifier { return { itemVar: itemVar, indexVar: indexVar }; }
+  / itemVar:Identifier { return { itemVar: itemVar, indexVar: null }; }
 
 
 /**
@@ -279,6 +314,8 @@ CssClassName = $([a-zA-Z_-][a-zA-Z0-9_-]*)
 Symbol = $([a-zA-Z0-9_\-] [a-zA-Z0-9:_\-]*)
 
 HTMLDomVarName = $([a-zA-Z_$][a-zA-Z_$0-9]*)
+
+Identifier = $([a-zA-Z_][a-zA-Z0-9_]*)
 
 whitespace "required space characters" = [ \t\u000C]+ / NL
 

@@ -1,0 +1,1 @@
+<div *for={item of items} />

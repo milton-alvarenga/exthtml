@@ -1484,7 +1484,10 @@ function $$_setAttr(elem, name, value) {
     String({a:1});     // "[object Object]"
     String(function(){return 1;}); // "function(){return 1;}"
     */
-    return elem.setAttribute(name, String(value))
+    const currentValue = elem.getAttribute(name);
+    if (currentValue !== String(value)) {
+        return elem.setAttribute(name, String(value))
+    }
 }
 
     export default function(){

@@ -778,8 +778,6 @@ function traverseExthtml(exthtml, result, parent_nm, anchor_nm = null) {
                 function ${reactiveFnName}_mount(){
                     ${result_if_block.code.mount.join(';\n')};
                 }
-                function ${reactiveFnName}_update(){
-                }
                 function ${reactiveFnName}_destroy(){
                     ${result_if_block.code.destroy.join(';\n')};
                 }

@@ -746,7 +746,7 @@ function traverseExthtml(exthtml, result, parent_nm, anchor_nm = null) {
                 reactiveFnName = `${variableName}__ifBlock`
                 variableNameAnchor = `${variableName}__anchor`
                 result.code.elems.push(variableNameAnchor)
-                if (setup.dev_version) result.code.create.push(`/* VirtualIF: ${exthtml.value} */`);
+                if (setup.dev_version) result.code.create.push(`/* VirtualIF: ${variableName} */`);
                 result.code.create.push(`${variableNameAnchor} = $$_comment('${variableName}')`)
                 if (setup.dev_version) result.code.mount.push(`/* ${exthtml.type}: ${exthtml.value} */`);
                 result.code.mount.push(`$$_append(${parent_nm},${variableNameAnchor},${anchor_nm})`)
@@ -801,73 +801,81 @@ function traverseExthtml(exthtml, result, parent_nm, anchor_nm = null) {
                 return
                 case 'VirtualFOR':
                     variableName = getVariableName(exthtml);
+                    result.code.internal_import.add("el")
                     result.code.internal_import.add("comment");
                     result.code.internal_import.add("append");
                     result.code.internal_import.add("detach");
 
-                    const forAnchor = `${variableName}__anchor`;
-                    result.code.elems.push(forAnchor);
-                    result.code.create.push(`${forAnchor} = $$_comment('${variableName}')`);
-                    result.code.mount.push(`$$_append(${parent_nm}, ${forAnchor}, ${anchor_nm})`);
+                    reactiveFnName = `${variableName}__forBlock`
+                    variableNameAnchor = `${variableName}__anchor`
 
-                    // Parse "item of items" or "(item, i) of items"
-                    const forMatch = exthtml.value.match(/^\s*(?:\(([^,]+)\s*,\s*([^)]+)\)|([^ ]+))\s+of\s+(.+)$/);
-                    if (!forMatch) throw new Error(`Invalid *for syntax at line ${exthtml.location.start.line}: ${exthtml.value}`);
 
-                    const itemVar = forMatch[1] || forMatch[3];
-                    const indexVar = forMatch[2] || `${variableName}_index`;
-                    const listExpr = forMatch[4];
+                    result.code.elems.push(variableNameAnchor)
+                    if (setup.dev_version) result.code.create.push(`/* VirtualFOR: ${variableName} */`);
+                    result.code.create.push(`${variableNameAnchor} = $$_comment('${variableName}')`)
+                    if (setup.dev_version) result.code.mount.push(`/* ${exthtml.type}: ${exthtml.value} */`);
+                    result.code.mount.push(`$$_append(${parent_nm},${variableNameAnchor},${anchor_nm})`)
 
-                    const forFnName = `${variableName}__forBlock`;
-                    const blocksVar = `${variableName}__blocks`;
+                    const forExpression = JSON.parse(exthtml.value)
+                    const forExpressionVar = forExpression.collection
+                    const itemVar = forExpression.item
+                    const indexVar = forExpression.index
+
+                    usedVars = extract_relevant_js_parts_evaluated_to_string(forExpressionVar, result)
+                    for (const v of usedVars) {
+                        let depVar = result.dependencyTree.get(v)
+                        depVar.dependents.directives.add(reactiveFnName)
+                    }
+
+                    let result_for_block = {
+                        ...result, // shallow copy of top-level properties (still referencing same Sets, objects, etc.)
+                        code: {
+                            ...result.code, // shallow copy of result.code
+                            create: [],     // override only these four
+                            mount: [],
+                            update: [],
+                            destroy: []
+                        }
+                    };
 
                     result.code.reactives.push(`
-                        let ${blocksVar} = [];
+                    function ${reactiveFnName}_mount(){
+                        ${result_for_block.code.mount.join(';\n')};
+                    }
+                    function ${reactiveFnName}_destroy(){
+                        ${result_for_block.code.destroy.join(';\n')};
+                    }
+                    function ${reactiveFnName}(){
+                        let len = ${forExpressionVar}.length;
+                        for (let x=0; x<len; x++) {
+                            let ${itemVar} = ${forExpressionVar}[x];
+                            let ${indexVar} = null;
 
-                        function ${forFnName}_create(ctx){
-                            const ${variableName}_ctx = {...ctx};
-                            ${result.code.internal_import.has("el") ? "" : "import { $$_el } from 'internal';"}
-                            ${result.code.internal_import.has("append") ? "" : "import { $$_append } from 'internal';"}
-
-                            const result_for_block = {
-                                ...result,
-                                code: { create: [], mount: [], update: [], destroy: [] }
-                            };
-
-                            // Render inner block for one iteration
-                            ${exthtml.children.map(child =>
-                                `traverseExthtml(${JSON.stringify(child)}, result_for_block, ${parent_nm}, ${forAnchor});`
-                            ).join('\n')}
-
-                            return {
-                                create() { ${result_for_block.code.create.join(';\n')} },
-                                mount() { ${result_for_block.code.mount.join(';\n')} },
-                                destroy() { ${result_for_block.code.destroy.join(';\n')} }
-                            };
-                        }
-
-                        function ${forFnName}(){
-                            const list = ${listExpr} || [];
-                            const newBlocks = [];
-                            let i = 0;
-
-                            for (const ${itemVar} of list) {
-                                const ctx = { ${itemVar}, ${indexVar}: i };
-                                const block = ${forFnName}_create(ctx);
-                                block.create();
-                                block.mount();
-                                newBlocks.push(block);
-                                i++;
+                            if (typeof ${indexVar} !== 'undefined') {
+                                ${indexVar} = {
+                                    first: x == 0,
+                                    middle: (len > 2 && len%2 == 1 ? Math.floor(len/2) == x : Math.floor(len/2) == x || (Math.floor(len/2) - 1)),
+                                    last: x-1 == len,
+                                    odd: x%2 == 0,
+                                    even: x%2 == 1,
+                                    index: x,
+                                    index1: x+1
+                                };
                             }
 
-                            // Destroy old blocks
-                            for (const oldBlock of ${blocksVar}) {
-                                oldBlock.destroy();
+                            function ${reactiveFnName}_create(${itemVar},${indexVar}){
+                                ${result_for_block.code.create.join(';\n')};
                             }
 
-                            ${blocksVar} = newBlocks;
+
+                            ${reactiveFnName}_create(${itemVar},${indexVar});
+                            ${reactiveFnName}_mount();
+
+                            ${exthtml.children.forEach(node => traverseExthtml(node, result_for_block, parent_nm, variableNameAnchor))}
+                        } else {
+                            ${reactiveFnName}_destroy();
                         }
-                    `);
+                    }`)
 
                     // Extract reactive dependencies
                     usedVars = extract_relevant_js_parts_evaluated_to_string(listExpr, result);

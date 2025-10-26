@@ -838,6 +838,8 @@ function traverseExthtml(exthtml, result, parent_nm, anchor_nm = null) {
                         }
                     };
 
+                    exthtml.children.forEach(node => traverseExthtml(node, result_for_block, parent_nm, variableNameAnchor))
+
                     result.code.reactives.push(`
                     function ${reactiveFnName}_mount(){
                         ${result_for_block.code.mount.join(';\n')};
@@ -849,9 +851,7 @@ function traverseExthtml(exthtml, result, parent_nm, anchor_nm = null) {
                         let len = ${forExpressionVar}.length;
                         for (let x=0; x<len; x++) {
                             let ${itemVar} = ${forExpressionVar}[x];
-                            let ${indexVar} = null;
-
-                            if (typeof ${indexVar} !== 'undefined') {
+                            ${indexVar !== null ?  `
                                 ${indexVar} = {
                                     first: x == 0,
                                     middle: (len > 2 && len%2 == 1 ? Math.floor(len/2) == x : Math.floor(len/2) == x || (Math.floor(len/2) - 1)),
@@ -861,7 +861,7 @@ function traverseExthtml(exthtml, result, parent_nm, anchor_nm = null) {
                                     index: x,
                                     index1: x+1
                                 };
-                            }
+                            ` : ''}
 
                             function ${reactiveFnName}_create(${itemVar},${indexVar}){
                                 ${result_for_block.code.create.join(';\n')};
@@ -870,9 +870,8 @@ function traverseExthtml(exthtml, result, parent_nm, anchor_nm = null) {
 
                             ${reactiveFnName}_create(${itemVar},${indexVar});
                             ${reactiveFnName}_mount();
-
-                            ${exthtml.children.forEach(node => traverseExthtml(node, result_for_block, parent_nm, variableNameAnchor))}
-                        } else {
+                        }
+                        if(len == 0) {
                             ${reactiveFnName}_destroy();
                         }
                     }`)

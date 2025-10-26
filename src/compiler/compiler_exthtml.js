@@ -877,16 +877,10 @@ function traverseExthtml(exthtml, result, parent_nm, anchor_nm = null) {
                         }
                     }`)
 
-                    // Extract reactive dependencies
-                    usedVars = extract_relevant_js_parts_evaluated_to_string(listExpr, result);
-                    for (const v of usedVars) {
-                        let depVar = result.dependencyTree.get(v);
-                        depVar.dependents.directives.add(forFnName);
-                    }
-
-                    result.code.mount.push(`${forFnName}()`);
-                    result.code.destroy.push(`for (const b of ${blocksVar}) b.destroy();`);
-                    result.code.destroy.push(`$$_detach(${forAnchor})`);
+                    if (setup.dev_version) result.code.mount.push(`/* ${exthtml.type}: ${exthtml.value} */`);
+                    result.code.mount.push(`${reactiveFnName}()`)
+                    if (setup.dev_version) result.code.destroy.push(`/* ${exthtml.type}: ${exthtml.value} */`);
+                    result.code.destroy.push(`$$_detach(${variableNameAnchor})`);
                     return;
 
             default:

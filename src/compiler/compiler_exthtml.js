@@ -863,12 +863,12 @@ function traverseExthtml(exthtml, result, parent_nm, anchor_nm = null) {
                                 };
                             ` : ''}
 
-                            function ${reactiveFnName}_create(${itemVar},${indexVar}){
+                            function ${reactiveFnName}_create(${itemVar}${indexVar !== null ?  `,${indexVar}` : ''}){
                                 ${result_for_block.code.create.join(';\n')};
                             }
 
 
-                            ${reactiveFnName}_create(${itemVar},${indexVar});
+                            ${reactiveFnName}_create(${itemVar}${indexVar !== null ?  `,${indexVar}` : ''});
                             ${reactiveFnName}_mount();
                         }
                         if(len == 0) {

@@ -97,7 +97,7 @@ export function rmElem(elem) {
 
 export function append(parent, elem, anchor = null) {
     if (anchor && anchor.parentNode === parent) {
-        return parent.insertAfter(elem, anchor.nextSibling);
+        return parent.insertBefore(elem, anchor.nextSibling);
     } else {
         return parent.appendChild(elem);
     }

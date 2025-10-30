@@ -834,16 +834,14 @@ function traverseExthtml(exthtml, result, parent_nm, anchor_nm = null) {
                             create: [],     // override only these four
                             mount: [],
                             update: [],
-                            destroy: []
+                            destroy: [],
+                            elems: []
                         }
                     };
 
                     exthtml.children.forEach(node => traverseExthtml(node, result_for_block, parent_nm, variableNameAnchor))
 
                     result.code.reactives.push(`
-                    function ${reactiveFnName}_mount(){
-                        ${result_for_block.code.mount.join(';\n')};
-                    }
                     function ${reactiveFnName}_destroy(){
                         ${result_for_block.code.destroy.join(';\n')};
                     }
@@ -863,10 +861,15 @@ function traverseExthtml(exthtml, result, parent_nm, anchor_nm = null) {
                                 };
                             ` : ''}
 
+                            let ${result_for_block.code.elems.join(',')};
+
                             function ${reactiveFnName}_create(${itemVar}${indexVar !== null ?  `,${indexVar}` : ''}){
                                 ${result_for_block.code.create.join(';\n')};
                             }
 
+                            function ${reactiveFnName}_mount(){
+                                ${result_for_block.code.mount.join(';\n')};
+                            }
 
                             ${reactiveFnName}_create(${itemVar}${indexVar !== null ?  `,${indexVar}` : ''});
                             ${reactiveFnName}_mount();

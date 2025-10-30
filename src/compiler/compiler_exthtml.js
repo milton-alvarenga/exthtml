@@ -22,7 +22,7 @@ import {extHTMLElement} from './transform/extHTMLElement.js'
 //import { style } from "../analyse/exthtml/directives/style";
 
 let setup = {
-    __VERSION__: '0.0.3',
+    __VERSION__: '0.0.4',
     elem_counter: 1,
     dev_version: true,
 }

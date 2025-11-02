@@ -660,7 +660,7 @@ function getVariableName(exthtml){
         case 'SELF_CLOSE_TAG':
             return `$$${exthtml.value.toLowerCase()}_${setup.elem_counter++}`
         case 'COMPONENT':
-
+            return `$$${exthtml.value}_${setup.elem_counter++}`
         case 'VirtualIF':
             return `$$if_${setup.elem_counter++}`
         case 'VirtualFOR':
@@ -735,6 +735,52 @@ function traverseExthtml(exthtml, result, parent_nm, anchor_nm = null) {
                 //if (setup.dev_version) result.code.create.push(`/* ${exthtml.type}: ${exthtml.value} */`);
                 break
             case 'COMPONENT':
+                variableName = getVariableName(exthtml);
+                result.code.internal_import.add("el")
+                result.code.internal_import.add("append")
+                result.code.internal_import.add("detach")
+                result.code.internal_import.add("comment")
+
+                const componentName = exthtml.value;
+                const componentImportName = componentName;
+                //Import should be done by the programmer on .extHTML file
+                //const componentPath = `./${componentName}.exthtml`; // Assuming component file is in the same directory
+
+                //result.code.imports.push(`import ${componentImportName} from '${componentPath}';`);
+                result.code.elems.push(variableName);
+
+                // Create component instance
+                if (setup.dev_version) result.code.create.push(`/* COMPONENT: ${componentName} */`);
+                result.code.create.push(`${variableName} = ${componentImportName}();`);
+
+                // Create a placeholder element to mount the component into, to preserve DOM order.
+                variableNameAnchor = `${variableName}__anchor`
+                result.code.elems.push(variableNameAnchor)
+                if (setup.dev_version) result.code.create.push(`/* VirtualComponent: ${variableName} */`);
+                result.code.create.push(`${variableNameAnchor} = $$_comment('${variableName}')`)
+                if (setup.dev_version) result.code.mount.push(`/* ${exthtml.type}: ${exthtml.value} */`);
+
+
+                // Append placeholder in order
+                result.code.mount.push(`$$_append(${parent_nm}, ${variableNameAnchor}, ${anchor_nm});`);
+
+                // Mount component inside the placeholder
+                result.code.mount.push(`${variableName}.mount(${variableNameAnchor});`);
+
+                // Destroy component and then detach the placeholder
+                if (setup.dev_version) result.code.destroy.push(`/* COMPONENT: ${componentName} */`);
+                result.code.destroy.push(`${variableName}.destroy();`);
+                result.code.destroy.push(`$$_detach(${variableNameAnchor});`);
+
+                /*
+                No recursive compilation
+                // Handle attributes (props) and children (slots) here in the future.
+                let result_component = getStructure()
+
+                exthtml.children.forEach(node => traverseExthtml(node, result_component, parent_nm, variableNameAnchor))
+                */
+
+                return;
 
             case 'VirtualIF':
                 variableName = getVariableName(exthtml)

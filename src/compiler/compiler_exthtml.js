@@ -884,7 +884,7 @@ function traverseExthtml(exthtml, result, parent_nm, anchor_nm = null) {
                         }
                     };
 
-                    exthtml.children.forEach((node,idx) => traverseExthtml(node, result_for_block, parent_nm, (idx == 0) ? variableNameAnchor : null))
+                    exthtml.children.forEach((node,idx) => traverseExthtml(node, result_for_block, parent_nm, null))/*(idx == 0) ? variableNameAnchor : null*/
 
                     result.code.reactives.push(`
                     function ${reactiveFnName}_destroy(){

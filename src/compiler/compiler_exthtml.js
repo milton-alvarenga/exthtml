@@ -859,7 +859,7 @@ function traverseExthtml(exthtml, result, parent_nm, anchor_nm = null) {
                     if (setup.dev_version) result.code.create.push(`/* VirtualFOR: ${variableName} */`);
                     result.code.create.push(`${variableNameAnchor} = $$_comment('${variableName}')`)
                     if (setup.dev_version) result.code.mount.push(`/* ${exthtml.type}: ${exthtml.value} */`);
-                    result.code.mount.push(`$$_append(${parent_nm},${variableNameAnchor},${anchor_nm})`)
+                    result.code.mount.push(`$$_append(${parent_nm},${variableNameAnchor},null)`)/*${anchor_nm}*/
 
                     const forExpression = JSON.parse(exthtml.value)
                     const forExpressionVar = forExpression.collection

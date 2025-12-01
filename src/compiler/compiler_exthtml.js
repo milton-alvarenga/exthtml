@@ -1095,12 +1095,14 @@ function traverseExthtmlEventAttr(eventAttr, mode, result, variableName, parent_
         }
     } else if (['methodCall'].indexOf(descriptors.type) > -1) {
         if(result.declared_variables.has(descriptors.variable) || knownGlobals.objects(descriptors.variable)){
+            let reactive = [descriptors.variable].filter((nm) => result.declared_variables.has(nm)).map(nm => escodegen.generate(createCheckReactiveNode(nm))).join(';\n');
             handlerCode = `
                 function ${reactiveFnName}(event) {
                     ${modifierChecks}
                     ${mouseKeyCheck}
                     //if want the event, need to add on parameter as event (not string)
                     (${descriptors.variable}) && (${eventAttr.value})
+                    ${reactive}
                 }
             `.replace(/^\s*[\r\n]/gm, '');
         } else {
@@ -1108,12 +1110,14 @@ function traverseExthtmlEventAttr(eventAttr, mode, result, variableName, parent_
         }
     } else if (['methodCallWithParams'].indexOf(descriptors.type) > -1) {
         if(result.declared_variables.has(descriptors.variable) || (knownGlobals.objects(descriptors.variable))){
+            let reactive = [descriptors.variable].filter((nm) => result.declared_variables.has(nm)).map(nm => escodegen.generate(createCheckReactiveNode(nm))).join(';\n');
             handlerCode = `
                 function ${reactiveFnName}(event) {
                     ${modifierChecks}
                     ${mouseKeyCheck}
                     //if want the event, need to add on parameter as event (not string)
                     (${descriptors.variable}) && (${descriptors.variable}${descriptors.methodName ? "."+descriptors.methodName : ""}(${descriptors.parameters.join(',')}))
+                    ${reactive}
                 }
             `.replace(/^\s*[\r\n]/gm, '');
         } else {
@@ -1493,9 +1497,47 @@ function generateCtx(scripts, analysis) {
 
 //context="module"
 function generate4Web(scripts, styles, analysis) {
+    let dev_only_code = '';
+    let dev_export_code = '';
+    if (setup.dev_version) {
+        dev_only_code = `
+    if (!window.$$getInternals) {
+        window.$$getInternals = (element) => {
+            const target = element || (typeof $0 !== 'undefined' ? $0 : null);
+            if (!target) {
+                console.log("No element selected. Please select an element in the inspector or pass one as an argument.");
+                return;
+            }
+            let current = target;
+            while(current) {
+                if (current.__extHTML_internals__) {
+                    return current.__extHTML_internals__;
+                }
+                current = current.parentElement;
+            }
+            console.log("No extHTML component found for the selected element.");
+        };
+    }
+    `;
+        dev_export_code = `
+        const internalVars = {
+            $$_dependencyTree,
+            $$_changes,
+            $$_TARGET,
+            $$_mounted,
+            $$_updating,
+            ${[...analysis.declared_variables, ...analysis.undeclared_variables].join(",")}
+        };
+        if ($$_TARGET) {
+            $$_TARGET.__extHTML_internals__ = internalVars;
+        }
+    `;
+    }
+
     //${scripts.filter(script => !script.attrs.some(attr => attr.name === 'context' && attr.value === 'module')).map(script => escodegen.generate(script.children))}
     //${Array.from(analysis.undeclared_variables).map((v) => `let ${v};`).join('\n')}
     return `${setup.BANNER}
+    ${dev_only_code}
     ${analysis.code.internal_import.size > 0
             ? `import {${Array.from(analysis.code.internal_import).map(name => `${name} as $$_${name}`).join(", ")}} from 'exthtml/src/runtime/dom.js';`
             : ""}
@@ -1542,6 +1584,7 @@ function generate4Web(scripts, styles, analysis) {
                 $$_TARGET = TARGET
                 this.create();
                 ${analysis.code.mount.join(';\n')};
+                ${dev_export_code}
                 $$_mounted = true;
             },
             update() {

@@ -32,7 +32,7 @@ export function buildProxy(obj, callback, path = []) {
     return obj;
   }
   
-  const arrayMutations = ['push', 'pop', 'shift', 'unshift', 'splice', 'sort', 'reverse'];
+  const arrayMutations = ['push', 'pop', 'shift', 'unshift', 'splice', 'sort', 'reverse','fill','copyWithin'];
 
   const handler = {
     get(target, prop, receiver) {

@@ -38,7 +38,7 @@ export function buildProxy(obj, callback, path = []) {
     get(target, prop, receiver) {
       const value = Reflect.get(target, prop, receiver);
 
-      if (typeof value === 'function' && isArray(target) && arrayMutations.includes(prop)) {
+      if (typeof value === 'function' && Array.isArray(target) && arrayMutations.includes(prop)) {
         // Wrap array mutator methods to catch changes
         return function(...args) {
           const oldLength = target.length;

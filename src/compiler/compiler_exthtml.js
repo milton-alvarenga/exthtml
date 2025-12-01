@@ -1100,7 +1100,7 @@ function traverseExthtmlEventAttr(eventAttr, mode, result, variableName, parent_
                     ${modifierChecks}
                     ${mouseKeyCheck}
                     //if want the event, need to add on parameter as event (not string)
-                    (${descriptors.name}) && (${eventAttr.value})
+                    (${descriptors.variable}) && (${eventAttr.value})
                 }
             `.replace(/^\s*[\r\n]/gm, '');
         } else {
@@ -1113,7 +1113,7 @@ function traverseExthtmlEventAttr(eventAttr, mode, result, variableName, parent_
                     ${modifierChecks}
                     ${mouseKeyCheck}
                     //if want the event, need to add on parameter as event (not string)
-                    (${descriptors.name}) && (${descriptors.name})(${descriptors.parameters.join(',')})
+                    (${descriptors.variable}) && (${descriptors.variable}${descriptors.methodName ? "."+descriptors.methodName : ""}(${descriptors.parameters.join(',')}))
                 }
             `.replace(/^\s*[\r\n]/gm, '');
         } else {

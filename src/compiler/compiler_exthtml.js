@@ -1093,6 +1093,32 @@ function traverseExthtmlEventAttr(eventAttr, mode, result, variableName, parent_
                 }
             `.replace(/^\s*[\r\n]/gm, '');
         }
+    } else if (['methodCall'].indexOf(descriptors.type) > -1) {
+        if(result.declared_variables.has(descriptors.variable) || knownGlobals.objects(descriptors.variable)){
+            handlerCode = `
+                function ${reactiveFnName}(event) {
+                    ${modifierChecks}
+                    ${mouseKeyCheck}
+                    //if want the event, need to add on parameter as event (not string)
+                    (${descriptors.name}) && (${eventAttr.value})
+                }
+            `.replace(/^\s*[\r\n]/gm, '');
+        } else {
+            throw Error(`${traverseExthtmlEventAttr.name} function: Invalid ${descriptors.type.toLowerCase()} attribute on ${attr.name} and its value as ${attr.value}`)
+        }
+    } else if (['methodCallWithParams'].indexOf(descriptors.type) > -1) {
+        if(result.declared_variables.has(descriptors.variable) || (knownGlobals.objects(descriptors.variable))){
+            handlerCode = `
+                function ${reactiveFnName}(event) {
+                    ${modifierChecks}
+                    ${mouseKeyCheck}
+                    //if want the event, need to add on parameter as event (not string)
+                    (${descriptors.name}) && (${descriptors.name})(${descriptors.parameters.join(',')})
+                }
+            `.replace(/^\s*[\r\n]/gm, '');
+        } else {
+            throw Error(`${traverseExthtmlEventAttr.name} function: Invalid ${descriptors.type.toLowerCase()} attribute on ${attr.name} and its value as ${attr.value}`)
+        }
     } else if (descriptors.type == 'functionCallWithParams') {
         if (!result.functions.has(descriptors.name)) {
             throw Error(`${traverseExthtmlEventAttr.name} function: Invalid ${descriptors.type.toLowerCase()} attribute on ${attr.name} and its value as ${attr.value}`)

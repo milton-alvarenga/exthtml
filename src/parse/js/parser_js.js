@@ -71,11 +71,22 @@ export function createCheckReactiveNode(varName) {
     }
 }
 
+function getRootIdentifierName(node) {
+    let curr = node;
+    while (curr.type === 'MemberExpression') {
+        curr = curr.object;
+    }
+    if (curr.type === 'Identifier') {
+        return curr.name;
+    }
+    return null;
+}
+
 export function parseEventDescription(eventDescription) {
     let ast = parseCode(eventDescription)
 
-    if (!ast || !ast.body || !ast.body[0] || !ast.body[0].expression) {
-        throw new Error("Error to parse event description: " + eventDescription);
+    if (!ast || !ast.body || !ast.body[0] || ast.body[0].type !== 'ExpressionStatement') {
+        throw new Error("Unsupported expression type: " + (ast && ast.body && ast.body[0] ? ast.body[0].type : 'Unknown') + " and description: " + eventDescription);
     }
 
     ast = ast.body[0].expression
@@ -89,8 +100,25 @@ export function parseEventDescription(eventDescription) {
         };
     }
     else if (ast.type === "CallExpression") {
-        // Case: function call execution
-        const fnName = ast.callee.name || (ast.callee.type === "MemberExpression" ? getMemberExpressionName(ast.callee) : null);
+        const callee = ast.callee;
+
+        if (callee.type === 'MemberExpression') {
+            const fullPath = getMemberExpressionName(callee);
+            const variable = getRootIdentifierName(callee);
+            const methodName = variable && fullPath.startsWith(variable + '.') ? fullPath.substring(variable.length + 1) : fullPath;
+
+            const type = ast.arguments.length > 0 ? 'methodCallWithParams' : 'methodCall';
+
+            return {
+                type,
+                variable,
+                methodName,
+                parameters: ast.arguments.map(arg => eventDescription.slice(arg.start, arg.end))
+            };
+        }
+
+        // Fallback for simple function calls like myFunction()
+        const fnName = callee.name;
         if (!fnName) {
             throw new Error("Unsupported callee structure");
         }
@@ -117,7 +145,6 @@ export function parseEventDescription(eventDescription) {
         // Case: an assignment, e.g. someVar = expr
         // Extract variable changed (left side)
         const variableChanged = getAssignmentLeftSide(ast.left);
-
         // Extract dependencies from the right side (could be identifiers, function calls etc.)
         const dependencies = extractDependencies(ast.right);
 
@@ -128,10 +155,7 @@ export function parseEventDescription(eventDescription) {
         };
     }
     else if (ast.type === "ArrowFunctionExpression") {
-        // Extract parameters - list their source text
         const parameters = ast.params.map(param => eventDescription.slice(param.start, param.end));
-
-        // Detect if the function body is a block or a single expression
         const bodyType = ast.body.type === "BlockStatement" ? "block" : "expression";
         const rawBody = eventDescription.slice(ast.body.start, ast.body.end);
 
@@ -145,17 +169,19 @@ export function parseEventDescription(eventDescription) {
     else if (ast.type == "UpdateExpression") {
         // Extract the variable changed (argument of the UpdateExpression)
         const variableChanged = getAssignmentLeftSide(ast.argument);
-
         // For UpdateExpression, dependencies are usually just the argument itself
         // or could be empty if you don't need dependencies here
+
         const dependencies = []
 
         return {
             type: "updateExpression",
             variableChanged,
             dependencies,
-            operator: ast.operator,   // e.g. ++ or --
-            prefix: ast.prefix        // boolean: true if ++x, false if x++
+            // e.g. ++ or --
+            operator: ast.operator,
+            // boolean: true if ++x, false if x++
+            prefix: ast.prefix
         };
     }
     else {

@@ -18,7 +18,6 @@ import { inspect } from 'util';
 import { getStructure } from './internals/analyze.js'
 import * as codeUtils from './tools/codeUtils.js'
 import {extHTMLElement} from './transform/extHTMLElement.js'
-import { keyed } from '../runtime/keyed.js';
 
 //import { style } from "../analyse/exthtml/directives/style";
 

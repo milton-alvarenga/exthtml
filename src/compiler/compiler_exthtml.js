@@ -1275,7 +1275,7 @@ function generate4Web(scripts, styles, analysis) {
 
     const dom_imports = Array.from(analysis.code.internal_import).filter(name => name !== 'keyed');
     const keyed_import = analysis.code.internal_import.has('keyed')
-        ? `import { keyed as $$_keyed } from '../runtime/keyed.js';`
+        ? `import { keyed as $$_keyed } from exthtml/src/compiler/runtime/keyed.js';`
         : '';
 
     return `${setup.BANNER}

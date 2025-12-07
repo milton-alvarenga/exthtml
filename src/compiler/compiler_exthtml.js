@@ -680,8 +680,8 @@ function traverseExthtml(exthtml, result, parent_nm, anchor_nm = null, root_elem
                 exthtml.children.forEach((node) => traverseExthtml(node, for_block_result, ' $$__for_fragment', null, for_block_result.code.root_elements));
                 
                 const block_creation_code = `
-                (item, key) => {
-                    let ${itemVar} = item;
+                ($$item, key) => {
+                    let ${itemVar} = $$item;
                     ${indexVar ? `let ${indexVar} = key;` : ''}
                     let ${Array.from(for_block_result.code.elems).join(',')};
 

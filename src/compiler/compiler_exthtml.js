@@ -87,6 +87,30 @@ function parseScriptsAndStylesTags(scripts, styles) {
 }
 
 function analyse(exthtml, scripts, styles, filePath) {
+    /*
+            let vars = {
+                count: {
+                    v:[0],
+                    dependencies:{
+                        variable:[],
+                        components:[],
+                        directives:[]
+                    },
+                    dependents:{
+                        variable:[],
+                        components:[],
+                        directives:[]
+                    }
+                }
+            };
+
+            let dirty_queue = [
+                {
+                    target_var:
+                    generated_by:
+                }
+            ]
+    */
     const result = getStructure()
     for (let x = 0; x < styles.length; x++) {
         if (styles[x].value) {
@@ -96,13 +120,16 @@ function analyse(exthtml, scripts, styles, filePath) {
                 if (x > 0) {
                     continue
                 }
-                let baseName = filePath + '.css'; 
+                //let baseName = path.basename(filePath, path.extname(filePath)) // get name without extension
+                let baseName = filePath + '.css'; // add .css extension
                 result.code.internal_import.add('addCssLinkOnHead')
                 result.code.internal_import.add('removeCssLinkFromHead')
-                result.code.create.push(` $$_addCssLinkOnHead('/${baseName}')`)
-                result.code.destroy.push(` $$_removeCssLinkFromHead('/${baseName}')`)
+                result.code.create.push(`$$_addCssLinkOnHead('/${baseName}')`)
+                result.code.destroy.push(`$$_removeCssLinkFromHead('/${baseName}')`)
                 result.code.imports.push(`import 'virtual:${baseName}'`)
+                //result.code.imports.push(`//import 'virtual'`)
             } else {
+                //Must to be inline css as we did not know the component path
                 result.code.internal_import.add("el")
                 result.code.internal_import.add("setAttr")
                 result.code.internal_import.add("append")
@@ -111,9 +138,10 @@ function analyse(exthtml, scripts, styles, filePath) {
                 let varname = '$$style_1'
                 result.code.elems.push(varname)
                 result.code.create.push(`${varname} = $$_el('style')`)
-                result.code.create.push(` $$_setAttr(${variableName}, 'textContent', '${ast2strCss(styles[x].children)}'`)
-                result.code.mount.push(` $$_append($$_TARGET,${variableName})`)
-                result.code.destroy.push(` $$_detach(${variableName})`)
+                //result.code.create.push(`$$_setAttr(${variableName}, 'textContent', '${styles[x].value}'`)
+                result.code.create.push(`$$_setAttr(${variableName}, 'textContent', '${ast2strCss(styles[x].children)}'`)
+                result.code.mount.push(`$$_append($$_TARGET,${variableName})`)
+                result.code.destroy.push(`$$_detach(${variableName})`)
             }
         }
     }
@@ -131,13 +159,110 @@ function analyse(exthtml, scripts, styles, filePath) {
         const { scope: rootScope, map, globals } = periscopic.analyze(scripts[x].children)
         result.declared_variables = new Set(rootScope.declarations.keys())
         result.undeclared_variables = Array.from(globals.keys()).filter(v => !(knownGlobals.functions.has(v) || knownGlobals.objects.has(v)));
+        //console.log(inspect(scripts[x].children.body, { depth: null, colors: true }));
+
+        /*
+        scripts[x].children.body.forEach((node, index) => {
+            if (node.type === 'LabeledStatement' && node.label.name === '$') {
+                toRemove.add(node);
+                const body = node.body;
+                const left = body.expression.left;
+                const right = body.expression.right;
+                const dependencies = [];
+
+                estreewalker.walk(right, {
+                    enter(node) {
+                        if (node.type === 'Identifier') {
+                            dependencies.push(node.name);
+                        }
+                    },
+                });
+                result.willChange.add(left.name);
+                const reactiveDeclaration = {
+                    assignees: [left.name],
+                    dependencies: dependencies,
+                    node: body,
+                    index,
+                };
+                reactiveDeclarations.push(reactiveDeclaration);
+            }
+        });
+
+
+        estreewalker.walk(scripts[x].children.body, {
+            enter(node, parent) {
+                if (node.type === 'LabeledStatement' && node.label.name === '$') {
+                    // Replace the labeled statement node in the parent's body with the inner statement
+                    if (parent && Array.isArray(parent.body)) {
+                        const index = parent.body.indexOf(node);
+                        if (index !== -1) {
+                            parent.body.splice(index, 1, node.body);
+                            // Stop walking this replaced node to avoid confusion
+                            this.skip();
+                        }
+                    } else if (parent && parent.type === 'Program') {
+                        // If parent is Program, replace in its body array
+                        const index = parent.body.indexOf(node);
+                        if (index !== -1) {
+                            parent.body.splice(index, 1, node.body);
+                            this.skip();
+                        }
+                    }
+                }
+            }
+        });
+
+        estreewalker.walk(scripts[x].children.body, {
+            enter(node, parent) {
+                if (node.type === 'LabeledStatement' && node.label.name === '$') {
+                    if (parent && Array.isArray(parent)) {
+                        const index = parent.indexOf(node);
+                        if (index !== -1) {
+                            // Assuming node.body is an ExpressionStatement or similar
+                            // Extract expression from node.body
+                            let initExpression = null;
+                            if (node.body.type === 'ExpressionStatement') {
+                                initExpression = node.body.expression;
+                            } else if (node.body.type === 'Literal' || node.body.type.endsWith('Expression')) {
+                                initExpression = node.body;
+                            } else {
+                                // If node.body is a block or other statement, you need to handle differently
+                                // For now, skip or throw error
+                                this.skip();
+                                return;
+                            }
+
+                            // Create a VariableDeclaration node
+                            const varDecl = {
+                                type: 'VariableDeclaration',
+                                kind: 'let',
+                                declarations: [{
+                                    type: 'VariableDeclarator',
+                                    id: { type: 'Identifier', name: 'x' }, // You can change 'x' to any variable name you want
+                                    init: initExpression,
+                                }]
+                            };
+console.log(inspect(parent, { depth: null, colors: true }));
+                            // Replace the labeled statement with the new let declaration
+                            parent.splice(index, 1, varDecl);
+console.log("------------")
+console.log(inspect(parent, { depth: null, colors: true }));
+                            this.skip();
+                        }
+                    }
+                }
+            }
+        });
+*/
 
         estreewalker.walk(scripts[x].children.body, {
             enter(node, parent) {
                 if (parent !== null) {
+                    // We are at a child node (first level), so skip its children
                     this.skip();
                 }
 
+                // Check if node is a FunctionDeclaration and its parent is Program (global scope)
                 if (node.type === 'FunctionDeclaration') {
                     result.functions.add(node.id.name)
                 } else if (
@@ -166,6 +291,7 @@ function analyse(exthtml, scripts, styles, filePath) {
 
 
 
+        //scripts[x].children.body = scripts[x].children.body.filter((node) => !toRemove.has(node))
         result.reactiveDeclarations = reactiveDeclarations
 
         estreewalker.walk(scripts[x].children, {
@@ -202,6 +328,8 @@ function analyse(exthtml, scripts, styles, filePath) {
                         }
 
                         if (node.kind !== 'const' && has_dependency) {
+                            // Generate an assignment expression string for the variable initialization:
+                            // e.g. "x = 5" or "x = someFunction()"
                             const assignmentAst = {
                                 type: 'ExpressionStatement',
                                 expression: {
@@ -215,13 +343,18 @@ function analyse(exthtml, scripts, styles, filePath) {
                             const assignmentCode = escodegen.generate(assignmentAst);
 
                             let depVar = result.dependencyTree.get(decl.id.name);
+
+                            // Push the recalculate function that reassigns the variable
                             depVar.recalculate.push(`() => { ${assignmentCode} }`);
                         }
 
+                        // Insert a new statement after this VariableDeclaration node
                         const setReactiveNode = createSetReactiveNode(decl.id.name);
 
+                        // Find the index of the current VariableDeclaration node in parent's body
                         const index = parent.body.indexOf(node);
 
+                        // Insert the setReactive statement right after in the parent's body array
                         if (index !== -1) {
                             parent.body.splice(index + 1, 0, setReactiveNode);
                         }
@@ -236,14 +369,18 @@ function analyse(exthtml, scripts, styles, filePath) {
         estreewalker.walk(scripts[x].children.body, {
             enter(node, parent) {
                 parentStack.push(node);
+                // Track the current body context for potential insertions
                 if (node.body && Array.isArray(node.body)) {
                     closestBodyParentStack.push(node);
                 }
+                // Update current scope from scope map
                 if (map.has(node)) currentScope = map.get(node);
 
                 if (
+                    //An UpdateExpression (e.g., x++ or --y)
                     node.type === 'UpdateExpression'
                     ||
+                    //An AssignmentExpression (e.g., x = 5 or y += 2)
                     node.type === 'AssignmentExpression'
                 ) {
                     const names = periscopic.extract_names(
@@ -252,13 +389,19 @@ function analyse(exthtml, scripts, styles, filePath) {
                     for (const name of names) {
                         if (
                             currentScope.find_owner(name) === rootScope
+                            /*
+                            ||
+                            globals.has(name)
+                            */
                         ) {
                             result.willChange.add(name);
 
+                            // Insert a new statement after this VariableDeclaration node or Update expression
                             const checkReactiveNode = createCheckReactiveNode(name);
 
+                            // Find the closest parent statement in parentStack
                             const enclosingStmt = parentStack
-                                .slice() 
+                                .slice() // make a copy
                                 .reverse()
                                 .find(n =>
                                     n && n.type && n.type.endsWith('Statement') &&
@@ -284,9 +427,15 @@ function analyse(exthtml, scripts, styles, filePath) {
                     node.left.type === "MemberExpression"
                 ) {
                     let name = null;
+                    //It is an Array or object on pattern obj[attr]
                     if (node.left.computed) {
+                        // This is like arr[4] = ...
+                        //console.log("Array index assignment detected:", node.left.object.name, "[...]", "at position", node.left.property.value);
                         name = node.left.object.name
+                        //It is an object on pattern obj.attr
                     } else {
+                        // This is like obj.a = ...
+                        //console.log("Object property assignment detected:", node.left.object.name, ".", node.left.property.name);
                         name = node.left.object.name
                     }
 
@@ -295,12 +444,19 @@ function analyse(exthtml, scripts, styles, filePath) {
                         &&
                         (
                             currentScope.find_owner(name) === rootScope
+                            /*
+                            ||
+                            globals.has(name)
+                            */
                         )
                     ) {
                         result.willChange.add(name);
                         let depVar = result.dependencyTree.get(name);
                         const assignmentCode = escodegen.generate(node);
+
+                        // Push the recalculate function that reassigns the variable
                         depVar.recalculate.push(`() => { ${assignmentCode} }`);
+
 
 
 
@@ -333,11 +489,21 @@ function analyse(exthtml, scripts, styles, filePath) {
                 }
             },
         });
+
+        /*
+        console.log(inspect(scope, { depth: null, colors: true, showHidden: true }));
+        console.log(inspect(map, { depth: null, colors: true, showHidden: true }));
+        console.log(inspect(globals, { depth: null, colors: true, showHidden: true }));
+        */
+        //console.log(inspect(result, { depth: null, colors: true, showHidden: true }))
         script_pos_analyse(scripts[x], result)
     }
 
-    exthtml.forEach((node, pos) => exthtml_pre_analyse(node, result, ' $$__TARGET', exthtml, pos))
-    exthtml.forEach(node => traverseExthtml(node, result, ' $$__TARGET'))
+    //console.log(inspect(exthtml, { depth: null, colors: true, showHidden: true }))
+    //console.log("============================================")
+    exthtml.forEach((node, pos) => exthtml_pre_analyse(node, result, '$$_TARGET', exthtml, pos))
+    //console.log(inspect(exthtml, { depth: null, colors: true, showHidden: true }))
+    exthtml.forEach(node => traverseExthtml(node, result, '$$_TARGET'))
 
     result.dependencyTree.css.idNames = result.cssTree.idNames
     result.code.dependencyTree.push(...result.dependencyTree.compile())
@@ -355,8 +521,11 @@ function moveImportToTheTop(script, result) {
     estreewalker.walk(script, {
         enter(node, parent, prop, index) {
             if (node.type === 'ImportDeclaration') {
+                // Generate the import code string from this part of the AST
                 const importCode = escodegen.generate(node, { format: { semicolons: false } });
                 result.code.imports.push(importCode);
+
+                // Remove this node from AST
                 this.remove();
             }
         }
@@ -367,9 +536,12 @@ function removeDuplicateCheckReactiveDeep(node, lastFound) {
     if (!node || typeof node !== 'object') return;
 
     lastFound = lastFound || "";
+    // Check keys for arrays or objects and recurse
     for (const key in node) {
         if (Array.isArray(node[key])) {
+            // For arrays of nodes, filter duplicates then recurse into each node
             if (key === 'body' || key === 'consequent' || key === 'alternate' || key === 'block' || key === 'handlers') {
+                const seenVarNames = new Set();
                 node[key] = node[key].filter(child => {
                     if (
                         child.type === 'ExpressionStatement'
@@ -378,7 +550,7 @@ function removeDuplicateCheckReactiveDeep(node, lastFound) {
                         &&
                         child.expression.callee.type === 'Identifier'
                         &&
-                        child.expression.callee.name === ' $$__checkReactive'
+                        child.expression.callee.name === '$$_checkReactive'
                         &&
                         child.expression.arguments.length === 4
                         &&
@@ -386,7 +558,7 @@ function removeDuplicateCheckReactiveDeep(node, lastFound) {
                     ) {
                         const varName = child.expression.arguments[0].value;
                         if (lastFound == varName) {
-                            return false;
+                            return false; // remove duplicate
                         } else {
                             lastFound = varName
                             return true;
@@ -396,8 +568,10 @@ function removeDuplicateCheckReactiveDeep(node, lastFound) {
                     return true;
                 });
             }
+            // Recurse into each item in the array
             node[key].forEach(child => removeDuplicateCheckReactiveDeep(child, lastFound));
         } else if (node[key] && typeof node[key] === 'object') {
+            // Recurse into nested AST nodes
             removeDuplicateCheckReactiveDeep(node[key], lastFound);
         }
     }
@@ -424,7 +598,8 @@ function exthtml_pre_analyse(exthtml, result, parent_nm, parent_elem, parent_pos
         case 'HTML_NESTED_TAG':
         case 'SELF_CLOSE_TAG':
         case 'COMPONENT':
-            break
+            //OK. Need to analyze
+        break
         default:
             throw Error(`${exthtml_pre_analyse.name} Error on unexpected type equal ${exthtml[0].type} and value ${exthtml[0].value} at line ${exthtml[0].location.line}`)
     }
@@ -495,7 +670,7 @@ function getVariableName(exthtml){
     }
 }
 
-function traverseExthtml(exthtml, result, parent_nm, anchor_nm = null, root_elements_set = null) {
+function traverseExthtml(exthtml, result, parent_nm, anchor_nm = null) {
     let variableName = ''
     let variableNameAnchor = ''
     let reactiveFnName = ''
@@ -514,7 +689,6 @@ function traverseExthtml(exthtml, result, parent_nm, anchor_nm = null, root_elem
                 result.code.internal_import.add("append")
                 result.code.internal_import.add("detach")
                 variableName = getVariableName(exthtml)
-                if (root_elements_set) root_elements_set.add(variableName);
                 reactiveFnName = `${variableName}__textContent`
                 result.code.elems.push(variableName)
                 if (setup.dev_version) result.code.create.push(`/* DYNAMIC_TEXT_NODE: ${exthtml.value} */`);
@@ -524,10 +698,9 @@ function traverseExthtml(exthtml, result, parent_nm, anchor_nm = null, root_elem
                     let depVar = result.dependencyTree.get(v)
                     depVar.dependents.texts.add(reactiveFnName)
                 }
-                result.code.reactives.push(`function ${reactiveFnName}(){${variableName}.textContent = ${exthtml.value}}
-`)
-                result.code.mount.push(` $$_append(${parent_nm},${variableName},${anchor_nm})`)
-                result.code.destroy.push(` $$_detach(${variableName})`)
+                result.code.reactives.push(`function ${reactiveFnName}(){${variableName}.textContent = ${exthtml.value}}\n`)
+                result.code.mount.push(`$$_append(${parent_nm},${variableName},${anchor_nm})`)
+                result.code.destroy.push(`$$_detach(${variableName})`)
                 return
 
             case 'TEXT_NODE':
@@ -535,32 +708,34 @@ function traverseExthtml(exthtml, result, parent_nm, anchor_nm = null, root_elem
                 result.code.internal_import.add("append")
                 result.code.internal_import.add("detach")
                 variableName = getVariableName(exthtml)
-                if (root_elements_set) root_elements_set.add(variableName);
                 result.code.elems.push(variableName)
                 if (setup.dev_version) result.code.create.push(`/* TEXT_NODE: ${variableName} */`);
                 result.code.create.push(`${variableName} = $$_text('${codeUtils.escapeNewLine(exthtml.value)}')`)
                 if (setup.dev_version) result.code.mount.push(`/* TEXT_NODE: ${variableName} */`);
-                result.code.mount.push(` $$_append(${parent_nm},${variableName},${anchor_nm})`)
+                result.code.mount.push(`$$_append(${parent_nm},${variableName},${anchor_nm})`)
                 if (setup.dev_version) result.code.destroy.push(`/* TEXT_NODE: ${variableName} */`);
-                result.code.destroy.push(` $$_detach(${variableName})`)
+                result.code.destroy.push(`$$_detach(${variableName})`)
                 return
 
             case 'TEXTAREA_TAG':
                 variableName = getVariableName(exthtml)
+                //if (setup.dev_version) result.code.create.push(`/* TEXTAREA_TAG: ${variableName} */`);
                 break
             case 'TITLE_TAG':
                 variableName = getVariableName(exthtml)
+                //if (setup.dev_version) result.code.create.push(`/* TITLE_TAG: ${variableName} */`);
                 break
             case 'PLAINTEXT_TAG':
                 variableName = getVariableName(exthtml)
+                //if (setup.dev_version) result.code.create.push(`/* PLAINTEXT_TAG: ${variableName} */`);
                 break
             case 'HTML_NESTED_TAG':
             case 'SELF_CLOSE_TAG':
                 variableName = getVariableName(exthtml)
+                //if (setup.dev_version) result.code.create.push(`/* ${exthtml.type}: ${exthtml.value} */`);
                 break
             case 'COMPONENT':
                 variableName = getVariableName(exthtml);
-                if (root_elements_set) root_elements_set.add(variableName);
                 result.code.internal_import.add("el")
                 result.code.internal_import.add("append")
                 result.code.internal_import.add("detach")
@@ -568,28 +743,47 @@ function traverseExthtml(exthtml, result, parent_nm, anchor_nm = null, root_elem
 
                 const componentName = exthtml.value;
                 const componentImportName = componentName;
+                //Import should be done by the programmer on .extHTML file
+                //const componentPath = `./${componentName}.exthtml`; // Assuming component file is in the same directory
+
+                //result.code.imports.push(`import ${componentImportName} from '${componentPath}';`);
                 result.code.elems.push(variableName);
 
+                // Create component instance
                 if (setup.dev_version) result.code.create.push(`/* COMPONENT: ${componentName} */`);
                 result.code.create.push(`${variableName} = ${componentImportName}();`);
 
+                // Create a placeholder element to mount the component into, to preserve DOM order.
                 variableNameAnchor = `${variableName}__anchor`
                 result.code.elems.push(variableNameAnchor)
                 if (setup.dev_version) result.code.create.push(`/* VirtualComponent: ${variableName} */`);
                 result.code.create.push(`${variableNameAnchor} = $$_comment('${variableName}')`)
                 if (setup.dev_version) result.code.mount.push(`/* ${exthtml.type}: ${exthtml.value} */`);
-                result.code.mount.push(` $$_append(${parent_nm}, ${variableNameAnchor}, ${anchor_nm});`);
+
+
+                // Append placeholder in order
+                result.code.mount.push(`$$_append(${parent_nm}, ${variableNameAnchor}, ${anchor_nm});`);
+
+                // Mount component inside the placeholder
                 result.code.mount.push(`${variableName}.mount(${variableNameAnchor});`);
 
+                // Destroy component and then detach the placeholder
                 if (setup.dev_version) result.code.destroy.push(`/* COMPONENT: ${componentName} */`);
                 result.code.destroy.push(`${variableName}.destroy();`);
-                result.code.destroy.push(` $$_detach(${variableNameAnchor});`);
+                result.code.destroy.push(`$$_detach(${variableNameAnchor});`);
+
+                /*
+                No recursive compilation
+                // Handle attributes (props) and children (slots) here in the future.
+                let result_component = getStructure()
+
+                exthtml.children.forEach(node => traverseExthtml(node, result_component, parent_nm, variableNameAnchor))
+                */
 
                 return;
 
             case 'VirtualIF':
                 variableName = getVariableName(exthtml)
-                if (root_elements_set) root_elements_set.add(variableName);
                 result.code.internal_import.add("el")
                 result.code.internal_import.add("append")
                 result.code.internal_import.add("detach")
@@ -601,7 +795,7 @@ function traverseExthtml(exthtml, result, parent_nm, anchor_nm = null, root_elem
                 if (setup.dev_version) result.code.create.push(`/* VirtualIF: ${variableName} */`);
                 result.code.create.push(`${variableNameAnchor} = $$_comment('${variableName}')`)
                 if (setup.dev_version) result.code.mount.push(`/* ${exthtml.type}: ${exthtml.value} */`);
-                result.code.mount.push(` $$_append(${parent_nm},${variableNameAnchor},${anchor_nm})`)
+                result.code.mount.push(`$$_append(${parent_nm},${variableNameAnchor},${anchor_nm})`)
 
 
                 usedVars = extract_relevant_js_parts_evaluated_to_string(exthtml.value, result)
@@ -611,27 +805,27 @@ function traverseExthtml(exthtml, result, parent_nm, anchor_nm = null, root_elem
                 }
 
                 let result_if_block = {
-                    ...result,
+                    ...result, // shallow copy of top-level properties (still referencing same Sets, objects, etc.)
                     code: {
-                        ...result.code,
-                        create: [],
+                        ...result.code, // shallow copy of result.code
+                        create: [],     // override only these four
                         mount: [],
                         update: [],
                         destroy: []
                     }
                 };
 
-                exthtml.children.forEach(node => traverseExthtml(node, result_if_block, parent_nm, variableNameAnchor, null))
+                exthtml.children.forEach(node => traverseExthtml(node, result_if_block, parent_nm, variableNameAnchor))
 
                 result.code.reactives.push(`
                 function ${reactiveFnName}_create(){
-                    ${result_if_block.code.create.join(";\n")};
+                    ${result_if_block.code.create.join(';\n')};
                 }
                 function ${reactiveFnName}_mount(){
-                    ${result_if_block.code.mount.join(";\n")};
+                    ${result_if_block.code.mount.join(';\n')};
                 }
                 function ${reactiveFnName}_destroy(){
-                    ${result_if_block.code.destroy.join(";\n")};
+                    ${result_if_block.code.destroy.join(';\n')};
                 }
                 function ${reactiveFnName}(){
                     if(${exthtml.value}){
@@ -645,93 +839,114 @@ function traverseExthtml(exthtml, result, parent_nm, anchor_nm = null, root_elem
                 if (setup.dev_version) result.code.mount.push(`/* ${exthtml.type}: ${exthtml.value} */`);
                 result.code.mount.push(`${reactiveFnName}()`)
                 if (setup.dev_version) result.code.destroy.push(`/* ${exthtml.type}: ${exthtml.value} */`);
-                result.code.destroy.push(` $$_detach(${variableNameAnchor})`)
+                // detach the anchor variable (not the virtual if name)
+                result.code.destroy.push(`$$_detach(${variableNameAnchor})`)
 
 
-                return;
-            case 'VirtualFOR':
-                variableName = getVariableName(exthtml);
-                if (root_elements_set) root_elements_set.add(variableName);
-                result.code.internal_import.add("keyed");
-                result.code.internal_import.add("comment");
-                result.code.internal_import.add("detach");
+                //console.log(inspect(exthtml, { depth: null, colors: true }));
+                return
+                case 'VirtualFOR':
+                    variableName = getVariableName(exthtml);
+                    result.code.internal_import.add("reconcile");
+                    result.code.internal_import.add("comment");
+                    result.code.internal_import.add("append");
+                    result.code.internal_import.add("detach");
+                    result.code.internal_import.add("el");
+                    result.code.internal_import.add("text");
 
-                const forExpression = JSON.parse(exthtml.value);
-                const forExpressionVar = forExpression.collection;
-                const itemVar = forExpression.item;
-                const indexVar = forExpression.index;
-                const keyFn = indexVar ? `(item, i) => i` : `(item) => item`;
-
-                reactiveFnName = `${variableName}__forBlock_update`;
-                usedVars = extract_relevant_js_parts_evaluated_to_string(forExpressionVar, result);
-                for (const v of usedVars) {
-                    let depVar = result.dependencyTree.get(v);
-                    depVar.dependents.directives.add(reactiveFnName);
-                }
-
-                const for_block_result = {
-                    ...result,
-                    code: {
-                        ...result.code,
-                        create: [], mount: [], update: [], destroy: [], elems: [], root_elements: new Set(),
-                    }
-                };
-                
-                exthtml.children.forEach((node) => traverseExthtml(node, for_block_result, ' $$__for_fragment', null, for_block_result.code.root_elements));
-                
-                const block_creation_code = `
-                ($$item, key) => {
-                    let ${itemVar} = $$item;
-                    ${indexVar ? `let ${indexVar} = key;` : ''}
-                    let ${Array.from(for_block_result.code.elems).join(',')};
-
-                    ${for_block_result.code.create.join(";\n")};
+                    reactiveFnName = `${variableName}__forBlock`;
+                    variableNameAnchor = `${variableName}__anchor`;
                     
-                    const root_nodes = [${Array.from(for_block_result.code.root_elements).join(',')}];
+                    const forExpression = JSON.parse(exthtml.value);
+                    const forExpressionVar = forExpression.collection;
+                    const itemVar = forExpression.item;
+                    const indexVar = forExpression.index;
 
-                    const block = {
-                        key,
-                        update(new_item, new_index) {
-                            ${itemVar} = new_item;
-                            ${indexVar ? `${indexVar} = new_index;` : ''}
-                        },
-                        mount(parent, anchor) {
-                            root_nodes.forEach(node => parent.insertBefore(node, anchor));
-                        },
-                        first_node() {
-                            return root_nodes[0];
-                        },
-                        destroy() {
-                            root_nodes.forEach(node => $$_detach(node));
-                        }
+                    // 1. Setup anchor, state, and dependency
+                    result.code.elems.push(variableNameAnchor);
+                    // This state needs to be part of the component instance, not global. Let's add it to the component function scope.
+                    result.code.component_scope_vars.push(`let ${variableName}_old_items = [];`);
+                    
+                    if (setup.dev_version) result.code.create.push(`/* VirtualFOR: ${variableName} */`);
+                    result.code.create.push(`${variableNameAnchor} = $$_comment('${variableName}');`);
+                    result.code.mount.push(`$$_append(${parent_nm}, ${variableNameAnchor}, ${anchor_nm || 'null'});`);
+                    
+                    usedVars = extract_relevant_js_parts_evaluated_to_string(forExpressionVar, result);
+                    for (const v of usedVars) {
+                        let depVar = result.dependencyTree.get(v);
+                        depVar.dependents.directives.add(reactiveFnName);
+                    }
+
+                    // 2. Generate the createNode function
+                    let result_for_block = {
+                        ...result,
+                        declared_variables: new Set(result.declared_variables),
+                        code: { ...result.code, create: [], mount: [], update: [], destroy: [], elems: [] }
                     };
-                    return block;
-                }
-                `;
+                    result_for_block.declared_variables.add(itemVar);
+                    if (indexVar) result_for_block.declared_variables.add(indexVar);
 
-                variableNameAnchor = `${variableName}__anchor`;
-                result.code.elems.push(variableNameAnchor);
-                if (setup.dev_version) result.code.create.push(`/* VirtualFOR: ${variableName} */`);
-                result.code.create.push(`${variableNameAnchor} = $$_comment('keyed-for-anchor');`);
-                result.code.mount.push(` $$_append(${parent_nm}, ${variableNameAnchor}, ${anchor_nm});`);
+                    const fragmentName = `${variableName}_fragment`;
+                    exthtml.children.forEach(node => traverseExthtml(node, result_for_block, fragmentName, null));
 
-                result.code.reactives.push(`
-                    const ${reactiveFnName}_updater = $$_keyed(
-                        ${parent_nm},
-                        () => ${forExpressionVar},
-                        ${keyFn},
-                        ${block_creation_code}
-                    );
-                `);
-                
-                result.code.update.push(`${reactiveFnName}_updater();`);
-                return;
+                    const createNodeFnName = `${variableName}_createNode`;
+                    const createNodeCode = `
+                    function ${createNodeFnName}(${itemVar}) {
+                        ${indexVar ? `let ${indexVar};` : ''}
+                        let ${result_for_block.code.elems.join(',')};
+                        const ${fragmentName} = document.createDocumentFragment();
+
+                        ${result_for_block.code.create.join(';\n')};
+                        ${result_for_block.code.mount.join(';\n')};
+                        
+                        // The \`_node\` property will be the first child of the fragment, which must be the single root element.
+                        return ${fragmentName}.firstChild;
+                    }
+                    `;
+
+                    // 3. Generate the main reactive function
+                    const reactiveCode = `
+                    ${createNodeCode}
+                    function ${reactiveFnName}() {
+                        const new_items = ${forExpressionVar};
+                        
+                        const getKey = (item) => item; // Default keying
+                        const getNode = (item) => item._node;
+
+                        ${variableName}_old_items = $$_reconcile(
+                            ${variableNameAnchor}.parentNode,
+                            ${variableName}_old_items,
+                            new_items,
+                            getKey,
+                            ${createNodeFnName},
+                            getNode
+                        );
+                    }
+                    `;
+                    
+                    result.code.reactives.push(reactiveCode);
+                    
+                    if (setup.dev_version) result.code.mount.push(`/* ${exthtml.type}: ${exthtml.value} */`);
+                    result.code.mount.push(`${reactiveFnName}();`);
+                    if (setup.dev_version) result.code.destroy.push(`/* ${exthtml.type}: ${exthtml.value} */`);
+                    // When the component is destroyed, we need to remove all items from the list.
+                    // We can do this by reconciling with an empty list.
+                    result.code.destroy.push(`
+                        $$_reconcile(
+                            ${variableNameAnchor}.parentNode,
+                            ${variableName}_old_items,
+                            [],
+                            (item) => item,
+                            () => {},
+                            (item) => item._node
+                        );
+                    `);
+                    result.code.destroy.push(`$$_detach(${variableNameAnchor});`);
+                    return;
 
             default:
                 throw Error(`${traverseExthtml.name} Error on unexpected type equal ${exthtml.type} and value ${exthtml.value} at line ${exthtml.location.line}`)
         }
-
-        if (root_elements_set) root_elements_set.add(variableName);
 
         result.code.internal_import.add("el")
         result.code.internal_import.add("append")
@@ -741,14 +956,18 @@ function traverseExthtml(exthtml, result, parent_nm, anchor_nm = null, root_elem
         if (setup.dev_version) result.code.create.push(`/* ${exthtml.type}: ${exthtml.value} */`);
         result.code.create.push(`${variableName} = $$_el('${exthtml.value.toLowerCase()}')`)
 
+        //Check any type selector on css
         if (
             result.cssTree.typeSelector.hasOwnProperty(exthtml.value.toLowerCase())
         ){
+            // Static class attribute for css type selector : set once on create
             if (setup.dev_version) result.code.create.push(`/* ${exthtml.type}: CSS type selector */`);
             result.code.create.push(`${variableName}.classList.add('${result.cssTree.typeSelector[exthtml.value.toLowerCase()]}')`)
         }
         
+        //Check universal selector
         if(result.cssTree.typeSelector.hasOwnProperty('*')){
+            // Static class attribute for css type selector : set once on create
             if (setup.dev_version) result.code.create.push(`/* ${exthtml.type}: Universal css selector */`);
             result.code.create.push(`${variableName}.classList.add('${result.cssTree.typeSelector['*']}')`)
         }
@@ -756,12 +975,12 @@ function traverseExthtml(exthtml, result, parent_nm, anchor_nm = null, root_elem
         exthtml.attrs.forEach(attr => traverseExthtmlAttr(attr, "STATIC", result, variableName, exthtml, parent_nm))
         exthtml.dynamic_attrs.forEach(dynamicAttr => traverseExthtmlAttr(dynamicAttr, "DYNAMIC", result, variableName, exthtml, parent_nm))
         exthtml.event_attrs.forEach(eventAttr => traverseExthtmlEventAttr(eventAttr, "DYNAMIC", result, variableName, parent_nm))
-        exthtml.children.forEach(node => traverseExthtml(node, result, variableName, null, null))
+        exthtml.children.forEach(node => traverseExthtml(node, result, variableName))
 
         if (setup.dev_version) result.code.mount.push(`/* ${exthtml.type}: ${exthtml.value} */`);
-        result.code.mount.push(` $$_append(${parent_nm},${variableName},${anchor_nm})`)
+        result.code.mount.push(`$$_append(${parent_nm},${variableName},${anchor_nm})`)
         if (setup.dev_version) result.code.destroy.push(`/* ${exthtml.type}: ${exthtml.value} */`);
-        result.code.destroy.push(` $$_detach(${variableName})`)
+        result.code.destroy.push(`$$_detach(${variableName})`)
     } catch (err) {
         let errors = [err, new Error(`${traverseExthtml.name} Error on ${exthtml.type}.${exthtml.value} at line ${exthtml.location.start.line}`)]
         console.log(errors);
@@ -841,8 +1060,11 @@ function traverseExthtmlEventAttr(eventAttr, mode, result, variableName, parent_
         modifierChecks = mods ? `if (!(${mods})) return;` : '';
     }
 
+    // Build mouse key check if applicable
     let mouseKeyCheck = '';
     if (eventAttr.mouse_keys) {
+        // For example, left mouse button check: event.button === 0
+        // Map mouse_keys string to event.button number:
         const mouseButtonMap = {
             left: 0,
             middle: 1,
@@ -861,18 +1083,21 @@ function traverseExthtmlEventAttr(eventAttr, mode, result, variableName, parent_
 
     let handlerCode = ''
     if (['functionName', 'functionCall'].indexOf(descriptors.type) > -1) {
+        //Has the function been declared?
         if (!result.functions.has(descriptors.name)) {
             throw Error(`${traverseExthtmlEventAttr.name} function: Invalid ${descriptors.type.toLowerCase()} attribute on ${attr.name} and its value as ${attr.value}`)
         }
 
         if (descriptors.type == 'functionName') {
+            // Compose the full event handler code snippet
+            // DYNAMIC mode: eventAttr.value is an expression to be evaluated at runtime
             handlerCode = `
                 function ${reactiveFnName}(event) {
                     ${modifierChecks}
                     ${mouseKeyCheck}
                     (${eventAttr.value}) && (${eventAttr.value})(event)
                 }
-            `.trim();
+            `.replace(/^\s*[\r\n]/gm, '');
         } else {
             handlerCode = `
                 function ${reactiveFnName}(event) {
@@ -880,7 +1105,7 @@ function traverseExthtmlEventAttr(eventAttr, mode, result, variableName, parent_
                     ${mouseKeyCheck}
                     (${descriptors.name}) && (${eventAttr.value})
                 }
-            `.trim();
+            `.replace(/^\s*[\r\n]/gm, '');
         }
     } else if (['methodCall'].indexOf(descriptors.type) > -1) {
         if(result.declared_variables.has(descriptors.variable) || knownGlobals.objects(descriptors.variable)){
@@ -889,10 +1114,11 @@ function traverseExthtmlEventAttr(eventAttr, mode, result, variableName, parent_
                 function ${reactiveFnName}(event) {
                     ${modifierChecks}
                     ${mouseKeyCheck}
+                    //if want the event, need to add on parameter as event (not string)
                     (${descriptors.variable}) && (${eventAttr.value})
                     ${reactive}
                 }
-            `.trim();
+            `.replace(/^\s*[\r\n]/gm, '');
         } else {
             throw Error(`${traverseExthtmlEventAttr.name} function: Invalid ${descriptors.type.toLowerCase()} attribute on ${attr.name} and its value as ${attr.value}`)
         }
@@ -903,10 +1129,11 @@ function traverseExthtmlEventAttr(eventAttr, mode, result, variableName, parent_
                 function ${reactiveFnName}(event) {
                     ${modifierChecks}
                     ${mouseKeyCheck}
-                    (${descriptors.variable}) && (${descriptors.variable}${descriptors.methodName ? ".\n"+descriptors.methodName : ""}(${descriptors.parameters.join(',')}))
+                    //if want the event, need to add on parameter as event (not string)
+                    (${descriptors.variable}) && (${descriptors.variable}${descriptors.methodName ? "."+descriptors.methodName : ""}(${descriptors.parameters.join(',')}))
                     ${reactive}
                 }
-            `.trim();
+            `.replace(/^\s*[\r\n]/gm, '');
         } else {
             throw Error(`${traverseExthtmlEventAttr.name} function: Invalid ${descriptors.type.toLowerCase()} attribute on ${attr.name} and its value as ${attr.value}`)
         }
@@ -914,14 +1141,18 @@ function traverseExthtmlEventAttr(eventAttr, mode, result, variableName, parent_
         if (!result.functions.has(descriptors.name)) {
             throw Error(`${traverseExthtmlEventAttr.name} function: Invalid ${descriptors.type.toLowerCase()} attribute on ${attr.name} and its value as ${attr.value}`)
         }
+        // Compose the full event handler code snippet
+        // DYNAMIC mode: eventAttr.value is an expression to be evaluated at runtime
         handlerCode = `
             function ${reactiveFnName}(event) {
                 ${modifierChecks}
                 ${mouseKeyCheck}
+                //if want the event, need to add on parameter as event (not string)
                 (${descriptors.name}) && (${descriptors.name})(${descriptors.parameters.join(',')})
             }
-        `.trim();
+        `.replace(/^\s*[\r\n]/gm, '');
     } else if (descriptors.type == 'assignment') {
+        // Insert a new statement after this VariableDeclaration node
         let reactive = [descriptors.variableChanged].filter((nm) => result.declared_variables.has(nm)).map(nm => escodegen.generate(createCheckReactiveNode(nm))).join(';\n');
         handlerCode = `
                 function ${reactiveFnName}(event) {
@@ -930,7 +1161,7 @@ function traverseExthtmlEventAttr(eventAttr, mode, result, variableName, parent_
                     ${eventAttr.value}
                     ${reactive}
                 }
-            `.trim();
+            `.replace(/^\s*[\r\n]/gm, '');
 
     } else if (descriptors.type == 'arrowFunction') {
         let ast = parseCode(descriptors.rawBody)
@@ -945,7 +1176,7 @@ function traverseExthtmlEventAttr(eventAttr, mode, result, variableName, parent_
                     $$_arrowfn(${descriptors.parameters.join(',')});
                     ${reactive}
                 }
-            `.trim();
+            `.replace(/^\s*[\r\n]/gm, '');
         } else {
             handlerCode = `
                 function ${reactiveFnName}(event) {
@@ -955,9 +1186,10 @@ function traverseExthtmlEventAttr(eventAttr, mode, result, variableName, parent_
                     $$_arrowfn(event);
                     ${reactive}
                 }
-            `.trim();
+            `.replace(/^\s*[\r\n]/gm, '');
         }
     } else if (descriptors.type == 'updateExpression') {
+        // Insert a new statement after this VariableDeclaration node
         let reactive = [descriptors.variableChanged].filter((nm) => result.declared_variables.has(nm)).map(nm => escodegen.generate(createCheckReactiveNode(nm))).join(';\n');
         handlerCode = `
             function ${reactiveFnName}(event) {
@@ -966,7 +1198,7 @@ function traverseExthtmlEventAttr(eventAttr, mode, result, variableName, parent_
                 ${eventAttr.value}
                 ${reactive}
             }
-        `.trim();
+        `.replace(/^\s*[\r\n]/gm, '');
     } else {
         handlerCode = `
             function ${reactiveFnName}(event) {
@@ -974,7 +1206,7 @@ function traverseExthtmlEventAttr(eventAttr, mode, result, variableName, parent_
                 ${mouseKeyCheck}
                 (${eventAttr.value}) && (${eventAttr.value})(event)
             }
-        `.trim();
+        `.replace(/^\s*[\r\n]/gm, '');
     }
 
     result.code.reactives.push(`${handlerCode.trim()}\n`)
@@ -998,19 +1230,26 @@ function htmlBooleanAttr(attr, mode, result, variableName, node, parent_nm) {
             let depVar = result.dependencyTree.get(v)
             depVar.dependents.directives.add(reactiveFnName)
         }
-        result.code.reactives.push(`function ${reactiveFnName}(){
+        result.code.reactives.push(`function ${reactiveFnName}(){\n
             (${attr.value}) ? $$_setAttr(${variableName}, '${attr.name}', ${!!attr.value} ? "" : false) : $$_rmAttr(${variableName}, '${attr.name}')
         }`)
         result.code.create.push(`${reactiveFnName}()`)
+        //result.code.update.push(`(${attr.value}) ? setAttr(${variableName}, '${attr.name}', ${attr.value}) : rmAttr(${variableName}, '${attr.name}')`)
     }
 }
 
 function htmlDataAttr(attr, mode, result, variableName, node, parent_nm) {
     checkMode(mode)
 
-    const dataKey = attr.name.slice(5) 
+    // Data attributes are of the form data-xxx
+    // They should be set or removed on the element's dataset property
+    // For STATIC mode, attr.value is a literal value (string)
+    // For DYNAMIC mode, attr.value is an expression to be evaluated at runtime
+
+    const dataKey = attr.name.slice(5) // remove 'data-' prefix
 
     if (mode === "STATIC") {
+        // For static, check if the value is truthy to set or remove dataset property
         result.code.create.push(`('${attr.value}') ? ${variableName}.dataset['${dataKey}'] = '${attr.value}' : delete ${variableName}.dataset['${dataKey}']`)
     } else {
         result.code.internal_import.add("setAttr")
@@ -1025,6 +1264,8 @@ function htmlDataAttr(attr, mode, result, variableName, node, parent_nm) {
         }
 
 
+        // For dynamic, evaluate expression and set or delete accordingly
+        //result.code.update.push(`(${attr.value}) ? ${variableName}.dataset['${dataKey}'] = ${attr.value} : delete ${variableName}.dataset['${dataKey}']`)
         result.code.reactives.push(`function ${reactiveFnName}(){(${attr.value}) ? ${variableName}.dataset['${dataKey}'] = ${attr.value} : delete ${variableName}.dataset['${dataKey}']}`)
         result.code.create.push(`${reactiveFnName}()`)
     }
@@ -1049,6 +1290,8 @@ function htmlClassDirective(attr, mode, result, variableName, node, parent_nm) {
         (!!(${attr.value})) ? ${variableName}.classList.add('${className}') : ${variableName}.classList.remove('${className}') && ${variableName}.classList.length === 0 && $$_rmAttr(${variableName}, 'class')
     }`)
     result.code.create.push(`${reactiveFnName}()`)
+    //class:xxxxxx
+    //result.code.update.push(`(!!(${attr.value})) ? ${variableName}.classList.add('${attr.name}'): ${variableName}.classList.remove('${attr.name}')`)
 }
 
 function htmlClassAttr(attr, mode, result, variableName, node, parent_nm) {
@@ -1074,18 +1317,22 @@ function htmlClassAttr(attr, mode, result, variableName, node, parent_nm) {
             }`)
             result.code.create.push(`${reactiveFnName}()`)
 
+            //result.code.update.push(`(!!(${expression})) ? ${variableName}.classList.add('${_class}'): ${variableName}.classList.remove('${_class}')`)
         });
     } else {
+        // Static class attribute: set once on create
         result.code.create.push(`${variableName}.classList.add('${attr.value.split(" ").map(cls => `"${result.cssTree.className[cls.trim()]}"`).join(", ")}')`)
     }
 }
 
 function htmlRegularAttr(attr, mode, result, variableName, node, parent_nm) {
     checkMode(mode)
+    // Handle special cases for 'class'
     if (attr.name === 'class') {
         htmlClassAttr(attr, mode, result, variableName, node, parent_nm)
         return
     }
+    //style
     if (attr.name === 'style') {
         handleStyleAttr(attr, mode, result, variableName);
         return;
@@ -1117,6 +1364,8 @@ function htmlRegularAttr(attr, mode, result, variableName, node, parent_nm) {
         }`)
 
         result.code.create.push(`${reactiveFnName}()`)
+
+        //result.code.update.push(`(${attr.value}) ? setAttr(${variableName}, '${attr.name}', ${attr.value}) : rmAttr(${variableName}, '${attr.name}')`)
     }
 }
 
@@ -1172,12 +1421,32 @@ function htmlMacroDirective(attr, mode, result, variableName, node, parent_nm) {
 
 function handleStyleAttr(attr, mode, result, variableName) {
     if (mode === "STATIC") {
+        // Static style: attr.value is expected to be a string of CSS declarations
+        // Just set the whole style attribute once
         result.code.create.push(`${variableName}.setAttribute('style', '${attr.value}')`);
     } else if (mode === "DYNAMIC") {
+        // Dynamic style: attr.value can be string, object, or array
+        // We'll generate code to update styles individually
+
+        // The dynamic value is expected to be a JS expression (variable or object/array literal)
         const styleVar = attr.value;
+
+        // Generate code that:
+        // - clears previous inline styles
+        // - iterates over the style declarations and sets/removes styles accordingly
+
+        // We'll generate code that handles three cases:
+        // 1. If styleVar is a string: parse by ';' and split by ':'
+        // 2. If styleVar is an array: iterate and split each item by ':'
+        // 3. If styleVar is an object: iterate keys and values
+
+        // To keep it simple, generate a helper function in update code:
+
+        //@TODO - See all formats and adapt the code
         result.code.update.push(`
             (function() {
                 const el = ${variableName};
+                // Clear all previous inline styles
                 el.style.cssText = '';
                 const styleVal = ${styleVar};
                 if (typeof styleVal === 'string') {
@@ -1197,14 +1466,17 @@ function handleStyleAttr(attr, mode, result, variableName) {
                 }
             })()
         `);
+        //result.code.create.push(`${reactiveFnName}()`)
     }
 }
 
 export function extract_relevant_js_parts_evaluated_to_string(code, result) {
 
     let ast = parseCode(code)
+    // console.log(inspect(ast, { depth: null, colors: true }))
     let usedVars = new Set()
 
+    //ExpressionStatement
     estreewalker.walk(ast.body, {
         enter(node) {
             if (node.type === 'Identifier' && node.name) {
@@ -1217,6 +1489,8 @@ export function extract_relevant_js_parts_evaluated_to_string(code, result) {
     })
 
     return usedVars
+
+    //console.log(inspect(ast, { depth: null, colors: true }))
 }
 
 function extract_relevant_js_parts_evaluated_to_boolean(code, result) {
@@ -1227,17 +1501,18 @@ function extract_relevant_js_parts_evaluated_to_boolean(code, result) {
 function generateCtx(scripts, analysis) {
     return ''
     return `function ctx(){
-        ${Array.from(analysis.undeclared_variables).map((v) => `let ${v};`).join("\n")}
+        ${Array.from(analysis.undeclared_variables).map((v) => `let ${v};`).join('\n')}
         ${scripts.map(script => escodegen.generate(script.children))}
 
-        return [${[...analysis.declared_variables, ...analysis.undeclared_variables].filter(x => x).join(",	")}]
+        return [${[...analysis.declared_variables, ...analysis.undeclared_variables].filter(x => x).join(",")}]
     }
     `
 }
 
+//context="module"
 function generate4Web(scripts, styles, analysis) {
     let dev_only_code = '';
-    let dev_mount_code = '';
+    let dev_export_code = '';
     if (setup.dev_version) {
         dev_only_code = `
     if (!window.$$getInternals) {
@@ -1258,31 +1533,31 @@ function generate4Web(scripts, styles, analysis) {
         };
     }
     `;
-        dev_mount_code = `
+        dev_export_code = `
         const internalVars = {
             $$_dependencyTree,
             $$_changes,
             $$_TARGET,
             $$_mounted,
             $$_updating,
-            ${[...analysis.declared_variables, ...analysis.undeclared_variables].join(",	")}
+            ${[...analysis.declared_variables, ...analysis.undeclared_variables].join(",")}
         };
         if ($$_TARGET) {
             $$_TARGET.__extHTML_internals__ = internalVars;
         }
-        `;
+    `;
     }
 
-    const dom_imports = Array.from(analysis.code.internal_import).filter(name => name !== 'keyed');
-    const keyed_import = analysis.code.internal_import.has('keyed')
-        ? `import { keyed as $$_keyed } from 'exthtml/src/runtime/keyed.js';`
-        : '';
+    const dom_imports = Array.from(analysis.code.internal_import).filter(name => name !== 'reconcile');
+    const reconcile_import = analysis.code.internal_import.has('reconcile');
 
     return `${setup.BANNER}
     ${dev_only_code}
-    ${keyed_import}
     ${dom_imports.length > 0
             ? `import {${dom_imports.map(name => `${name} as $$_${name}`).join(", ")}} from 'exthtml/src/runtime/dom.js';`
+            : ""}
+    ${reconcile_import 
+            ? `import { reconcile as $$_reconcile } from 'exthtml/src/runtime/for.js';`
             : ""}
     import {setReactive as $$_setReactive, checkReactive as $$_checkReactive, update as $$_update} from 'exthtml/src/runtime/reactive2.js';
     import { DependencyTree as $$_DependencyTree } from 'exthtml/src/compiler/internals/variable.js';
@@ -1293,7 +1568,7 @@ function generate4Web(scripts, styles, analysis) {
 
     export default function(){
         ${analysis.code.elems.length > 0 ? `let ${analysis.code.elems.join(',')};` : ''}
-
+        ${analysis.code.component_scope_vars.join(';\n')}
         let $$_TARGET = null
         let $$_dependencyTree = new $$_DependencyTree();
         let $$_depVar = null;
@@ -1309,7 +1584,7 @@ function generate4Web(scripts, styles, analysis) {
             }
         }
 
-        ${analysis.code.internal_import.has('setDepTree') ? ` $$_setDepTree($$_dependencyTree);` : ""}
+        ${analysis.code.internal_import.has('setDepTree') ? `$$_setDepTree($$_dependencyTree);` : ""}
 
         ${scripts.filter(script => !script.attrs.some(attr => attr.name === 'context' && attr.value === 'module')).map(script => escodegen.generate(script.children) + '\n').join('')}
 
@@ -1327,7 +1602,7 @@ function generate4Web(scripts, styles, analysis) {
                 $$_TARGET = TARGET
                 this.create();
                 ${analysis.code.mount.join(';\n')};
-                ${dev_mount_code}
+                ${dev_export_code}
                 $$_mounted = true;
             },
             update() {
@@ -1344,12 +1619,13 @@ function generate4Web(scripts, styles, analysis) {
                 ${analysis.code.destroy.join(';\n')};
             },
             capture_state(){
-                return { ${[...analysis.declared_variables, ...analysis.undeclared_variables].join(",	")} };
+                return { ${[...analysis.declared_variables, ...analysis.undeclared_variables].join(",")} };
             }
         }
         return $$_lifecycle;
     }`
 }
+
 function generate4React(scripts, styles, analysis) {
 
 }
@@ -1389,6 +1665,7 @@ function print_nodes(ast, indent = 0) {
     ast.forEach(node => {
         node_print = { ...node, children: undefined }
         console.log(indentStr + JSON.stringify(node_print, null, indentStr.replace("\t", "    ")))
+        // If node has children, recursively print them with increased indent
         if (node.children && node.children.length > 0) {
             printNodes(node.children, indent + 1);
         }

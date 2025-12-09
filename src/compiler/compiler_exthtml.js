@@ -884,6 +884,8 @@ function traverseExthtml(exthtml, result, parent_nm, anchor_nm = null) {
                         code: { ...result.code, create: [], mount: [], update: [], destroy: [], elems: [] }
                     };
                     result_for_block.declared_variables.add(itemVar);
+                    let depVar = result.dependencyTree.get(itemVar);
+                    depVar.declarationType = 'let';
                     if (indexVar) result_for_block.declared_variables.add(indexVar);
 
                     const fragmentName = `${variableName}_fragment`;

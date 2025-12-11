@@ -53,7 +53,6 @@ export function reconcileReactive(parent, oldList, newList, getKey, createNode, 
   if (newLen === 0) {
     for (let i = 0; i < oldLen; i++) {
       old[i].dispose();
-      parent.removeChild(old[i].node);
     }
     return [];
   }
@@ -90,7 +89,6 @@ export function reconcileReactive(parent, oldList, newList, getKey, createNode, 
   if (start > endNew) {
     while (start <= endOld) {
       old[start].dispose();
-      parent.removeChild(old[start].node);
       start++;
     }
     return newItems;
@@ -126,7 +124,6 @@ export function reconcileReactive(parent, oldList, newList, getKey, createNode, 
       toNewIndex[i - start] = idx;
     } else {
       rec.dispose();
-      parent.removeChild(rec.node);
     }
   }
 

@@ -782,173 +782,117 @@ function traverseExthtml(exthtml, result, parent_nm, anchor_nm = null) {
 
                 return;
 
-            case 'VirtualIF':
-                variableName = getVariableName(exthtml)
-                result.code.internal_import.add("el")
-                result.code.internal_import.add("append")
-                result.code.internal_import.add("detach")
-                result.code.internal_import.add("comment")
+            case 'VirtualFOR':
+                variableName = getVariableName(exthtml);
+                result.code.internal_import.add("reconcileReactive");
+                result.code.internal_import.add("comment");
+                result.code.internal_import.add("append");
+                result.code.internal_import.add("detach");
+                result.code.internal_import.add("el");
+                result.code.internal_import.add("text");
 
-                reactiveFnName = `${variableName}__ifBlock`
-                variableNameAnchor = `${variableName}__anchor`
-                result.code.elems.push(variableNameAnchor)
-                if (setup.dev_version) result.code.create.push(`/* VirtualIF: ${variableName} */`);
-                result.code.create.push(`${variableNameAnchor} = $$_comment('${variableName}')`)
-                if (setup.dev_version) result.code.mount.push(`/* ${exthtml.type}: ${exthtml.value} */`);
-                result.code.mount.push(`$$_append(${parent_nm},${variableNameAnchor},${anchor_nm})`)
+                reactiveFnName = `${variableName}__forBlock`;
+                variableNameAnchor = `${variableName}__anchor`;
+                
+                const forExpression = JSON.parse(exthtml.value);
+                const forExpressionVar = forExpression.collection;
+                const itemVar = forExpression.item;
+                const indexVar = forExpression.index;
 
-
-                usedVars = extract_relevant_js_parts_evaluated_to_string(exthtml.value, result)
+                // 1. Setup anchor, state, and dependency
+                result.code.elems.push(variableNameAnchor);
+                result.code.component_scope_vars.push(`let ${variableName}_old_items = [];`);
+                
+                if (setup.dev_version) result.code.create.push(`/* VirtualFOR: ${variableName} */`);
+                result.code.create.push(`${variableNameAnchor} = $$_comment('${variableName}');`);
+                result.code.mount.push(`$$_append(${parent_nm}, ${variableNameAnchor}, ${anchor_nm || 'null'});`);
+                
+                usedVars = extract_relevant_js_parts_evaluated_to_string(forExpressionVar, result);
                 for (const v of usedVars) {
-                    let depVar = result.dependencyTree.get(v)
-                    depVar.dependents.directives.add(reactiveFnName)
+                    let depVar = result.dependencyTree.get(v);
+                    depVar.dependents.directives.add(reactiveFnName);
                 }
 
-                let result_if_block = {
-                    ...result, // shallow copy of top-level properties (still referencing same Sets, objects, etc.)
-                    code: {
-                        ...result.code, // shallow copy of result.code
-                        create: [],     // override only these four
-                        mount: [],
-                        update: [],
-                        destroy: []
-                    }
+                // 2. Generate the createNode function
+                let result_for_block = {
+                    ...result,
+                    declared_variables: new Set(result.declared_variables),
+                    code: { ...result.code, create: [], mount: [], update: [], destroy: [], elems: [] }
                 };
-
-                exthtml.children.forEach(node => traverseExthtml(node, result_if_block, parent_nm, variableNameAnchor))
-
-                result.code.reactives.push(`
-                function ${reactiveFnName}_create(){
-                    ${result_if_block.code.create.join(';\n')};
+                result_for_block.declared_variables.add(itemVar);
+                let depVar = result.dependencyTree.get(itemVar);
+                depVar.declarationType = 'let';
+                if (indexVar) {
+                    result_for_block.declared_variables.add(indexVar);
+                    let indexDepVar = result.dependencyTree.get(indexVar);
+                    indexDepVar.declarationType = 'let';
                 }
-                function ${reactiveFnName}_mount(){
-                    ${result_if_block.code.mount.join(';\n')};
-                }
-                function ${reactiveFnName}_destroy(){
-                    ${result_if_block.code.destroy.join(';\n')};
-                }
-                function ${reactiveFnName}(){
-                    if(${exthtml.value}){
-                        ${reactiveFnName}_create();
-                        ${reactiveFnName}_mount();
-                    } else {
-                        ${reactiveFnName}_destroy();
-                    }
-                }`)
 
-                if (setup.dev_version) result.code.mount.push(`/* ${exthtml.type}: ${exthtml.value} */`);
-                result.code.mount.push(`${reactiveFnName}()`)
-                if (setup.dev_version) result.code.destroy.push(`/* ${exthtml.type}: ${exthtml.value} */`);
-                // detach the anchor variable (not the virtual if name)
-                result.code.destroy.push(`$$_detach(${variableNameAnchor})`)
+                const fragmentName = `${variableName}_fragment`;
+                exthtml.children.forEach(node => traverseExthtml(node, result_for_block, fragmentName, null));
 
+                const createNodeFnName = `${variableName}_createNode`;
+                const createNodeCode = `
+                function ${createNodeFnName}(${itemVar}${indexVar ? `, ${indexVar}` : ''}) {
+                    let ${result_for_block.code.elems.join(',')};
+                    const ${fragmentName} = document.createDocumentFragment();
 
-                //console.log(inspect(exthtml, { depth: null, colors: true }));
-                return
-                case 'VirtualFOR':
-                    variableName = getVariableName(exthtml);
-                    result.code.internal_import.add("reconcile");
-                    result.code.internal_import.add("comment");
-                    result.code.internal_import.add("append");
-                    result.code.internal_import.add("detach");
-                    result.code.internal_import.add("el");
-                    result.code.internal_import.add("text");
-
-                    reactiveFnName = `${variableName}__forBlock`;
-                    variableNameAnchor = `${variableName}__anchor`;
+                    ${result_for_block.code.create.join(';\n')};
+                    ${result_for_block.code.mount.join(';\n')};
                     
-                    const forExpression = JSON.parse(exthtml.value);
-                    const forExpressionVar = forExpression.collection;
-                    const itemVar = forExpression.item;
-                    const indexVar = forExpression.index;
-
-                    // 1. Setup anchor, state, and dependency
-                    result.code.elems.push(variableNameAnchor);
-                    // This state needs to be part of the component instance, not global. Let's add it to the component function scope.
-                    result.code.component_scope_vars.push(`let ${variableName}_old_items = [];`);
+                    const node = ${fragmentName}.firstChild; 
                     
-                    if (setup.dev_version) result.code.create.push(`/* VirtualFOR: ${variableName} */`);
-                    result.code.create.push(`${variableNameAnchor} = $$_comment('${variableName}');`);
-                    result.code.mount.push(`$$_append(${parent_nm}, ${variableNameAnchor}, ${anchor_nm || 'null'});`);
-                    
-                    usedVars = extract_relevant_js_parts_evaluated_to_string(forExpressionVar, result);
-                    for (const v of usedVars) {
-                        let depVar = result.dependencyTree.get(v);
-                        depVar.dependents.directives.add(reactiveFnName);
-                    }
-
-                    // 2. Generate the createNode function
-                    let result_for_block = {
-                        ...result,
-                        declared_variables: new Set(result.declared_variables),
-                        code: { ...result.code, create: [], mount: [], update: [], destroy: [], elems: [] }
+                    const dispose = () => {
+                        ${result_for_block.code.destroy.join(';\n')};
                     };
-                    result_for_block.declared_variables.add(itemVar);
-                    let depVar = result.dependencyTree.get(itemVar);
-                    depVar.declarationType = 'let';
-                    if (indexVar) result_for_block.declared_variables.add(indexVar);
-
-                    const fragmentName = `${variableName}_fragment`;
-                    exthtml.children.forEach(node => traverseExthtml(node, result_for_block, fragmentName, null));
-
-                    const createNodeFnName = `${variableName}_createNode`;
-                    const createNodeCode = `
-                    function ${createNodeFnName}(${itemVar}) {
-                        ${indexVar ? `let ${indexVar};` : ''}
-                        let ${result_for_block.code.elems.join(',')};
-                        const ${fragmentName} = document.createDocumentFragment();
-
-                        ${result_for_block.code.create.join(';\n')};
-                        ${result_for_block.code.mount.join(';\n')};
-                        
-                        // The \`_node\` property will be the first child of the fragment, which must be the single root element.
-                        return ${fragmentName}.firstChild;
-                    }
-                    `;
-
-                    // 3. Generate the main reactive function
-                    const reactiveCode = `
-                    ${createNodeCode}
-                    function ${reactiveFnName}() {
-                        const new_items = ${forExpressionVar};
-                        
-                        const getKey = (item) => item; // Default keying
-                        const getNode = (item) => item._node;
-
-                        ${variableName}_old_items = $$_reconcile(
-                            ${variableNameAnchor}.parentNode,
-                            ${variableName}_old_items,
-                            new_items,
-                            getKey,
-                            ${createNodeFnName},
-                            getNode
-                        );
-                    }
-                    `;
                     
-                    result.code.reactives.push(reactiveCode);
+                    return { node, dispose };
+                }
+                `;
+
+                // 3. Generate the main reactive function
+                const reactiveCode = `
+                ${createNodeCode}
+                function ${reactiveFnName}() {
+                    const new_items = ${forExpressionVar};
                     
-                    if (setup.dev_version) result.code.mount.push(`/* ${exthtml.type}: ${exthtml.value} */`);
-                    result.code.mount.push(`${reactiveFnName}();`);
-                    if (setup.dev_version) result.code.destroy.push(`/* ${exthtml.type}: ${exthtml.value} */`);
-                    // When the component is destroyed, we need to remove all items from the list.
-                    // We can do this by reconciling with an empty list.
-                    result.code.destroy.push(`
-                        $$_reconcile(
+                    const getKey = (item) => item.id ?? item;
+
+                    ${variableName}_old_items = $$_reconcileReactive(
+                        ${variableNameAnchor}.parentNode,
+                        ${variableName}_old_items,
+                        new_items,
+                        getKey,
+                        ${createNodeFnName},
+                        ${variableNameAnchor}
+                    );
+                }
+                `;
+                
+                result.code.reactives.push(reactiveCode);
+                
+                if (setup.dev_version) result.code.mount.push(`/* ${exthtml.type}: ${exthtml.value} */`);
+                result.code.mount.push(`${reactiveFnName}();`);
+                if (setup.dev_version) result.code.destroy.push(`/* ${exthtml.type}: ${exthtml.value} */`);
+
+                result.code.destroy.push(`
+                    if (${variableName}_old_items.length) {
+                        $$_reconcileReactive(
                             ${variableNameAnchor}.parentNode,
                             ${variableName}_old_items,
                             [],
-                            (item) => item,
+                            (item) => item.id ?? item,
                             () => {},
-                            (item) => item._node
+                            ${variableNameAnchor}
                         );
-                    `);
-                    result.code.destroy.push(`$$_detach(${variableNameAnchor});`);
-                    return;
-
+                    }
+                `);
+                result.code.destroy.push(`$$_detach(${variableNameAnchor});`);
+                return;
             default:
                 throw Error(`${traverseExthtml.name} Error on unexpected type equal ${exthtml.type} and value ${exthtml.value} at line ${exthtml.location.line}`)
         }
+
 
         result.code.internal_import.add("el")
         result.code.internal_import.add("append")
@@ -1550,17 +1494,17 @@ function generate4Web(scripts, styles, analysis) {
     `;
     }
 
-    const dom_imports = Array.from(analysis.code.internal_import).filter(name => name !== 'reconcile');
-    const reconcile_import = analysis.code.internal_import.has('reconcile');
+    const dom_imports = Array.from(analysis.code.internal_import).filter(name => name !== 'reconcileReactive');
+    const reconcile_reactive_import = analysis.code.internal_import.has('reconcileReactive');
 
     return `${setup.BANNER}
     ${dev_only_code}
     ${dom_imports.length > 0
             ? `import {${dom_imports.map(name => `${name} as $$_${name}`).join(", ")}} from 'exthtml/src/runtime/dom.js';`
             : ""}
-    ${reconcile_import 
-            ? `import { reconcile as $$_reconcile } from 'exthtml/src/runtime/for.js';`
-            : ""}
+    ${reconcile_reactive_import 
+        ? `import { reconcileReactive as $$_reconcileReactive } from 'exthtml/src/runtime/for2.js';`
+        : ""}
     import {setReactive as $$_setReactive, checkReactive as $$_checkReactive, update as $$_update} from 'exthtml/src/runtime/reactive2.js';
     import { DependencyTree as $$_DependencyTree } from 'exthtml/src/compiler/internals/variable.js';
     ${analysis.code.imports.join(";\n")};

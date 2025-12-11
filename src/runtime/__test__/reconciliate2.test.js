@@ -66,6 +66,28 @@ function getPrimitiveKey(item) {
   return item;
 }
 
+// New helper functions for mixed arrays
+function getMixedKey(item) {
+  if (typeof item === 'object' && item !== null && 'id' in item) {
+    return item.id;
+  }
+  return item; // Primitive type
+}
+
+function makeMixedNode(item) {
+  if (typeof item === 'object' && item !== null && 'id' in item) {
+    return { id: item.id };
+  }
+  return { id: item }; // Primitive type
+}
+
+function createMixedNodeFactory() {
+  return jest.fn(item => {
+    const node = makeMixedNode(item);
+    return { node, dispose: jest.fn() };
+  });
+}
+
 
 describe("reconcileReactive()", () => {
     
@@ -321,5 +343,125 @@ describe("reconcileReactive()", () => {
       expect(structuredOldItems[1].dispose).not.toHaveBeenCalled();
       expect(structuredOldItems[3].dispose).not.toHaveBeenCalled();
     });
+  });
+});
+
+describe("reconcileReactive() with mixed arrays", () => {
+  test("append new items (old empty) with mixed types", () => {
+    const parent = makeParent();
+    const oldItems = [];
+    const newItems = [{ id: 1 }, 'B', { id: 3 }, 'D'];
+
+    const createNode = createMixedNodeFactory();
+
+    const result = reconcileReactive(parent, oldItems, newItems, getMixedKey, createNode);
+
+    expect(parent.children.map(n => n.id)).toEqual([1, 'B', 3, 'D']);
+    expect(result.map(r => r.key)).toEqual([1, 'B', 3, 'D']);
+    expect(result.map(r => r.node.id)).toEqual([1, 'B', 3, 'D']);
+  });
+
+  test("remove old items (new empty) with mixed types", () => {
+    const parent = makeParent();
+    const initialOldItems = [{ id: 1 }, 'B', { id: 3 }];
+    const createNode = createMixedNodeFactory();
+
+    const structuredOldItems = initialOldItems.map(item => {
+      const rec = createNode(item);
+      parent.children.push(rec.node);
+      return { key: getMixedKey(item), node: rec.node, dispose: rec.dispose };
+    });
+
+    const newItems = [];
+    
+    const result = reconcileReactive(parent, structuredOldItems, newItems, getMixedKey, createNode);
+
+    expect(parent.children).toEqual([]);
+    expect(result).toEqual([]);
+    structuredOldItems.forEach(item => expect(item.dispose).toHaveBeenCalled());
+  });
+
+  test("move items (D → A → B) with mixed types", () => {
+    const parent = makeParent();
+    const initialOldItems = ['A', { id: 2 }, 'C', 'D'];
+    const createNode = createMixedNodeFactory();
+
+    const structuredOldItems = initialOldItems.map(item => {
+      const rec = createNode(item);
+      parent.children.push(rec.node);
+      return { key: getMixedKey(item), node: rec.node, dispose: rec.dispose };
+    });
+
+    const newItems = ['D', 'A', { id: 2 }, 'C'];
+    createNode.mockClear();
+
+    const result = reconcileReactive(parent, structuredOldItems, newItems, getMixedKey, createNode);
+
+    expect(parent.children.map(n => n.id)).toEqual(['D', 'A', 2, 'C']);
+    expect(createNode).not.toHaveBeenCalled(); 
+
+    expect(parent.children[0]).toBe(structuredOldItems[3].node); // 'D' should be reused
+    expect(parent.children[1]).toBe(structuredOldItems[0].node); // 'A' should be reused
+    expect(parent.children[2]).toBe(structuredOldItems[1].node); // {id:2} should be reused
+    expect(parent.children[3]).toBe(structuredOldItems[2].node); // 'C' should be reused
+    
+    structuredOldItems.forEach(item => expect(item.dispose).not.toHaveBeenCalled());
+  });
+
+  test("insert, move, remove mixed with mixed types", () => {
+    const parent = makeParent();
+    const initialOldItems = [{ id: 1 }, 'B', { id: 3 }];
+    const createNode = createMixedNodeFactory();
+
+    const structuredOldItems = initialOldItems.map(item => {
+      const rec = createNode(item);
+      parent.children.push(rec.node);
+      return { key: getMixedKey(item), node: rec.node, dispose: rec.dispose };
+    });
+
+    const newItems = ['B', { id: 4 }, { id: 1 }]; // {id:4} is new, {id:3} is removed
+    createNode.mockClear();
+
+    const result = reconcileReactive(parent, structuredOldItems, newItems, getMixedKey, createNode);
+
+    expect(parent.children.map(n => n.id)).toEqual(['B', 4, 1]);
+    expect(result.map(r => r.node.id)).toEqual(['B', 4, 1]);
+
+    expect(result.find(r => r.key === 4).dispose).not.toHaveBeenCalled(); // new node dispose should not be called
+
+    expect(structuredOldItems[2].dispose).toHaveBeenCalledTimes(1); // Old item {id:3} should have its dispose called
+    
+    expect(structuredOldItems[0].dispose).not.toHaveBeenCalled();
+    expect(structuredOldItems[1].dispose).not.toHaveBeenCalled();
+  });
+
+  test("common prefix + suffix fast paths with mixed types", () => {
+    const parent = makeParent();
+    const initialOldItems = [{ id: 1 }, 'B', { id: 3 }, 'D'];
+    const createNode = createMixedNodeFactory();
+
+    const structuredOldItems = initialOldItems.map(item => {
+      const rec = createNode(item);
+      parent.children.push(rec.node);
+      return { key: getMixedKey(item), node: rec.node, dispose: rec.dispose };
+    });
+
+    const newItems = [{ id: 1 }, 'B', { id: 5 }, 'D']; // {id:5} is new, {id:3} is removed
+    createNode.mockClear();
+
+    const result = reconcileReactive(parent, structuredOldItems, newItems, getMixedKey, createNode);
+
+    expect(parent.children.map(n => n.id)).toEqual([1, 'B', 5, 'D']);
+    expect(result.map(r => r.node.id)).toEqual([1, 'B', 5, 'D']);
+
+    expect(parent.children[0]).toBe(structuredOldItems[0].node);
+    expect(parent.children[1]).toBe(structuredOldItems[1].node);
+    expect(parent.children[3]).toBe(structuredOldItems[3].node);
+
+    expect(structuredOldItems[2].dispose).toHaveBeenCalledTimes(1); // Old item {id:3} should have its dispose called
+
+    expect(structuredOldItems[0].dispose).not.toHaveBeenCalled();
+    expect(structuredOldItems[1].dispose).not.toHaveBeenCalled();
+    expect(structuredOldItems[3].dispose).not.toHaveBeenCalled();
   });
 });

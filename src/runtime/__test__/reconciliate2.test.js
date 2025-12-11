@@ -464,4 +464,30 @@ describe("reconcileReactive() with mixed arrays", () => {
     expect(structuredOldItems[1].dispose).not.toHaveBeenCalled();
     expect(structuredOldItems[3].dispose).not.toHaveBeenCalled();
   });
+
+  test("insert, move, remove with numbers, booleans, and objects", () => {
+    const parent = makeParent();
+    const initialOldItems = [{ id: 1 }, true, 3, 'D', false];
+    const createNode = createMixedNodeFactory();
+
+    const structuredOldItems = initialOldItems.map(item => {
+      const rec = createNode(item);
+      parent.children.push(rec.node);
+      return { key: getMixedKey(item), node: rec.node, dispose: rec.dispose };
+    });
+
+    const newItems = [true, { id: 1 }, 'E', 3, false]; // 'E' is new, 'D' is removed
+    createNode.mockClear();
+
+    const result = reconcileReactive(parent, structuredOldItems, newItems, getMixedKey, createNode);
+
+    expect(parent.children.map(n => n.id)).toEqual([true, 1, 'E', 3, false]);
+    expect(result.map(r => r.node.id)).toEqual([true, 1, 'E', 3, false]);
+
+    expect(createNode).toHaveBeenCalledTimes(1);
+    expect(createNode).toHaveBeenCalledWith('E');
+
+    const removedItem = structuredOldItems.find(item => item.key === 'D');
+    expect(removedItem.dispose).toHaveBeenCalledTimes(1);
+  });
 });

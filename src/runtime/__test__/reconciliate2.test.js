@@ -44,10 +44,17 @@ function getKey(item) {
 // }
 
 // FIXED: no parent.children.push() here!
-function createNodeFactory() { // parent is not strictly needed here
+function createNodeFactory(parent) { // parent is not strictly needed here
   return jest.fn(item => {
     const node = makeNode(item);
-    return { node, dispose: jest.fn() };
+    const dispose = jest.fn(() => {
+        // Simulate detach: remove node from parent's children array
+        const idx = parent.children.indexOf(node);
+        if (idx !== -1) {
+          parent.children.splice(idx, 1);
+        }
+      });
+    return { node, dispose };
   });
 }
 // Helper functions for primitive arrays (strings, numbers)
@@ -55,10 +62,16 @@ function makePrimitiveNode(item) {
   return { id: item }; // Use item itself as ID for testing assertions
 }
 
-function createPrimitiveNodeFactory() { // Parent is not strictly needed for primitive node creation
+function createPrimitiveNodeFactory(parent) { // Parent is not strictly needed for primitive node creation
     return jest.fn(item => {
         const node = makePrimitiveNode(item);
-        return { node, dispose: jest.fn() };
+        const dispose = jest.fn(() => {
+            const idx = parent.children.indexOf(node);
+            if (idx !== -1) {
+              parent.children.splice(idx, 1);
+            }
+          });
+        return { node, dispose };
     });
 }
 
@@ -81,10 +94,16 @@ function makeMixedNode(item) {
   return { id: item }; // Primitive type
 }
 
-function createMixedNodeFactory() {
+function createMixedNodeFactory(parent) {
   return jest.fn(item => {
     const node = makeMixedNode(item);
-    return { node, dispose: jest.fn() };
+    const dispose = jest.fn(() => {
+        const idx = parent.children.indexOf(node);
+        if (idx !== -1) {
+          parent.children.splice(idx, 1);
+        }
+      });
+    return { node, dispose };
   });
 }
 
@@ -98,7 +117,7 @@ describe("reconcileReactive()", () => {
     const oldItems = []; // reconcileReactive expects structured oldList, but empty is fine
     const newItems = [{ id: 1 }, { id: 2 }, { id: 3 }];
 
-    const createNode = createNodeFactory(); // Adapted to return {node, dispose}
+    const createNode = createNodeFactory(parent); // Adapted to return {node, dispose}
 
     const result = reconcileReactive(parent, oldItems, newItems, getKey, createNode);
 
@@ -111,7 +130,7 @@ describe("reconcileReactive()", () => {
     const parent = makeParent();
 
     const initialOldItems = [{ id: 1 }, { id: 2 }];
-    const createNode = createNodeFactory(); // To get nodes for initial setup
+    const createNode = createNodeFactory(parent); // To get nodes for initial setup
 
     // Manually create the structured oldList that reconcileReactive expects
     const structuredOldItems = initialOldItems.map(item => {
@@ -133,7 +152,7 @@ describe("reconcileReactive()", () => {
     const parent = makeParent();
 
     const initialOldItems = [{ id: 1 }, { id: 2 }, { id: 3 }];
-    const createNode = createNodeFactory();
+    const createNode = createNodeFactory(parent);
 
     const structuredOldItems = initialOldItems.map(item => {
       const rec = createNode(item);
@@ -163,7 +182,7 @@ describe("reconcileReactive()", () => {
     const parent = makeParent();
 
     const initialOldItems = [{ id: 1 }, { id: 2 }, { id: 3 }];
-    const createNode = createNodeFactory();
+    const createNode = createNodeFactory(parent);
 
     const structuredOldItems = initialOldItems.map(item => {
       const rec = createNode(item);
@@ -192,7 +211,7 @@ describe("reconcileReactive()", () => {
     const parent = makeParent();
 
     const initialOldItems = [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }];
-    const createNode = createNodeFactory();
+    const createNode = createNodeFactory(parent);
 
     const structuredOldItems = initialOldItems.map(item => {
       const rec = createNode(item);
@@ -228,7 +247,7 @@ describe("reconcileReactive()", () => {
       const oldItems = [];
       const newItems = ['A', 'B', 'C'];
 
-      const createNode = createPrimitiveNodeFactory();
+      const createNode = createPrimitiveNodeFactory(parent);
 
       const result = reconcileReactive(parent, oldItems, newItems, getPrimitiveKey, createNode);
 
@@ -240,7 +259,7 @@ describe("reconcileReactive()", () => {
     test("remove old items (new empty) with strings", () => {
       const parent = makeParent();
       const initialOldItems = ['A', 'B'];
-      const createNode = createPrimitiveNodeFactory();
+      const createNode = createPrimitiveNodeFactory(parent);
 
       const structuredOldItems = initialOldItems.map(item => {
         const rec = createNode(item);
@@ -260,7 +279,7 @@ describe("reconcileReactive()", () => {
     test("move items (C → A → B) with strings", () => {
       const parent = makeParent();
       const initialOldItems = ['A', 'B', 'C'];
-      const createNode = createPrimitiveNodeFactory();
+      const createNode = createPrimitiveNodeFactory(parent);
 
       const structuredOldItems = initialOldItems.map(item => {
         const rec = createNode(item);
@@ -288,7 +307,7 @@ describe("reconcileReactive()", () => {
     test("insert, move, remove mixed with strings", () => {
       const parent = makeParent();
       const initialOldItems = ['A', 'B', 'C'];
-      const createNode = createPrimitiveNodeFactory();
+      const createNode = createPrimitiveNodeFactory(parent);
 
       const structuredOldItems = initialOldItems.map(item => {
         const rec = createNode(item);
@@ -304,6 +323,8 @@ describe("reconcileReactive()", () => {
       expect(parent.children.map(n => n.id)).toEqual(['B', 'D', 'A']);
       expect(result.map(r => r.node.id)).toEqual(['B', 'D', 'A']);
 
+      expect(result.find(r => r.key === 'D').dispose).not.toHaveBeenCalled(); // new node dispose should not be called
+
       // Old item 'C' should have its dispose called
       expect(structuredOldItems[2].dispose).toHaveBeenCalledTimes(1);
       
@@ -315,7 +336,7 @@ describe("reconcileReactive()", () => {
     test("common prefix + suffix fast paths with strings", () => {
       const parent = makeParent();
       const initialOldItems = ['A', 'B', 'C', 'D'];
-      const createNode = createPrimitiveNodeFactory();
+      const createNode = createPrimitiveNodeFactory(parent);
 
       const structuredOldItems = initialOldItems.map(item => {
         const rec = createNode(item);
@@ -352,7 +373,7 @@ describe("reconcileReactive() with mixed arrays", () => {
     const oldItems = [];
     const newItems = [{ id: 1 }, 'B', { id: 3 }, 'D'];
 
-    const createNode = createMixedNodeFactory();
+    const createNode = createMixedNodeFactory(parent);
 
     const result = reconcileReactive(parent, oldItems, newItems, getMixedKey, createNode);
 
@@ -364,7 +385,7 @@ describe("reconcileReactive() with mixed arrays", () => {
   test("remove old items (new empty) with mixed types", () => {
     const parent = makeParent();
     const initialOldItems = [{ id: 1 }, 'B', { id: 3 }];
-    const createNode = createMixedNodeFactory();
+    const createNode = createMixedNodeFactory(parent);
 
     const structuredOldItems = initialOldItems.map(item => {
       const rec = createNode(item);
@@ -384,7 +405,7 @@ describe("reconcileReactive() with mixed arrays", () => {
   test("move items (D → A → B) with mixed types", () => {
     const parent = makeParent();
     const initialOldItems = ['A', { id: 2 }, 'C', 'D'];
-    const createNode = createMixedNodeFactory();
+    const createNode = createMixedNodeFactory(parent);
 
     const structuredOldItems = initialOldItems.map(item => {
       const rec = createNode(item);
@@ -411,7 +432,7 @@ describe("reconcileReactive() with mixed arrays", () => {
   test("insert, move, remove mixed with mixed types", () => {
     const parent = makeParent();
     const initialOldItems = [{ id: 1 }, 'B', { id: 3 }];
-    const createNode = createMixedNodeFactory();
+    const createNode = createMixedNodeFactory(parent);
 
     const structuredOldItems = initialOldItems.map(item => {
       const rec = createNode(item);
@@ -438,7 +459,7 @@ describe("reconcileReactive() with mixed arrays", () => {
   test("common prefix + suffix fast paths with mixed types", () => {
     const parent = makeParent();
     const initialOldItems = [{ id: 1 }, 'B', { id: 3 }, 'D'];
-    const createNode = createMixedNodeFactory();
+    const createNode = createMixedNodeFactory(parent);
 
     const structuredOldItems = initialOldItems.map(item => {
       const rec = createNode(item);
@@ -468,7 +489,7 @@ describe("reconcileReactive() with mixed arrays", () => {
   test("insert, move, remove with numbers, booleans, and objects", () => {
     const parent = makeParent();
     const initialOldItems = [{ id: 1 }, true, 3, 'D', false];
-    const createNode = createMixedNodeFactory();
+    const createNode = createMixedNodeFactory(parent);
 
     const structuredOldItems = initialOldItems.map(item => {
       const rec = createNode(item);

@@ -96,12 +96,12 @@ export function reconcileReactive(parent, oldList, newList, getKey, createNode, 
 
   // 4. No old remaining — pure insertion
   if (start > endOld) {
-    const ref = endNew + 1 < newLen ? newItems[endNew + 1].node : before;
     for (let i = endNew; i >= start; i--) {
       const rec = createNode(newItems[i].value);
       newItems[i].node = rec.node;
       newItems[i].dispose = rec.dispose;
-      parent.insertBefore(rec.node, ref);
+      const currentRef = (i + 1 < newLen) ? newItems[i+1].node : before; // Dynamic ref
+      parent.insertBefore(rec.node, currentRef);
     }
     return newItems;
   }

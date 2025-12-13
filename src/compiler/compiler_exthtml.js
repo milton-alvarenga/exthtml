@@ -782,6 +782,71 @@ function traverseExthtml(exthtml, result, parent_nm, anchor_nm = null) {
 
                 return;
 
+            case 'VirtualIF':
+                variableName = getVariableName(exthtml)
+                result.code.internal_import.add("el")
+                result.code.internal_import.add("append")
+                result.code.internal_import.add("detach")
+                result.code.internal_import.add("comment")
+
+                reactiveFnName = `${variableName}__ifBlock`
+                variableNameAnchor = `${variableName}__anchor`
+                result.code.elems.push(variableNameAnchor)
+                if (setup.dev_version) result.code.create.push(`/* VirtualIF: ${variableName} */`);
+                result.code.create.push(`${variableNameAnchor} = $$_comment('${variableName}')`)
+                if (setup.dev_version) result.code.mount.push(`/* ${exthtml.type}: ${exthtml.value} */`);
+                result.code.mount.push(`$$_append(${parent_nm},${variableNameAnchor},${anchor_nm})`)
+
+
+                usedVars = extract_relevant_js_parts_evaluated_to_string(exthtml.value, result)
+                for (const v of usedVars) {
+                    let depVar = result.dependencyTree.get(v)
+                    depVar.dependents.directives.add(reactiveFnName)
+                }
+
+                let result_if_block = {
+                    ...result, // shallow copy of top-level properties (still referencing same Sets, objects, etc.)
+                    code: {
+                        ...result.code, // shallow copy of result.code
+                        create: [],     // override only these four
+                        mount: [],
+                        update: [],
+                        destroy: []
+                    }
+                };
+
+                exthtml.children.forEach(node => traverseExthtml(node, result_if_block, parent_nm, variableNameAnchor))
+
+                result.code.reactives.push(`
+                function ${reactiveFnName}_create(){
+                    ${result_if_block.code.create.join(';\n')};
+                }
+                function ${reactiveFnName}_mount(){
+                    ${result_if_block.code.mount.join(';\n')};
+                }
+                function ${reactiveFnName}_destroy(){
+                    ${result_if_block.code.destroy.join(';\n')};
+                }
+                function ${reactiveFnName}(){
+                    if(${exthtml.value}){
+                        ${reactiveFnName}_create();
+                        ${reactiveFnName}_mount();
+                    } else {
+                        ${reactiveFnName}_destroy();
+                    }
+                }`)
+
+                if (setup.dev_version) result.code.mount.push(`/* ${exthtml.type}: ${exthtml.value} */`);
+                result.code.mount.push(`${reactiveFnName}()`)
+                if (setup.dev_version) result.code.destroy.push(`/* ${exthtml.type}: ${exthtml.value} */`);
+                // detach the anchor variable (not the virtual if name)
+                result.code.destroy.push(`$$_detach(${variableNameAnchor})`)
+
+
+                //console.log(inspect(exthtml, { depth: null, colors: true }));
+                return
+
+
             case 'VirtualFOR':
                 variableName = getVariableName(exthtml);
                 result.code.internal_import.add("reconcileReactive");

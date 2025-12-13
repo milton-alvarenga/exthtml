@@ -30,7 +30,8 @@ export function getStructure(){
             create: [],
             mount: [],
             update: [],
-            destroy: []
+            destroy: [],
+            component_scope_vars: []
         }
     }
 }

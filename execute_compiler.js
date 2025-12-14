@@ -52,8 +52,7 @@ const __dirname = dirname(__filename);
 //const filePathIfNoneInformed = '../exthtml_vite_plugin/tests/kindergarten/if_directive/double_ifs_conditional/index.exthtml'
 //const filePathIfNoneInformed = '../exthtml_vite_plugin/tests/kindergarten/for_directive/simple_array/index.exthtml'
 //const filePathIfNoneInformed = '../exthtml_vite_plugin/tests/kindergarten/if_directive/nested_ifs/index.exthtml'
-//const filePathIfNoneInformed = '../exthtml_vite_plugin/tests/kindergarten/for_directive/simple_array/index.exthtml'
-const filePathIfNoneInformed = '../exthtml_vite_plugin/tests/kindergarten/for_directive/simple_array_dynamic/index.exthtml'
+const filePathIfNoneInformed = './src/examples/exthtml/simple_component/main.exthtml';
 
 
 const args = process.argv.slice(2);
